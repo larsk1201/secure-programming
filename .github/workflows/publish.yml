@@ -34,10 +34,10 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
       - name: Sign app APK
-        id: sign_app
         run: |
           echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > keystore.jks
       
+          # Manually signing it because Github actions don't work
           jarsigner \
           -verbose \
           -sigalg SHA256withRSA \
@@ -48,11 +48,9 @@ jobs:
           ./app/build/outputs/apk/release/app-release-unsigned.apk \
           ${{ secrets.ALIAS }}
       
+          # Cleanup
           rm -f keystore.jks
-          
           mv ./app/build/outputs/apk/release/guineatrade-signed.apk" ~/guineatrade.apk
-      
-          echo "signedReleaseFile=./app/build/outputs/apk/release/guineatrade-signed.apk" >> $GITHUB_OUTPUT
       - name: Append APK as artifact
         if: github.ref_type != 'tag'
         uses: actions/upload-artifact@v7
