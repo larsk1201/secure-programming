@@ -28,7 +28,6 @@ jobs:
         run: |
           ls
           ls -al
-          tree
 
 #      - name: Build android package
 #        uses: actions/build-android-app@v1.5.0
