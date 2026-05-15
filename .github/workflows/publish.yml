@@ -31,6 +31,11 @@ jobs:
           cache: gradle
       - name: Setup Android SDK
         uses: android-actions/setup-android@v4
+      - name: Install Android Build Tools
+        run: |
+          sdkmanager "build-tools;36.0.0" 
+          echo $PATH && which zipalign && which apksigner
+          echo "$ANDROID_HOME/build-tools/34.0.0" >> $GITHUB_PATH
       - name: Build with Gradle
         run: | 
           chmod +x ./gradlew
@@ -45,6 +50,8 @@ jobs:
           
           apksigner sign \
             --ks keystore.jks \
+            --ks-key-alias ${{ secrets.ALIAS }} \
+            --ks-pass pass:${{ secrets.KEY_STORE_PASSWORD }}
             --out ./guineatrade.apk \
             ./app/build/outputs/apk/release/app-release-unsigned-aligned.apk   
 
