@@ -34,16 +34,30 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
       - name: Sign app APK
-        uses: TeamNecta/build-signed-apk@v2.1
         id: sign_app
-        with:
-          keystore_b64: ${{ secrets.SIGNING_KEY }}
-          key_alias: ${{ secrets.ALIAS }}
-          keystore_password: ${{ secrets.KEY_STORE_PASSWORD }}
-          java_version: 21
-          java_distribution: 'temurin'
-      - name: Rename APK
-        run: mv app/build/outputs/apk/release/app-release.apk ~/guineatrade.apk
+        run: |
+          # Decode the keystore from base64
+          echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > keystore.jks
+      
+          # Sign the APK using jarsigner (part of the JDK)
+          jarsigner \
+          -verbose \
+          -sigalg SHA256withRSA \
+          -digestalg SHA-256 \
+          -keystore keystore.jks \
+          -storepass ${{ secrets.KEY_STORE_PASSWORD }} \
+          -keypass ${{ secrets.KEY_PASSWORD }} \
+          -signedjar ./app/build/outputs/apk/release/guineatrade-signed.apk \
+          ./app/build/outputs/apk/release/app-release-unsigned.apk \
+          ${{ secrets.ALIAS }}
+      
+          # Clean up the keystore (optional)
+          rm -f keystore.jks
+          
+          mv ./app/build/outputs/apk/release/guineatrade-signed.apk" ~/guineatrade.apk
+      
+          # Set output for next steps
+          echo "signedReleaseFile=./app/build/outputs/apk/release/guineatrade-signed.apk" >> $GITHUB_OUTPUT
       - name: Append APK as artifact
         if: github.ref_type != 'tag'
         uses: actions/upload-artifact@v7
