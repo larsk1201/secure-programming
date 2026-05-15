@@ -23,14 +23,12 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v6
-
       - name: Build android package
         uses: actions/setup-java@v5
         with:
           java-version: '11'
           distribution: 'temurin'
           cache: gradle
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
@@ -46,26 +44,26 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "36.0.0"
       - name: Rename APK
-        run: mv ${{ steps.sign_app.outputs.signedReleaseFile }} guineatrade.apk
+        run: mv ${{ steps.sign_app.outputs.signedReleaseFile }} ~/guineatrade.apk
       - name: Append APK as artifact
         if: github.ref_type != 'tag'
         uses: actions/upload-artifact@v7
         with:
           name: guineatrade.apk
-          path: guineatrade.apk
+          path: ~/guineatrade.apk
           if-no-files-found: error
           retention-days: 30
           archive: false
           overwrite: true
-#      - name: Generate hashes
-#        run: |
-#          sha256sum ~/guinetrade.apk >> ~/checksum.txt
-#      - name: Release
-#        uses: softprops/action-gh-release@v3
-#        if: github.ref_type == 'tag'
-#        with:
-#          files: |
-#            ~/guinetrade.apk
-#            ~/checksum.txt
-#        env:
-#          GITHUB_TOKEN: ${{ github.token }}
+      - name: Generate hashes
+        run: |
+          sha256sum ~/guineatrade.apk >> ~/checksum.txt
+      - name: Release
+        uses: softprops/action-gh-release@v3
+        if: github.ref_type == 'tag'
+        with:
+          files: |
+            ~/guineatrade.apk
+            ~/checksum.txt
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
