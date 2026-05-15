@@ -40,13 +40,12 @@ jobs:
           echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > keystore.jks
       
           # Sign the APK using jarsigner (part of the JDK)
-          jarsigner \
+          jarsigner
           -verbose \
           -sigalg SHA256withRSA \
           -digestalg SHA-256 \
           -keystore keystore.jks \
           -storepass ${{ secrets.KEY_STORE_PASSWORD }} \
-          -keypass ${{ secrets.KEY_PASSWORD }} \
           -signedjar ./app/build/outputs/apk/release/guineatrade-signed.apk \
           ./app/build/outputs/apk/release/app-release-unsigned.apk \
           ${{ secrets.ALIAS }}
