@@ -26,7 +26,7 @@ jobs:
       - name: Build android package
         uses: actions/setup-java@v5
         with:
-          java-version: '11'
+          java-version: '21'
           distribution: 'temurin'
           cache: gradle
       - name: Grant execute permission for gradlew
@@ -34,15 +34,16 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
       - name: Sign app APK
-        uses: ilharp/sign-android-release@v2.0.0
+        uses: TeamNecta/build-signed-apk@v2.1
         id: sign_app
         with:
-          releaseDir: ./app/build/outputs/apk/release
-          signingKey: ${{ secrets.SIGNING_KEY }}
-          keyAlias: ${{ secrets.ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keystore_b64: ${{ secrets.SIGNING_KEY }}
+          key_alias: ${{ secrets.ALIAS }}
+          keystore_password: ${{ secrets.KEY_STORE_PASSWORD }}
+          java_version: 21
+          java_distribution: 'temurin'
       - name: Rename APK
-        run: mv ${{ steps.sign_app.outputs.signedFile }} ~/guineatrade.apk
+        run: mv app/build/outputs/apk/release/app-release.apk ~/guineatrade.apk
       - name: Append APK as artifact
         if: github.ref_type != 'tag'
         uses: actions/upload-artifact@v7
