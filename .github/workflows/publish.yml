@@ -34,7 +34,6 @@ jobs:
       - name: Install Android Build Tools
         run: |
           sdkmanager "build-tools;36.0.0" 
-          echo $PATH && which zipalign && which apksigner
           echo "$ANDROID_HOME/build-tools/34.0.0" >> $GITHUB_PATH
       - name: Build with Gradle
         run: | 
@@ -45,13 +44,13 @@ jobs:
           echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > keystore.jks
           
           zipalign -v -p 4 \
-            ./app/build/outputs/apk/release/app-release-unsigned.apk
+            ./app/build/outputs/apk/release/app-release-unsigned.apk \
             ./app/build/outputs/apk/release/app-release-unsigned-aligned.apk         
           
           apksigner sign \
             --ks keystore.jks \
             --ks-key-alias ${{ secrets.ALIAS }} \
-            --ks-pass pass:${{ secrets.KEY_STORE_PASSWORD }}
+            --ks-pass pass:${{ secrets.KEY_STORE_PASSWORD }} \
             --out ./guineatrade.apk \
             ./app/build/outputs/apk/release/app-release-unsigned-aligned.apk   
 
