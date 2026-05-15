@@ -36,11 +36,9 @@ jobs:
       - name: Sign app APK
         id: sign_app
         run: |
-          # Decode the keystore from base64
           echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > keystore.jks
       
-          # Sign the APK using jarsigner (part of the JDK)
-          jarsigner
+          jarsigner \
           -verbose \
           -sigalg SHA256withRSA \
           -digestalg SHA-256 \
@@ -50,12 +48,10 @@ jobs:
           ./app/build/outputs/apk/release/app-release-unsigned.apk \
           ${{ secrets.ALIAS }}
       
-          # Clean up the keystore (optional)
           rm -f keystore.jks
           
           mv ./app/build/outputs/apk/release/guineatrade-signed.apk" ~/guineatrade.apk
       
-          # Set output for next steps
           echo "signedReleaseFile=./app/build/outputs/apk/release/guineatrade-signed.apk" >> $GITHUB_OUTPUT
       - name: Append APK as artifact
         if: github.ref_type != 'tag'
