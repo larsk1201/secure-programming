@@ -50,7 +50,8 @@ jobs:
       
           # Cleanup
           rm -f keystore.jks
-          mv ./app/build/outputs/apk/release/guineatrade-signed.apk" ~/guineatrade.apk
+          mv ./app/build/outputs/apk/release/guineatrade-signed.apk ~/guineatrade.apk
+
       - name: Append APK as artifact
         if: github.ref_type != 'tag'
         uses: actions/upload-artifact@v7
