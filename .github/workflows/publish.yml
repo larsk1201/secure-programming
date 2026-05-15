@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v6
-      - name: Build android package
+      - name: Install Java
         uses: actions/setup-java@v5
         with:
           java-version: '21'
@@ -51,10 +51,10 @@ jobs:
             --ks keystore.jks \
             --ks-key-alias ${{ secrets.ALIAS }} \
             --ks-pass pass:${{ secrets.KEY_STORE_PASSWORD }} \
-            --out ./guineatrade.apk \
+            --out ~/guineatrade.apk \
             ./app/build/outputs/apk/release/app-release-unsigned-aligned.apk   
 
-          apksigner verify ./guineatrade.apk
+          apksigner verify ~/guineatrade.apk
   
           rm -f keystore.jks
 
