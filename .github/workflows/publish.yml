@@ -29,28 +29,28 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: gradle
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
       - name: Build with Gradle
-        run: ./gradlew build
+        run: | 
+          chmod +x ./gradlew
+          ./gradlew build
       - name: Sign app APK
         run: |
           echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > keystore.jks
-      
-          # Manually signing it because Github actions don't work
-          jarsigner \
-          -verbose \
-          -sigalg SHA256withRSA \
-          -digestalg SHA-256 \
-          -keystore keystore.jks \
-          -storepass ${{ secrets.KEY_STORE_PASSWORD }} \
-          -signedjar ./app/build/outputs/apk/release/guineatrade-signed.apk \
-          ./app/build/outputs/apk/release/app-release-unsigned.apk \
-          ${{ secrets.ALIAS }}
-      
-          # Cleanup
+          
+          zipalign -v -p 4 \
+            ./app/build/outputs/apk/release/app-release-unsigned.apk
+            ./app/build/outputs/apk/release/app-release-unsigned-aligned.apk         
+          
+          apksigner sign \
+            --ks keystore.jks \
+            --out ./guineatrade.apk \
+            ./app/build/outputs/apk/release/app-release-unsigned-aligned.apk   
+
+          apksigner verify ./guineatrade.apk
+  
           rm -f keystore.jks
-          mv ./app/build/outputs/apk/release/guineatrade-signed.apk ~/guineatrade.apk
 
       - name: Append APK as artifact
         if: github.ref_type != 'tag'
