@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: guineatrade.apk
-          path: ${{ steps.sign_app.signedReleaseFile }}
+          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
           if-no-files-found: error
           retention-days: 30
           archive: false
