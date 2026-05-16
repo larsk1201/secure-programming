@@ -1,7 +1,7 @@
 package com.nhlstenden.guineatrade
 
 import android.os.Bundle
-import android.util.Log
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -44,6 +44,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+
+        this.setProfileCard()
+    }
+
+    private fun setProfileCard() {
+        val greetingText: TextView = findViewById(R.id.user_name)
+        val subText: TextView = findViewById(R.id.sub_text)
+
+        //        TODO: Get values from API
+        greetingText.text = String.format(getText(R.string.profile_header_name).toString(), "John Doe")
+        subText.text = String.format(getText(R.string.profile_header_subtitle).toString(), 49550.0 / 100.0)
     }
 
     private class MainPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {

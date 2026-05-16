@@ -33,7 +33,7 @@
 
             <!-- Greeting and sub_text in the middle -->
             <TextView
-                android:id="@+id/greeting_text"
+                android:id="@+id/user_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
@@ -41,6 +41,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="Hey, %s"
+                tools:text="Hey, %s"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -57,12 +58,13 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="$%.$2f"
+                tools:text="$%.$2f"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/greeting_text"
-                app:layout_constraintStart_toStartOf="@+id/greeting_text"
-                app:layout_constraintTop_toBottomOf="@+id/greeting_text" />
+                app:layout_constraintEnd_toEndOf="@+id/user_name"
+                app:layout_constraintStart_toStartOf="@+id/user_name"
+                app:layout_constraintTop_toBottomOf="@+id/user_name" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
