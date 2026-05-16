@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GuineaTrade</string>
+    <string name="profile_header_name">Hey, %s</string>
+    <string name="profile_header_subtitle">$ %.2f</string>
 </resources>
