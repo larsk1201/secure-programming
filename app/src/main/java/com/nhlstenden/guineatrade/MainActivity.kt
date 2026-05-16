@@ -33,6 +33,17 @@ class MainActivity : AppCompatActivity() {
 
             true
         }
+
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                bottomNavigation.selectedItemId = when (position) {
+                    0 -> R.id.nav_home
+                    1 -> R.id.nav_store
+                    2 -> R.id.nav_inventory
+                    else -> R.id.nav_home
+                }
+            }
+        })
     }
 
     private class MainPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
@@ -45,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                 2 -> InventoryFragment()
                 else -> HomeFragment()
             }
-            // Do not set user data in fragment arguments; rely on AuthRepository
+
             return fragment
         }
     }
