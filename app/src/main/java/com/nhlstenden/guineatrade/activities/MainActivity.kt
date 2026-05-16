@@ -1,4 +1,4 @@
-package com.nhlstenden.guineatrade
+package com.nhlstenden.guineatrade.activities
 
 import android.os.Bundle
 import android.widget.TextView
@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.fragments.HomeFragment
 import com.nhlstenden.guineatrade.fragments.InventoryFragment
 import com.nhlstenden.guineatrade.fragments.StoreFragment
