@@ -10,6 +10,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.fragments.LoginFragment
 import com.nhlstenden.guineatrade.fragments.SignupFragment
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

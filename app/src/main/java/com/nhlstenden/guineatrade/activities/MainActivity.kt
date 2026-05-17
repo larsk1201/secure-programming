@@ -11,7 +11,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.nhlstenden.guineatrade.R
-import com.nhlstenden.guineatrade.datasources.User
+import com.nhlstenden.guineatrade.datasources.UserDatasource
 import com.nhlstenden.guineatrade.fragments.HomeFragment
 import com.nhlstenden.guineatrade.fragments.InventoryFragment
 import com.nhlstenden.guineatrade.fragments.StoreFragment
@@ -21,12 +21,12 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    @Inject lateinit var user: User
+    @Inject lateinit var userDatasource: UserDatasource
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.d("MainActivity", user.username)
+        Log.d("MainActivity", userDatasource.username)
 
         val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_navigation)
         val viewPager: ViewPager2 = findViewById(R.id.view_page)
@@ -72,8 +72,8 @@ class MainActivity : AppCompatActivity() {
         val greetingText: TextView = findViewById(R.id.user_name)
         val subText: TextView = findViewById(R.id.sub_text)
 
-        greetingText.text = String.format(getText(R.string.profile_header_name).toString(), user.username)
-        subText.text = String.format(getText(R.string.profile_header_subtitle).toString(), user.balance.toFloat() / 100.0)
+        greetingText.text = String.format(getText(R.string.profile_header_name).toString(), userDatasource.username)
+        subText.text = String.format(getText(R.string.profile_header_subtitle).toString(), userDatasource.balance.toFloat() / 100.0)
     }
 
     private class MainPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {

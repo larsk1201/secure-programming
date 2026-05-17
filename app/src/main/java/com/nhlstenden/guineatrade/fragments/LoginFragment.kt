@@ -10,8 +10,15 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.nhlstenden.guineatrade.R
+import com.nhlstenden.guineatrade.datasources.UserDatasource
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
+
+    @Inject
+    lateinit var userDatasource: UserDatasource
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,8 +47,7 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-//            TODO: Login the user (singleton is currently nil)
-//            this.user.login(email, password)
+            this.userDatasource.login(email, password)
         }
     }
 
