@@ -18,6 +18,7 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GuineaTrade"
+            android:windowSoftInputMode="adjustPan"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
