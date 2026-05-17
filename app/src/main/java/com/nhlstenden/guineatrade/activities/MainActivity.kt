@@ -74,9 +74,8 @@ class MainActivity : AppCompatActivity() {
         val greetingText: TextView = findViewById(R.id.user_name)
         val subText: TextView = findViewById(R.id.sub_text)
 
-        //        TODO: Get values from API
-        greetingText.text = String.format(getText(R.string.profile_header_name).toString(), "John Doe")
-        subText.text = String.format(getText(R.string.profile_header_subtitle).toString(), 49550.0 / 100.0)
+        greetingText.text = String.format(getText(R.string.profile_header_name).toString(), user.username)
+        subText.text = String.format(getText(R.string.profile_header_subtitle).toString(), user.balance.toFloat() / 100.0)
     }
 
     private class MainPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
