@@ -5,13 +5,14 @@
     android:layout_margin="16dp"
     android:orientation="vertical"
     android:padding="16dp"
+    android:gravity="bottom"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Email address" />
+        android:text="@string/signup_input_email" />
 
     <EditText
         android:id="@+id/signup_input_email"
@@ -24,7 +25,7 @@
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/login_input_password" />
+        android:text="@string/signup_input_password" />
 
     <EditText
         android:id="@+id/signup_input_password"
@@ -37,7 +38,7 @@
         android:id="@+id/textView5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Password confirm" />
+        android:text="@string/signup_input_password_confirm" />
 
     <EditText
         android:id="@+id/signup_input_password_confirm"
@@ -50,7 +51,7 @@
         android:id="@+id/textView6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Phone number" />
+        android:text="@string/signup_input_phone" />
 
     <EditText
         android:id="@+id/signup_phone_number"
