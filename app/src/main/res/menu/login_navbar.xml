@@ -3,11 +3,11 @@
 
     <item
         android:id="@+id/nav_login"
-        android:icon="@drawable/shopping_cart_24px"
+        android:icon="@drawable/person_24px"
         android:title="Login" />
 
     <item
         android:id="@+id/nav_signup"
-        android:icon="@drawable/apps_24px"
+        android:icon="@drawable/how_to_reg_24px"
         android:title="Sign up" />
 </menu>

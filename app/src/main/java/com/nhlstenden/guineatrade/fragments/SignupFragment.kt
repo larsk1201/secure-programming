@@ -23,7 +23,7 @@ class SignupFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val submitButton = view.findViewById<Button>(R.id.login_button_confirm)
+        val submitButton = view.findViewById<Button>(R.id.signup_button_confirm)
 
         submitButton.setOnClickListener {
             val email = view.findViewById<EditText>(R.id.signup_input_email).text.toString()
