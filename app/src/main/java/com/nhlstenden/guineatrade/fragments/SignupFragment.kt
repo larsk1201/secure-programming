@@ -1,5 +1,6 @@
 package com.nhlstenden.guineatrade.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.nhlstenden.guineatrade.R
+import com.nhlstenden.guineatrade.activities.MainActivity
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -61,7 +63,15 @@ class SignupFragment : Fragment() {
 //            }
 
 //            TODO: Login the userDatasource (singleton is currently nil)
-            this.userDatasource.signup(email, password, passwordConfirm, phoneNumber)
+            if (!this.userDatasource.signup(email, password, passwordConfirm, phoneNumber)) {
+                Toast.makeText(context, "Unable to create new account", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+//            TODO: Redirect to activity that has the 2FA setup page
+            val intent = Intent()
+            intent.setClass(requireContext(), MainActivity::class.java)
+            activity?.startActivity(intent)
         }
     }
 

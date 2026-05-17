@@ -1,5 +1,6 @@
 package com.nhlstenden.guineatrade.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.nhlstenden.guineatrade.R
+import com.nhlstenden.guineatrade.activities.MainActivity
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -47,7 +49,14 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            this.userDatasource.login(email, password)
+            if (!this.userDatasource.login(email, password)) {
+                Toast.makeText(context, "Invalid credentials, unable to login", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val intent = Intent()
+            intent.setClass(requireContext(), MainActivity::class.java)
+            activity?.startActivity(intent)
         }
     }
 

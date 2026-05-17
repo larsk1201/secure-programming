@@ -16,19 +16,23 @@ class UserDatasource @Inject constructor() {
     var phone = ""
     var balance = 49650
 
-    fun login(email: String, password: String) {
+    fun login(email: String, password: String): Boolean {
 //        TODO: Make API call
         this.username = email
         this.email = email
         Log.d("UserSingleton", password)
         Log.d("UserSingleton", email)
+
+        return true
     }
 
-    fun signup(email: String, password: String, passwordConfirm: String, phoneNumber: String) {
+    fun signup(email: String, password: String, passwordConfirm: String, phoneNumber: String): Boolean {
         this.username = email
         this.email = email
         this.phone = phoneNumber
 //        TODO: Make API call
+
+        return true
     }
 
     @Provides
