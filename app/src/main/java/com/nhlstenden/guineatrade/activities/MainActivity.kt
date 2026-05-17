@@ -2,8 +2,6 @@ package com.nhlstenden.guineatrade.activities
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
