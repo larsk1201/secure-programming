@@ -35,10 +35,10 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigation.setOnItemSelectedListener { item ->
             viewPager.currentItem = when (item.itemId) {
-                R.id.nav_home -> 0
-                R.id.nav_store -> 1
-                R.id.nav_inventory -> 2
-                else -> 0
+                R.id.nav_home -> MainPage.HOME.position
+                R.id.nav_store -> MainPage.STORE.position
+                R.id.nav_inventory -> MainPage.INVENTORY.position
+                else -> MainPage.HOME.position
             }
 
             true
@@ -46,11 +46,10 @@ class MainActivity : AppCompatActivity() {
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                bottomNavigation.selectedItemId = when (position) {
-                    0 -> R.id.nav_home
-                    1 -> R.id.nav_store
-                    2 -> R.id.nav_inventory
-                    else -> R.id.nav_home
+                bottomNavigation.selectedItemId = when (MainPage.entries[position]) {
+                    MainPage.HOME -> R.id.nav_home
+                    MainPage.STORE -> R.id.nav_store
+                    MainPage.INVENTORY -> R.id.nav_inventory
                 }
             }
         })
@@ -80,14 +79,19 @@ class MainActivity : AppCompatActivity() {
         override fun getItemCount(): Int = 3
 
         override fun createFragment(position: Int): Fragment {
-            val fragment = when (position) {
-                0 -> HomeFragment()
-                1 -> StoreFragment()
-                2 -> InventoryFragment()
-                else -> HomeFragment()
+            val fragment = when (MainPage.entries[position]) {
+                MainPage.HOME -> HomeFragment()
+                MainPage.STORE -> StoreFragment()
+                MainPage.INVENTORY -> InventoryFragment()
             }
 
             return fragment
         }
+    }
+
+    enum class MainPage(val position: Int) {
+        HOME(0),
+        STORE(1),
+        INVENTORY(2),
     }
 }

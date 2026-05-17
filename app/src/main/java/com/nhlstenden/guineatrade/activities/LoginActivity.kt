@@ -13,7 +13,6 @@ import com.nhlstenden.guineatrade.fragments.SignupFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,9 +25,9 @@ class LoginActivity : AppCompatActivity() {
 
         bottomNavigation.setOnItemSelectedListener { item ->
             viewPager.currentItem = when (item.itemId) {
-                R.id.nav_login -> 0
-                R.id.nav_signup -> 1
-                else -> 0
+                R.id.nav_login -> LoginPage.LOGIN.position
+                R.id.nav_signup -> LoginPage.SIGNUP.position
+                else -> LoginPage.LOGIN.position
             }
 
             true
@@ -36,10 +35,9 @@ class LoginActivity : AppCompatActivity() {
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                bottomNavigation.selectedItemId = when (position) {
-                    0 -> R.id.nav_login
-                    1 -> R.id.nav_signup
-                    else -> R.id.nav_signup
+                bottomNavigation.selectedItemId = when (LoginPage.entries[position]) {
+                    LoginPage.LOGIN -> R.id.nav_login
+                    LoginPage.SIGNUP -> R.id.nav_signup
                 }
             }
         })
@@ -49,13 +47,17 @@ class LoginActivity : AppCompatActivity() {
         override fun getItemCount(): Int = 2
 
         override fun createFragment(position: Int): Fragment {
-            val fragment = when (position) {
-                0 -> LoginFragment()
-                1 -> SignupFragment()
-                else -> LoginFragment()
+            val fragment = when (LoginPage.entries[position]) {
+                LoginPage.LOGIN -> LoginFragment()
+                LoginPage.SIGNUP -> SignupFragment()
             }
 
             return fragment
         }
+    }
+
+    enum class LoginPage(val position: Int) {
+        LOGIN(0),
+        SIGNUP(1)
     }
 }
