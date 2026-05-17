@@ -1,6 +1,7 @@
 package com.nhlstenden.guineatrade.activities
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -12,15 +13,22 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.nhlstenden.guineatrade.R
+import com.nhlstenden.guineatrade.datasources.User
 import com.nhlstenden.guineatrade.fragments.HomeFragment
 import com.nhlstenden.guineatrade.fragments.InventoryFragment
 import com.nhlstenden.guineatrade.fragments.StoreFragment
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject lateinit var user: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Log.d("MainActivity", user.username)
 
         val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_navigation)
         val viewPager: ViewPager2 = findViewById(R.id.view_page)
