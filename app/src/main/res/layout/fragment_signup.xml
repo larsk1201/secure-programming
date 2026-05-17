@@ -62,10 +62,10 @@
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/login_input_email" />
+                android:text="Email address" />
 
             <EditText
-                android:id="@+id/login_input_email"
+                android:id="@+id/signup_input_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -78,17 +78,43 @@
                 android:text="@string/login_input_password" />
 
             <EditText
-                android:id="@+id/login_input_password"
+                android:id="@+id/signup_input_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPassword" />
 
-            <Button
-                android:id="@+id/login_button_confirm"
+            <TextView
+                android:id="@+id/textView5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/login_login_button"
+                android:text="Password confirm" />
+
+            <EditText
+                android:id="@+id/signup_input_password_confirm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Phone number" />
+
+            <EditText
+                android:id="@+id/signup_phone_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="phone" />
+
+            <Button
+                android:id="@+id/signup_button_confirm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sign up"
                 tools:cornerRadius="16dp" />
 
         </LinearLayout>
