@@ -12,13 +12,12 @@ import com.nhlstenden.guineatrade.fragments.LoginFragment
 import com.nhlstenden.guineatrade.fragments.SignupFragment
 
 class LoginActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_navigation)
-        val viewPager: ViewPager2 = findViewById(R.id.view_page)
+        val bottomNavigation: BottomNavigationView = findViewById(R.id.login_navigation)
+        val viewPager: ViewPager2 = findViewById(R.id.login_viewpage)
 
         viewPager.adapter = LoginPageAdapter(this)
 

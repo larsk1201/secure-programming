@@ -6,5 +6,10 @@
     <string name="login_subtitle">Ready to get rich</string>
     <string name="login_input_email">Email address</string>
     <string name="login_input_password">Password</string>
-    <string name="login_login_button">Login</string>
+    <string name="login_button">Log in</string>
+    <string name="signup_input_email">Email address</string>
+    <string name="signup_input_password">Password</string>
+    <string name="signup_input_password_confirm">Confirm password</string>
+    <string name="signup_input_phone">Phone number</string>
+    <string name="signup_button">Sign up</string>
 </resources>
