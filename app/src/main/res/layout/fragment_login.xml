@@ -35,7 +35,7 @@
         android:inputType="textPassword" />
 
     <Button
-        android:id="@+id/signup_button_confirm"
+        android:id="@+id/login_button_confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/login_button"
