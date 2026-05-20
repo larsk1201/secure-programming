@@ -2,4 +2,14 @@
     <string name="app_name">GuineaTrade</string>
     <string name="profile_header_name">Hey, %s</string>
     <string name="profile_header_subtitle">$ %.2f</string>
+    <string name="login_title">GuineaTrade</string>
+    <string name="login_subtitle">Ready to get rich</string>
+    <string name="login_input_email">Email address</string>
+    <string name="login_input_password">Password</string>
+    <string name="login_button">Log in</string>
+    <string name="signup_input_email">Email address</string>
+    <string name="signup_input_password">Password</string>
+    <string name="signup_input_password_confirm">Confirm password</string>
+    <string name="signup_input_phone">Phone number</string>
+    <string name="signup_button">Sign up</string>
 </resources>
