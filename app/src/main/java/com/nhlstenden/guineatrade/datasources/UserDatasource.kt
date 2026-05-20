@@ -18,7 +18,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Serializable
-data class Tokens(val jwt: String, val refresh: String)
+data class Tokens(var jwt: String, val refresh: String)
 
 @Serializable
 data class AuthMe(
@@ -120,6 +120,33 @@ class UserDatasource @Inject constructor() {
 
         try {
             this@UserDatasource.login(email, password)
+        } catch (_: Exception) {
+            return@withContext false
+        }
+
+        return@withContext true
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    suspend fun refreshToken() = withContext(Dispatchers.IO) {
+        val url = this@UserDatasource.client.apiUrl + "/auth/refresh"
+        val jsonBody = Json.encodeToString(this@UserDatasource.tokens)
+        val body = jsonBody.toRequestBody("application/json".toMediaType())
+        val request = Request.Builder()
+            .url(url)
+            .post(body)
+            .header("Content-Type", "application/json")
+            .build()
+
+        val result = this@UserDatasource.client.client.newCall(request).execute()
+
+        if (result.code != 200) {
+            return@withContext false
+        }
+
+        try {
+            val tokens = Json.decodeFromStream<Tokens>(result.body.byteStream())
+            this@UserDatasource.tokens.jwt = tokens.jwt
         } catch (_: Exception) {
             return@withContext false
         }
