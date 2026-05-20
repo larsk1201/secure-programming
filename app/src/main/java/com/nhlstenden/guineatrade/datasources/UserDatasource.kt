@@ -1,5 +1,6 @@
 package com.nhlstenden.guineatrade.datasources
 
+import android.util.Log
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,6 +30,15 @@ data class AuthMe(
 
 @Serializable
 data class Login(val email: String, val password: String)
+
+@Serializable
+data class SignUp(
+    val name: String,
+    val email: String,
+    val password: String,
+    val passwordVerify: String,
+    val tel: String,
+)
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -90,13 +100,31 @@ class UserDatasource @Inject constructor() {
         this@UserDatasource.balance = credentials.balance
     }
 
-    fun signup(email: String, password: String, passwordConfirm: String, phoneNumber: String): Boolean {
-        this.username = email
-        this.email = email
-        this.phone = phoneNumber
-//        TODO: Make API call
+    @OptIn(ExperimentalSerializationApi::class)
+    suspend fun signup(name: String, email: String, password: String, passwordConfirm: String, phoneNumber: String): Boolean = withContext(Dispatchers.IO) {
+        val url = this@UserDatasource.client.apiUrl + "/auth/register"
+        val jsonBody = Json.encodeToString(SignUp(name, email, password,passwordConfirm, phoneNumber ))
+        Log.d("UserDatasource", jsonBody)
+        val body = jsonBody.toRequestBody("application/json".toMediaType())
+        val request = Request.Builder()
+            .url(url)
+            .post(body)
+            .header("Content-Type", "application/json")
+            .build()
 
-        return true
+        val result = this@UserDatasource.client.client.newCall(request).execute()
+
+        if (result.code != 201) {
+            return@withContext false
+        }
+
+        try {
+            this@UserDatasource.login(email, password)
+        } catch (_: Exception) {
+            return@withContext false
+        }
+
+        return@withContext true
     }
 
     @Provides

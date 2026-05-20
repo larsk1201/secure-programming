@@ -10,10 +10,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.activities.MainActivity
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -36,13 +38,14 @@ class SignupFragment : Fragment() {
         val submitButton = view.findViewById<Button>(R.id.signup_button_confirm)
 
         submitButton.setOnClickListener {
+            val name = view.findViewById<EditText>(R.id.signup_input_username).text.toString()
             val email = view.findViewById<EditText>(R.id.signup_input_email).text.toString()
             val password = view.findViewById<EditText>(R.id.signup_input_password).text.toString()
             val passwordConfirm = view.findViewById<EditText>(R.id.signup_input_password_confirm).text.toString()
             val phoneNumber = view.findViewById<EditText>(R.id.signup_phone_number).text.toString()
 
 
-            if (email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty() || phoneNumber.isEmpty()) {
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty() || phoneNumber.isEmpty()) {
                 Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -62,16 +65,16 @@ class SignupFragment : Fragment() {
 //                return@setOnClickListener
 //            }
 
-//            TODO: Login the userDatasource (singleton is currently nil)
-            if (!this.userDatasource.signup(email, password, passwordConfirm, phoneNumber)) {
-                Toast.makeText(context, "Unable to create new account", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            lifecycleScope.launch {
+                if (!this@SignupFragment.userDatasource.signup(name, email, password, passwordConfirm, phoneNumber)) {
+                    Toast.makeText(context, "Unable to create new account", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
 
-//            TODO: Redirect to activity that has the 2FA setup page
-            val intent = Intent()
-            intent.setClass(requireContext(), MainActivity::class.java)
-            activity?.startActivity(intent)
+                val intent = Intent()
+                intent.setClass(requireContext(), MainActivity::class.java)
+                activity?.startActivity(intent)
+            }
         }
     }
 
