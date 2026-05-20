@@ -67,7 +67,28 @@ class UserDatasource @Inject constructor() {
         return@withContext true
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
+    suspend fun authMe() = withContext(Dispatchers.IO) {
+        if (this@UserDatasource.tokens == null) {
+            return@withContext
+        }
+        val url = this@UserDatasource.client.apiUrl + "/auth/me"
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer " + this@UserDatasource.tokens.jwt)
+            .build()
 
+        val result = this@UserDatasource.client.client.newCall(request).execute()
+
+        val credentials = Json.decodeFromStream<AuthMe>(result.body.byteStream())
+
+        this@UserDatasource.email = credentials.email
+        this@UserDatasource.username = credentials.name
+        this@UserDatasource.phone = credentials.tel
+        this@UserDatasource.balance = credentials.balance
+    }
 
     fun signup(email: String, password: String, passwordConfirm: String, phoneNumber: String): Boolean {
         this.username = email
