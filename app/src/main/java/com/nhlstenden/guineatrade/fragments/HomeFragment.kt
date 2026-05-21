@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.nhlstenden.guineatrade.R
@@ -39,6 +41,12 @@ class HomeFragment : Fragment() {
 
         val api = retrofit.create(SteamApi::class.java)
 
+        val profileName =
+            view.findViewById<TextView>(R.id.profileName)
+
+        val itemsContainer =
+            view.findViewById<LinearLayout>(R.id.itemsContainer)
+
         searchButton.setOnClickListener {
             val steamId = steamIdInput.text.toString()
 
@@ -46,8 +54,19 @@ class HomeFragment : Fragment() {
                 try
                 {
                     val response = api.getInventory(steamId)
-                    response.descriptions.forEach {
-                        Log.d("STEAM_ITEM", it.name)
+                    val inventoryText =  "Inventory of $steamId"
+
+                    profileName.text = inventoryText
+                    itemsContainer.removeAllViews()
+
+                    response.descriptions.forEach{ item ->
+                        val itemText = TextView(requireContext())
+
+                        itemText.text = item.name
+                        itemText.textSize = 16f
+                        itemText.setPadding(0, 8, 0, 8)
+
+                        itemsContainer.addView(itemText)
                     }
                 }
                 catch (e: Exception)
