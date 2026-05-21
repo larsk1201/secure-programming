@@ -54,19 +54,29 @@ class HomeFragment : Fragment() {
                 try
                 {
                     val response = api.getInventory(steamId)
-                    val inventoryText =  "Inventory of $steamId"
+                    val inventoryText = "Inventory of $steamId"
 
                     profileName.text = inventoryText
                     itemsContainer.removeAllViews()
 
-                    response.descriptions.forEach{ item ->
-                        val itemText = TextView(requireContext())
+                    val descriptionMap = response.descriptions.associateBy{
+                        "${it.classid}_${it.instanceid}"
+                    }
 
-                        itemText.text = item.name
-                        itemText.textSize = 16f
-                        itemText.setPadding(0, 8, 0, 8)
+                    response.assets.forEach { asset ->
+                        val key = "${asset.classid}_${asset.instanceid}"
+                        val description = descriptionMap[key]
 
-                        itemsContainer.addView(itemText)
+                        if (description != null)
+                        {
+                            val itemText = TextView(requireContext())
+
+                            itemText.text = description.name
+                            itemText.textSize = 16f
+                            itemText.setPadding(0, 8, 0, 8)
+
+                            itemsContainer.addView(itemText)
+                        }
                     }
                 }
                 catch (e: Exception)
