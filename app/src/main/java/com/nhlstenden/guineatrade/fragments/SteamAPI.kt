@@ -25,7 +25,7 @@ data class Asset(
 
 interface SteamApi {
 
-    @GET("inventory/{steamId}/440/2")
+    @GET("inventory/{steamId}/440/2") // Test ID: 76561198995576702
     suspend fun getInventory(
         @Path("steamId") steamId: String
     ): InventoryResponse
