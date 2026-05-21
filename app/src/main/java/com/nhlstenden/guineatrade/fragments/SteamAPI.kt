@@ -1,5 +1,6 @@
 package com.nhlstenden.guineatrade.fragments
 
+import com.google.gson.annotations.SerializedName
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -9,10 +10,10 @@ data class InventoryResponse(
     val assets: List<Asset>
 )
 
-// TODO: rename all these values to remove the annoying underlines without breaking steam api
 data class Description(
     val name: String,
-    val icon_url: String,
+    @SerializedName("icon_url")
+    val iconUrl: String,
     val classid: String,
     val instanceid: String
 )
