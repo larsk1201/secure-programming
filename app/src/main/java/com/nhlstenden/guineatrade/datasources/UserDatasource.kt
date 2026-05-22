@@ -52,11 +52,10 @@ class UserDatasource @Inject constructor() {
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun login(email: String, password: String): Boolean = withContext(Dispatchers.IO) {
-        val url = this@UserDatasource.client.apiUrl + "/auth/login"
         val jsonBody = Json.encodeToString(Login(email, password))
         val body = jsonBody.toRequestBody("application/json".toMediaType())
         val request = Request.Builder()
-            .url(url)
+            .url(this@UserDatasource.client.authLogin)
             .post(body)
             .header("Content-Type", "application/json")
             .build()
@@ -79,12 +78,11 @@ class UserDatasource @Inject constructor() {
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun authMe() = withContext(Dispatchers.IO) {
-        if (this@UserDatasource.tokens == null) {
+        if (this@UserDatasource::tokens.isInitialized) {
             return@withContext
         }
-        val url = this@UserDatasource.client.apiUrl + "/auth/me"
         val request = Request.Builder()
-            .url(url)
+            .url(this@UserDatasource.client.authMe)
             .get()
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer " + this@UserDatasource.tokens.jwt)
@@ -102,12 +100,11 @@ class UserDatasource @Inject constructor() {
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun signup(name: String, email: String, password: String, passwordConfirm: String, phoneNumber: String): Boolean = withContext(Dispatchers.IO) {
-        val url = this@UserDatasource.client.apiUrl + "/auth/register"
         val jsonBody = Json.encodeToString(SignUp(name, email, password,passwordConfirm, phoneNumber ))
         Log.d("UserDatasource", jsonBody)
         val body = jsonBody.toRequestBody("application/json".toMediaType())
         val request = Request.Builder()
-            .url(url)
+            .url(this@UserDatasource.client.authRegister)
             .post(body)
             .header("Content-Type", "application/json")
             .build()
@@ -129,11 +126,10 @@ class UserDatasource @Inject constructor() {
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun refreshToken() = withContext(Dispatchers.IO) {
-        val url = this@UserDatasource.client.apiUrl + "/auth/refresh"
         val jsonBody = Json.encodeToString(this@UserDatasource.tokens)
         val body = jsonBody.toRequestBody("application/json".toMediaType())
         val request = Request.Builder()
-            .url(url)
+            .url(this@UserDatasource.client.authRefresh)
             .post(body)
             .header("Content-Type", "application/json")
             .build()
