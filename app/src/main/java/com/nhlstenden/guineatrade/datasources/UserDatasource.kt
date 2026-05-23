@@ -1,6 +1,5 @@
 package com.nhlstenden.guineatrade.datasources
 
-import android.util.Log
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,7 +23,6 @@ data class Tokens(var jwt: String, val refresh: String)
 data class AuthMe(
     val email: String,
     val name: String,
-    val tel: String,
     val balance: Int,
 )
 
@@ -45,7 +43,6 @@ class UserDatasource @Inject constructor() {
     private val client = HttpClient()
     lateinit var username: String
     lateinit var email: String
-    lateinit var phone: String
     var balance = 0
     lateinit var tokens: Tokens
 
@@ -93,7 +90,6 @@ class UserDatasource @Inject constructor() {
 
         this@UserDatasource.email = credentials.email
         this@UserDatasource.username = credentials.name
-        this@UserDatasource.phone = credentials.tel
         this@UserDatasource.balance = credentials.balance
     }
 
