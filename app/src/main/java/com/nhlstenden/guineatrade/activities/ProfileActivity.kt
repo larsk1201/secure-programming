@@ -2,6 +2,7 @@ package com.nhlstenden.guineatrade.activities
 
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -11,10 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import com.nhlstenden.guineatrade.fragments.AppFragment
-import com.nhlstenden.guineatrade.fragments.HomeFragment
-import com.nhlstenden.guineatrade.fragments.InventoryFragment
 import com.nhlstenden.guineatrade.fragments.MfaFragment
-import com.nhlstenden.guineatrade.fragments.StoreFragment
 import com.nhlstenden.guineatrade.fragments.UserFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -53,6 +51,12 @@ class ProfileActivity: AppCompatActivity() {
                 }
             }
         })
+
+        if (this.userDatasource.hasMFA) {
+            settingsNavigation.menu.findItem(R.id.nav_otp).setIcon(R.drawable.verified_user_24px)
+        } else {
+            settingsNavigation.menu.findItem(R.id.nav_otp).setIcon(R.drawable.gpp_bad_24px)
+        }
     }
     
     private class ProfilePageAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {

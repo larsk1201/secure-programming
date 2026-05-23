@@ -24,6 +24,7 @@ data class AuthMe(
     val email: String,
     val name: String,
     val balance: Int,
+    val mfaEnabled: Boolean
 )
 
 @Serializable
@@ -43,6 +44,7 @@ class UserDatasource @Inject constructor() {
     private val client = HttpClient()
     lateinit var username: String
     lateinit var email: String
+    var hasMFA = false
     var balance = 0
     lateinit var tokens: Tokens
 
@@ -91,6 +93,7 @@ class UserDatasource @Inject constructor() {
         this@UserDatasource.email = credentials.email
         this@UserDatasource.username = credentials.name
         this@UserDatasource.balance = credentials.balance
+        this@UserDatasource.hasMFA = credentials.mfaEnabled
     }
 
     @OptIn(ExperimentalSerializationApi::class)
