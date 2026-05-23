@@ -38,6 +38,14 @@ data class SignUp(
     val passwordVerify: String,
 )
 
+@Serializable
+data class UpdateMe(
+    val email: String,
+    val currentPassword: String,
+    val newPassword: String,
+    val newPasswordVerify: String,
+){}
+
 @Module
 @InstallIn(SingletonComponent::class)
 class UserDatasource @Inject constructor() {
@@ -94,6 +102,31 @@ class UserDatasource @Inject constructor() {
         this@UserDatasource.username = credentials.name
         this@UserDatasource.balance = credentials.balance
         this@UserDatasource.hasMFA = credentials.mfaEnabled
+    }
+
+    suspend fun updateMe(totpCode: Int, currentPassword: String, newPassword: String, newPasswordVerify: String): Boolean = withContext(Dispatchers.IO) {
+        val jsonBody = Json.encodeToString(UpdateMe(this@UserDatasource.email,
+            currentPassword,
+            newPassword,
+            newPasswordVerify,
+        ))
+        val body = jsonBody.toRequestBody("application/json".toMediaType())
+        val requestBuilder = Request.Builder()
+            .url(this@UserDatasource.client.authRegister)
+            .post(body)
+            .header("Content-Type", "application/json")
+
+        if (totpCode != 0) {
+            requestBuilder.header("X-TOTP-Code", totpCode.toString())
+        }
+
+        val result = this@UserDatasource.client.client.newCall(requestBuilder.build()).execute()
+
+        if (result.code == 202) {
+            return@withContext true
+        }
+
+        return@withContext true
     }
 
     @OptIn(ExperimentalSerializationApi::class)

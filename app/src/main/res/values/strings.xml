@@ -12,4 +12,11 @@
     <string name="signup_input_password_confirm">Confirm password</string>
     <string name="signup_button">Sign up</string>
     <string name="signup_input_username">Username</string>
+    <string name="settings_input_username">Email</string>
+    <string name="settings_input_current_password">Current password</string>
+    <string name="settings_input_new_password">New Password</string>
+    <string name="settings_input_new_password_confirm">New Password confirm</string>
+    <string name="settings_input_verification_code">Verification code</string>
+    <string name="settings_button_update">Update</string>
+    <string name="settings_button_cancel">Cancel</string>
 </resources>
