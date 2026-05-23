@@ -60,19 +60,6 @@
         android:ems="10"
         android:inputType="textPassword" />
 
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/signup_input_phone" />
-
-    <EditText
-        android:id="@+id/signup_phone_number"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="phone" />
-
     <Button
         android:id="@+id/signup_button_confirm"
         android:layout_width="match_parent"

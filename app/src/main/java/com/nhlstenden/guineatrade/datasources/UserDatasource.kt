@@ -37,7 +37,6 @@ data class SignUp(
     val email: String,
     val password: String,
     val passwordVerify: String,
-    val tel: String,
 )
 
 @Module
@@ -99,9 +98,8 @@ class UserDatasource @Inject constructor() {
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    suspend fun signup(name: String, email: String, password: String, passwordConfirm: String, phoneNumber: String): Boolean = withContext(Dispatchers.IO) {
-        val jsonBody = Json.encodeToString(SignUp(name, email, password,passwordConfirm, phoneNumber ))
-        Log.d("UserDatasource", jsonBody)
+    suspend fun signup(name: String, email: String, password: String, passwordConfirm: String): Boolean = withContext(Dispatchers.IO) {
+        val jsonBody = Json.encodeToString(SignUp(name, email, password,passwordConfirm))
         val body = jsonBody.toRequestBody("application/json".toMediaType())
         val request = Request.Builder()
             .url(this@UserDatasource.client.authRegister)

@@ -42,10 +42,9 @@ class SignupFragment : Fragment() {
             val email = view.findViewById<EditText>(R.id.signup_input_email).text.toString()
             val password = view.findViewById<EditText>(R.id.signup_input_password).text.toString()
             val passwordConfirm = view.findViewById<EditText>(R.id.signup_input_password_confirm).text.toString()
-            val phoneNumber = view.findViewById<EditText>(R.id.signup_phone_number).text.toString()
 
 
-            if (name.isEmpty() || email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty() || phoneNumber.isEmpty()) {
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty()) {
                 Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -59,14 +58,9 @@ class SignupFragment : Fragment() {
                 Toast.makeText(context, "Passwords does not match", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-//            TODO: Implement
-//            if (!phoneNumber.isvalid()) {
-//                Toast.makeText(context, "Phone number is not valid", Toast.LENGTH_SHORT).show()
-//                return@setOnClickListener
-//            }
 
             lifecycleScope.launch {
-                if (!this@SignupFragment.userDatasource.signup(name, email, password, passwordConfirm, phoneNumber)) {
+                if (!this@SignupFragment.userDatasource.signup(name, email, password, passwordConfirm)) {
                     Toast.makeText(context, "Unable to create new account", Toast.LENGTH_SHORT).show()
                     return@launch
                 }
