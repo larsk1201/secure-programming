@@ -1,7 +1,9 @@
 package com.nhlstenden.guineatrade.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -73,6 +75,14 @@ class MainActivity : AppCompatActivity() {
 
         greetingText.text = String.format(getText(R.string.profile_header_name).toString(), userDatasource.username)
         subText.text = String.format(getText(R.string.profile_header_subtitle).toString(), userDatasource.balance.toFloat() / 100.0)
+
+        val profileImage: ImageView = findViewById(R.id.profile_image)
+
+        profileImage.setOnClickListener {
+            Log.d("MainActivity", "Switching to profile screen")
+            val intent = Intent(this@MainActivity, ProfileActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private class MainPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
