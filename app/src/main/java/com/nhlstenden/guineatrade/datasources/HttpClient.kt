@@ -12,9 +12,9 @@ data class HttpClient(
     val authLogoutAll: String = "$baseApiUrl/auth/logout/all",
     val authRefresh: String = "$baseApiUrl/auth/refresh",
     val authMe: String = "$baseApiUrl/auth/me",
-    val auth2fAToptRegister: String = "$baseApiUrl/auth/2fa/topt/register",
-    val auth2fAToptVerify: String = "$baseApiUrl/auth/2fa/topt/verify",
-    val auth2fAToptReset: String = "$baseApiUrl/auth/2fa/topt/reset",
+    val auth2fATotpRegister: String = "$baseApiUrl/auth/2fa/totp/register",
+    val auth2fATotpVerify: String = "$baseApiUrl/auth/2fa/totp/verify",
+    val auth2fATotpReset: String = "$baseApiUrl/auth/2fa/totp/reset",
 
     val steamAuth: String = "$baseApiUrl/steam/auth",
     val steamAuthCallback: String = "$baseApiUrl/steam/auth/callback",
