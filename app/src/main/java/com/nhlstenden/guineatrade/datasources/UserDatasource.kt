@@ -74,7 +74,7 @@ class UserDatasource @Inject constructor() {
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun authMe() = withContext(Dispatchers.IO) {
-        if (this@UserDatasource::tokens.isInitialized) {
+        if (!this@UserDatasource::tokens.isInitialized) {
             return@withContext
         }
         val request = Request.Builder()
