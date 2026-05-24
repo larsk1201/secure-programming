@@ -65,7 +65,7 @@ class ProfileActivity: AppCompatActivity() {
                     if (hasMFA) R.drawable.verified_user_24px
                     else R.drawable.gpp_bad_24px
                 )
-                profilePageAdapter.notifyItemChanged(ProfilePage.MFA.position)
+//                TODO: Find proper way to refresh MFA fragment
             }
         }
     }
@@ -73,13 +73,6 @@ class ProfileActivity: AppCompatActivity() {
     private class ProfilePageAdapter(activity: FragmentActivity, val userDatasource: UserDatasource) : FragmentStateAdapter(activity) {
         fun getMfaFragment(): Fragment {
             return if (this.userDatasource.hasMFA) MfaEnabledFragment() else MfaDisabledFragment()
-        }
-
-        override fun getItemId(position: Int): Long {
-            return when (ProfilePage.entries[position]) {
-                 ProfilePage.MFA -> if (userDatasource.hasMFA) 0L else 1L
-                else -> position.toLong()
-            }
         }
 
         override fun getItemCount(): Int = 3
