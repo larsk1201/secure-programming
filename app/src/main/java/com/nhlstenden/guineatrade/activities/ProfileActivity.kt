@@ -51,10 +51,12 @@ class ProfileActivity: AppCompatActivity() {
             }
         })
 
-        if (this.userDatasource.hasMFA) {
-            settingsNavigation.menu.findItem(R.id.nav_otp).setIcon(R.drawable.verified_user_24px)
-        } else {
-            settingsNavigation.menu.findItem(R.id.nav_otp).setIcon(R.drawable.gpp_bad_24px)
+        this.userDatasource.hasMFALiveData.observe(this) {
+            if (this.userDatasource.hasMFA) {
+                settingsNavigation.menu.findItem(R.id.nav_otp).setIcon(R.drawable.verified_user_24px)
+            } else {
+                settingsNavigation.menu.findItem(R.id.nav_otp).setIcon(R.drawable.gpp_bad_24px)
+            }
         }
     }
     

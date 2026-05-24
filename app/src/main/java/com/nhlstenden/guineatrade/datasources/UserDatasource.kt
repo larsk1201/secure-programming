@@ -75,19 +75,19 @@ class UserDatasource @Inject constructor() {
 
     var username: String
         get() = _username.value ?: ""
-        set(value) { _username.value = value }
+        set(value) { _username.postValue(value) }
     var email: String
         get() = _email.value ?: ""
-        set(value) { _email.value = value }
+        set(value) { _email.postValue(value) }
     var hasMFA: Boolean
         get() = _hasMFA.value ?: false
-        set(value) { _hasMFA.value = value }
+        set(value) { _hasMFA.postValue(value) }
     var balance: Int
         get() = _balance.value ?: 0
-        set(value) { _balance.value = value }
+        set(value) { _balance.postValue(value) }
     var tokens: Tokens
         get() = _tokens.value ?: Tokens("", "")
-        set(value) { _tokens.value = value}
+        set(value) { _tokens.postValue(value) }
 
 
     @OptIn(ExperimentalSerializationApi::class)
