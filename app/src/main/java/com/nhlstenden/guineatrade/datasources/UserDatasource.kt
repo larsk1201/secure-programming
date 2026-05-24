@@ -1,5 +1,6 @@
 package com.nhlstenden.guineatrade.datasources
 
+import android.util.Log
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,8 +13,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -46,6 +47,12 @@ data class UpdateMe(
     val newPassword: String,
     val newPasswordVerify: String,
 ){}
+
+@Serializable
+data class TotpTokens(
+    val code: String,
+    val recovery: String,
+)
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -179,6 +186,82 @@ class UserDatasource @Inject constructor() {
         try {
             val tokens = Json.decodeFromStream<Tokens>(result.body.byteStream())
             this@UserDatasource.tokens.jwt = tokens.jwt
+        } catch (_: Exception) {
+            return@withContext false
+        }
+
+        return@withContext true
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    suspend fun registerTOTPToken(): Result<TotpTokens> = withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url(this@UserDatasource.client.auth2fATotpRegister)
+            .post(RequestBody.EMPTY)
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
+            .build()
+
+        try {
+            val result = this@UserDatasource.client.client.newCall(request).execute()
+
+            if (result.code != 200) {
+                return@withContext Result.failure(Exception("Failed to register TOTP"))
+            }
+
+            val tokens = Json.decodeFromStream<TotpTokens>(result.body.byteStream())
+
+            Log.d("UserDatasource", tokens.code)
+            Log.d("UserDatasource", tokens.recovery)
+
+            return@withContext Result.success(tokens)
+        } catch (e: Exception) {
+            return@withContext Result.failure(e)
+        }
+    }
+
+    suspend fun validateTOTPCode(code: String): Boolean = withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url(this@UserDatasource.client.auth2fATotpVerify)
+            .post(RequestBody.EMPTY)
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
+            .header("X-TOTP-Code", code)
+            .build()
+
+        try {
+            val result = this@UserDatasource.client.client.newCall(request).execute()
+
+            if (result.code != 200) {
+                return@withContext false
+            }
+
+        } catch (_: Exception) {
+            return@withContext false
+        }
+
+        return@withContext true
+    }
+
+    suspend fun deactivateTOTPCode(code: String, isRecoveryCode: Boolean): Boolean = withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url(this@UserDatasource.client.auth2fATotpReset)
+            .delete(RequestBody.EMPTY)
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
+        if (!isRecoveryCode) {
+            request.header("X-TOTP-Code", code)
+        } else {
+            request.header("X-Recovery-Code", code)
+        }
+
+        try {
+            val result = this@UserDatasource.client.client.newCall(request.build()).execute()
+
+            if (result.code != 204) {
+                return@withContext false
+            }
+
         } catch (_: Exception) {
             return@withContext false
         }
