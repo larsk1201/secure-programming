@@ -1,6 +1,8 @@
 package com.nhlstenden.guineatrade.datasources
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -58,11 +60,35 @@ data class TotpTokens(
 @InstallIn(SingletonComponent::class)
 class UserDatasource @Inject constructor() {
     private val client = HttpClient()
-    lateinit var username: String
-    lateinit var email: String
-    var hasMFA = false
-    var balance = 0
-    lateinit var tokens: Tokens
+
+    private var _username: MutableLiveData<String> = MutableLiveData()
+    private var _email: MutableLiveData<String> = MutableLiveData()
+    private var _hasMFA: MutableLiveData<Boolean> = MutableLiveData(false)
+    private var _balance: MutableLiveData<Int> = MutableLiveData(0)
+    private var _tokens: MutableLiveData<Tokens> = MutableLiveData()
+
+    val usernameLiveData: LiveData<String> get() = _username
+    val emailLiveData: LiveData<String> get() = _email
+    val hasMFALiveData: LiveData<Boolean> get() = _hasMFA
+    val balanceLiveData: LiveData<Int> get() = _balance
+    val tokensLiveData: LiveData<Tokens> get() = _tokens
+
+    var username: String
+        get() = _username.value ?: ""
+        set(value) { _username.value = value }
+    var email: String
+        get() = _email.value ?: ""
+        set(value) { _email.value = value }
+    var hasMFA: Boolean
+        get() = _hasMFA.value ?: false
+        set(value) { _hasMFA.value = value }
+    var balance: Int
+        get() = _balance.value ?: 0
+        set(value) { _balance.value = value }
+    var tokens: Tokens
+        get() = _tokens.value ?: Tokens("", "")
+        set(value) { _tokens.value = value}
+
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun login(email: String, password: String): Boolean = withContext(Dispatchers.IO) {
@@ -92,9 +118,6 @@ class UserDatasource @Inject constructor() {
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun authMe() = withContext(Dispatchers.IO) {
-        if (!this@UserDatasource::tokens.isInitialized) {
-            return@withContext
-        }
         val request = Request.Builder()
             .url(this@UserDatasource.client.authMe)
             .get()
@@ -121,7 +144,7 @@ class UserDatasource @Inject constructor() {
         val body = jsonBody.toRequestBody("application/json".toMediaType())
         val requestBuilder = Request.Builder()
             .url(this@UserDatasource.client.authMe)
-            .patch(body)
+            .patch(body!!)
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
 
@@ -184,8 +207,7 @@ class UserDatasource @Inject constructor() {
         }
 
         try {
-            val tokens = Json.decodeFromStream<Tokens>(result.body.byteStream())
-            this@UserDatasource.tokens.jwt = tokens.jwt
+            this@UserDatasource.tokens = Json.decodeFromStream<Tokens>(result.body.byteStream())
         } catch (_: Exception) {
             return@withContext false
         }
