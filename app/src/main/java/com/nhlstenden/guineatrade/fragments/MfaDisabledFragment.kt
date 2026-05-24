@@ -91,6 +91,7 @@ class MfaDisabledFragment : Fragment() {
 
         val cancelButton = view.findViewById<Button>(R.id.mfa_cancel_setup)
         cancelButton.setOnClickListener {
+            setupPrompt.visibility = View.GONE
             lifecycleScope.launch {
                 val success = userDatasource.deactivateTOTPCode(recoveryTokenText.text.toString(), true)
                 if (success) {
