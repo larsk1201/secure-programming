@@ -13,6 +13,7 @@ import kotlinx.serialization.json.decodeFromStream
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -66,13 +67,13 @@ class UserDatasource @Inject constructor() {
             .header("Content-Type", "application/json")
             .build()
 
-        val result = this@UserDatasource.client.client.newCall(request).execute()
-
-        if (result.code != 200) {
-            return@withContext false
-        }
-
         try {
+            val result = this@UserDatasource.client.client.newCall(request).execute()
+
+            if (result.code != 200) {
+                return@withContext false
+            }
+
             this@UserDatasource.tokens = Json.decodeFromStream<Tokens>(result.body.byteStream())
             this@UserDatasource.authMe()
         } catch (_: Exception) {
@@ -104,7 +105,7 @@ class UserDatasource @Inject constructor() {
         this@UserDatasource.hasMFA = credentials.mfaEnabled
     }
 
-    suspend fun updateMe(totpCode: Int, currentPassword: String, newPassword: String, newPasswordVerify: String): Boolean = withContext(Dispatchers.IO) {
+    suspend fun updateMe(totpCode: String, currentPassword: String, newPassword: String, newPasswordVerify: String): Boolean = withContext(Dispatchers.IO) {
         val jsonBody = Json.encodeToString(UpdateMe(this@UserDatasource.email,
             currentPassword,
             newPassword,
@@ -112,21 +113,26 @@ class UserDatasource @Inject constructor() {
         ))
         val body = jsonBody.toRequestBody("application/json".toMediaType())
         val requestBuilder = Request.Builder()
-            .url(this@UserDatasource.client.authRegister)
-            .post(body)
+            .url(this@UserDatasource.client.authMe)
+            .patch(body)
             .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
 
-        if (totpCode != 0) {
-            requestBuilder.header("X-TOTP-Code", totpCode.toString())
+        if (totpCode != "") {
+            requestBuilder.header("X-TOTP-Code", totpCode)
         }
 
-        val result = this@UserDatasource.client.client.newCall(requestBuilder.build()).execute()
+        try {
+            val result = this@UserDatasource.client.client.newCall(requestBuilder.build()).execute()
 
-        if (result.code == 202) {
-            return@withContext true
+            if (result.code == 202) {
+                return@withContext true
+            }
+        } catch (_: Exception) {
+            return@withContext false
         }
 
-        return@withContext true
+        return@withContext false
     }
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -139,13 +145,13 @@ class UserDatasource @Inject constructor() {
             .header("Content-Type", "application/json")
             .build()
 
-        val result = this@UserDatasource.client.client.newCall(request).execute()
-
-        if (result.code != 201) {
-            return@withContext false
-        }
-
         try {
+            val result = this@UserDatasource.client.client.newCall(request).execute()
+
+            if (result.code != 201) {
+                return@withContext false
+            }
+
             this@UserDatasource.login(email, password)
         } catch (_: Exception) {
             return@withContext false
