@@ -9,26 +9,35 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.nhlstenden.guineatrade.R
+import com.nhlstenden.guineatrade.datasources.SettingsDatasource
+import com.nhlstenden.guineatrade.datasources.SettingsKeys
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import com.nhlstenden.guineatrade.fragments.HomeFragment
 import com.nhlstenden.guineatrade.fragments.InventoryFragment
 import com.nhlstenden.guineatrade.fragments.StoreFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var userDatasource: UserDatasource
+    @Inject lateinit var settingsDatasource: SettingsDatasource
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.d("MainActivity", userDatasource.username)
+
+        lifecycleScope.launch {
+            this@MainActivity.settingsDatasource.save(SettingsKeys.BIOMETRIC_ENABLED, true)
+            Log.d("MainActivity", this@MainActivity.settingsDatasource.load(SettingsKeys.BIOMETRIC_ENABLED, false).toString())
+        }
 
         val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_navigation)
         val viewPager: ViewPager2 = findViewById(R.id.view_page)

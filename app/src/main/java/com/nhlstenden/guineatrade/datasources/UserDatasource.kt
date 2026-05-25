@@ -56,8 +56,7 @@ data class TotpTokens(
     val recovery: String,
 )
 
-@Module
-@InstallIn(SingletonComponent::class)
+@Singleton
 class UserDatasource @Inject constructor() {
     private val client = HttpClient()
 
@@ -290,8 +289,4 @@ class UserDatasource @Inject constructor() {
 
         return@withContext true
     }
-
-    @Provides
-    @Singleton
-    fun provideUser(): UserDatasource = UserDatasource()
 }
