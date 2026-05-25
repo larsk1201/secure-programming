@@ -22,7 +22,7 @@
             android:id="@+id/totp_token"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="test TOTP code"
+            android:gravity="center|start"
             android:textSize="24sp"
             android:layout_weight="1" />
 
@@ -50,7 +50,6 @@
             android:id="@+id/totp_recovery_code"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="test recovery code"
             android:textSize="24sp"
             android:layout_weight="1" />
 
@@ -76,7 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Test MFA Code:" />
+            android:text="@string/settings_mfa_setup_test_code" />
 
         <EditText
             android:id="@+id/totp_code"
