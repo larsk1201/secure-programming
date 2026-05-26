@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import coil.load
 import com.nhlstenden.guineatrade.R
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
@@ -69,13 +71,35 @@ class HomeFragment : Fragment() {
 
                         if (description != null)
                         {
+                            val itemLayout = LinearLayout(requireContext())
+
+                            itemLayout.orientation = LinearLayout.HORIZONTAL
+                            itemLayout.setPadding(0, 12, 0, 12)
+
+                            val itemImage = ImageView(requireContext())
+
+                            val imageSize = 100
+
+                            itemImage.layoutParams = LinearLayout.LayoutParams(
+                                imageSize,
+                                imageSize
+                            )
+
+                            val imageUrl =
+                                "https://community.akamai.steamstatic.com/economy/image/${description.iconUrl}"
+
+                            itemImage.load(imageUrl)
+
                             val itemText = TextView(requireContext())
 
                             itemText.text = description.name
                             itemText.textSize = 16f
-                            itemText.setPadding(0, 8, 0, 8)
+                            itemText.setPadding(24, 24, 0, 0)
 
-                            itemsContainer.addView(itemText)
+                            itemLayout.addView(itemImage)
+                            itemLayout.addView(itemText)
+
+                            itemsContainer.addView(itemLayout)
                         }
                     }
                 }
