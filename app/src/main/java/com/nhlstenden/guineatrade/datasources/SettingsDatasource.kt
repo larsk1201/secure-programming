@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
@@ -35,4 +36,5 @@ class SettingsKey<T>(val key: Preferences.Key<T>)
 object SettingsKeys {
     val BIOMETRIC_ENABLED = SettingsKey(booleanPreferencesKey("biometric-enabled"))
     val AUTO_LOGIN_ENABLED = SettingsKey(booleanPreferencesKey("automatic-login"))
+    val LOGIN_KEY = SettingsKey(stringPreferencesKey("login-key"))
 }

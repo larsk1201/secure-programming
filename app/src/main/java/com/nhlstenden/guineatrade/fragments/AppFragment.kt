@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.SettingsDatasource
 import com.nhlstenden.guineatrade.datasources.SettingsKeys
+import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +25,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AppFragment : Fragment() {
 
+    @Inject lateinit var userDatasource: UserDatasource
     @Inject lateinit var settingsDatasource: SettingsDatasource
 
     override fun onCreateView(
@@ -84,10 +86,15 @@ class AppFragment : Fragment() {
             biometricPrompt.authenticate(promptInfo)
         }
 
-//        TODO: Save token as well
-        autoLoginSwitch.setOnCheckedChangeListener { button, bool ->
+        autoLoginSwitch.setOnCheckedChangeListener { button, isChecked ->
+            val key = if (isChecked) {
+                this@AppFragment.userDatasource.tokens.refresh
+            } else {
+                ""
+            }
             lifecycleScope.launch {
-                this@AppFragment.settingsDatasource.save(SettingsKeys.AUTO_LOGIN_ENABLED, bool)
+                this@AppFragment.settingsDatasource.save(SettingsKeys.AUTO_LOGIN_ENABLED, isChecked)
+                this@AppFragment.settingsDatasource.save(SettingsKeys.LOGIN_KEY, key)
             }
         }
 
