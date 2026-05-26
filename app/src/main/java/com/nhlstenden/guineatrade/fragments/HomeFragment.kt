@@ -88,7 +88,11 @@ class HomeFragment : Fragment() {
                             val imageUrl =
                                 "https://community.akamai.steamstatic.com/economy/image/${description.iconUrl}"
 
-                            itemImage.load(imageUrl)
+                            itemImage.load(imageUrl) {
+                                placeholder(R.drawable.app_icon)
+                                error(R.drawable.app_icon)
+                                fallback(R.drawable.app_icon)
+                            }
 
                             val itemText = TextView(requireContext())
 
