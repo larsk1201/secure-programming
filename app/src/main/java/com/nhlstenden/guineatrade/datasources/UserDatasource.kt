@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import okhttp3.MediaType.Companion.toMediaType
@@ -21,7 +22,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Serializable
-data class Tokens(var jwt: String, val refresh: String)
+data class Tokens(var jwt: String?, val refresh: String? = null)
 
 @Serializable
 data class AuthMe(
@@ -206,8 +207,11 @@ class UserDatasource @Inject constructor() {
         }
 
         try {
-            this@UserDatasource.tokens = Json.decodeFromStream<Tokens>(result.body.byteStream())
-        } catch (_: Exception) {
+            val jwtToken = Json.decodeFromStream<Tokens>(result.body.byteStream())
+            this@UserDatasource.tokens.jwt = jwtToken.jwt
+            this@UserDatasource.authMe()
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
 
@@ -231,9 +235,6 @@ class UserDatasource @Inject constructor() {
             }
 
             val tokens = Json.decodeFromStream<TotpTokens>(result.body.byteStream())
-
-            Log.d("UserDatasource", tokens.code)
-            Log.d("UserDatasource", tokens.recovery)
 
             return@withContext Result.success(tokens)
         } catch (e: Exception) {
