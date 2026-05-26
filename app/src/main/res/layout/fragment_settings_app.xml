@@ -16,19 +16,19 @@
             android:id="@+id/automatic_login_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Automatic login" />
+            android:text="@string/settings_app_auto_login_switch" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/require_biometric_login_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Biometric login required" />
+            android:text="@string/settings_app_biometric_login_switch" />
 
         <Button
             android:id="@+id/logout_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Logout"
+            android:text="@string/settings_app_logout_button"
             tools:cornerRadius="16dp"
             app:cornerRadius="16dp" />
 
@@ -36,7 +36,7 @@
             android:id="@+id/logout_everywhere_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Logout everywhere"
+            android:text="@string/settings_app_logout_everywhere_button"
             tools:cornerRadius="16dp"
             app:cornerRadius="16dp" />
     </LinearLayout>

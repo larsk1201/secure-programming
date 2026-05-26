@@ -31,4 +31,8 @@
     <string name="settings_mfa_enabled_recovery_code">Recovery code</string>
     <string name="settings_mfa_enabled_disable_button">Disable</string>
     <string name="settings_mfa_enabled_cancel_button">Cancel</string>
+    <string name="settings_app_biometric_login_switch">Biometric login required</string>
+    <string name="settings_app_auto_login_switch">Automatic login</string>
+    <string name="settings_app_logout_button">Logout</string>
+    <string name="settings_app_logout_everywhere_button">Logout everywhere</string>
 </resources>
