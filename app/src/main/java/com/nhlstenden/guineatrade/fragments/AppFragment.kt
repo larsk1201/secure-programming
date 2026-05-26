@@ -2,6 +2,7 @@ package com.nhlstenden.guineatrade.fragments
 
 import androidx.biometric.BiometricPrompt
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,6 +43,7 @@ class AppFragment : Fragment() {
         val biometricEnabledSwitch = view.findViewById<SwitchCompat>(R.id.require_biometric_login_switch)
         val autoLoginSwitch = view.findViewById<SwitchCompat>(R.id.automatic_login_switch)
         val logoutEverywhereButton = view.findViewById<Button>(R.id.logout_everywhere_button)
+        val logoutButton = view.findViewById<Button>(R.id.logout_button)
 
 //        Load settings from SettingsDatasource
         lifecycleScope.launch {
@@ -49,41 +51,15 @@ class AppFragment : Fragment() {
             autoLoginSwitch.isChecked = this@AppFragment.settingsDatasource.load(SettingsKeys.AUTO_LOGIN_ENABLED, false)
         }
 
-//        TODO: Move this to the proper login screen
+//        TODO: Finish logout buttons
+        logoutButton.setOnClickListener {
+            Log.d("AppFragment", "Logged out")
+//            this@AppFragment.userDatasource.logoutEverywhere()
+        }
+
         logoutEverywhereButton.setOnClickListener {
-            val executor = ContextCompat.getMainExecutor(requireContext())
-            val biometricPrompt = BiometricPrompt(this, executor,
-                object : BiometricPrompt.AuthenticationCallback() {
-                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                        super.onAuthenticationError(errorCode, errString)
-                        Toast.makeText(context,
-                            "Authentication error: $errString", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-
-                    override fun onAuthenticationSucceeded(
-                        result: BiometricPrompt.AuthenticationResult) {
-                        super.onAuthenticationSucceeded(result)
-                        Toast.makeText(context,
-                            "Authentication succeeded!", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-
-                    override fun onAuthenticationFailed() {
-                        super.onAuthenticationFailed()
-                        Toast.makeText(context, "Authentication failed",
-                            Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                })
-
-            val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Confirm Biometrics")
-                .setSubtitle("Before you can enable biometric login, you must test to make sure biometrics is enabled and working")
-                .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
-                .build()
-
-            biometricPrompt.authenticate(promptInfo)
+            Log.d("AppFragment", "Logged out everywhere")
+//            this@AppFragment.userDatasource.logoutEverywhere()
         }
 
         autoLoginSwitch.setOnCheckedChangeListener { button, isChecked ->
@@ -94,7 +70,7 @@ class AppFragment : Fragment() {
             }
             lifecycleScope.launch {
                 this@AppFragment.settingsDatasource.save(SettingsKeys.AUTO_LOGIN_ENABLED, isChecked)
-                this@AppFragment.settingsDatasource.save(SettingsKeys.LOGIN_KEY, key)
+                this@AppFragment.settingsDatasource.save(SettingsKeys.LOGIN_KEY, key ?: "")
             }
         }
 
