@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    kotlin("plugin.serialization") version "1.9.0"
 }
 
 android {
@@ -44,6 +45,9 @@ android {
 dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    implementation(libs.okhttp)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

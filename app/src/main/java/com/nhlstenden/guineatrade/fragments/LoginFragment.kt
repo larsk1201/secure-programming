@@ -10,10 +10,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.activities.MainActivity
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -49,14 +51,16 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            if (!this.userDatasource.login(email, password)) {
-                Toast.makeText(context, "Invalid credentials, unable to login", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            lifecycleScope.launch {
+                if (!this@LoginFragment.userDatasource.login(email, password)) {
+                    Toast.makeText(context, "Invalid credentials, unable to login", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
 
-            val intent = Intent()
-            intent.setClass(requireContext(), MainActivity::class.java)
-            activity?.startActivity(intent)
+                val intent = Intent()
+                intent.setClass(requireContext(), MainActivity::class.java)
+                activity?.startActivity(intent)
+            }
         }
     }
 

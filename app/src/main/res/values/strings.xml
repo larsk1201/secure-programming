@@ -10,6 +10,6 @@
     <string name="signup_input_email">Email address</string>
     <string name="signup_input_password">Password</string>
     <string name="signup_input_password_confirm">Confirm password</string>
-    <string name="signup_input_phone">Phone number</string>
     <string name="signup_button">Sign up</string>
+    <string name="signup_input_username">Username</string>
 </resources>
