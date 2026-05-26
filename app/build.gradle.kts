@@ -55,6 +55,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")
     implementation("io.coil-kt:coil:2.7.0")
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
+    implementation("com.google.android.material:material:1.14.0")
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

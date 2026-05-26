@@ -1,4 +1,4 @@
-package com.nhlstenden.guineatrade.fragments
+package com.nhlstenden.guineatrade.api
 
 import com.google.gson.annotations.SerializedName
 import retrofit2.http.GET
