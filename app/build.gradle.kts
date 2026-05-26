@@ -43,6 +43,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.biometric)
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 

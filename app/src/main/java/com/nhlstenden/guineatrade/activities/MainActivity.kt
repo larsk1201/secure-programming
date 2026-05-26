@@ -34,11 +34,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        lifecycleScope.launch {
-            this@MainActivity.settingsDatasource.save(SettingsKeys.BIOMETRIC_ENABLED, true)
-            Log.d("MainActivity", this@MainActivity.settingsDatasource.load(SettingsKeys.BIOMETRIC_ENABLED, false).toString())
-        }
-
         val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_navigation)
         val viewPager: ViewPager2 = findViewById(R.id.view_page)
 
