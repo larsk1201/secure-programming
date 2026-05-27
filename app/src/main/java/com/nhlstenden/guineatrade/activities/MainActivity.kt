@@ -2,26 +2,22 @@ package com.nhlstenden.guineatrade.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.SettingsDatasource
-import com.nhlstenden.guineatrade.datasources.SettingsKeys
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import com.nhlstenden.guineatrade.fragments.HomeFragment
 import com.nhlstenden.guineatrade.fragments.InventoryFragment
 import com.nhlstenden.guineatrade.fragments.StoreFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -83,7 +79,6 @@ class MainActivity : AppCompatActivity() {
         val profileImage: ImageView = findViewById(R.id.profile_image)
 
         profileImage.setOnClickListener {
-            Log.d("MainActivity", "Switching to profile screen")
             val intent = Intent(this@MainActivity, ProfileActivity::class.java)
             startActivity(intent)
         }
