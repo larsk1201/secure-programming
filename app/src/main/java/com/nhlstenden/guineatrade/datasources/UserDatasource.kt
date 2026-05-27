@@ -216,7 +216,7 @@ class UserDatasource @Inject constructor() {
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun registerTOTPToken(): Result<TotpTokens> = withContext(Dispatchers.IO) {
         val request = Request.Builder()
-            .url(this@UserDatasource.client.auth2fATotpRegister)
+            .url(this@UserDatasource.client.authMfaTotpRegister)
             .post(RequestBody.EMPTY)
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
@@ -239,7 +239,7 @@ class UserDatasource @Inject constructor() {
 
     suspend fun validateTOTPCode(code: String): Boolean = withContext(Dispatchers.IO) {
         val request = Request.Builder()
-            .url(this@UserDatasource.client.auth2fATotpVerify)
+            .url(this@UserDatasource.client.authMfaTotpVerify)
             .post(RequestBody.EMPTY)
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
@@ -262,7 +262,7 @@ class UserDatasource @Inject constructor() {
 
     suspend fun deactivateTOTPCode(code: String, isRecoveryCode: Boolean): Boolean = withContext(Dispatchers.IO) {
         val request = Request.Builder()
-            .url(this@UserDatasource.client.auth2fATotpReset)
+            .url(this@UserDatasource.client.authMfaTotpReset)
             .delete(RequestBody.EMPTY)
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")

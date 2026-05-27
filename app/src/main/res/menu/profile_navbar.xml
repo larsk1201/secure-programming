@@ -9,7 +9,7 @@
     <item
         android:id="@+id/nav_otp"
         android:icon="@drawable/gpp_maybe_24px"
-        android:title="2FA" />
+        android:title="Mfa" />
 
     <item
         android:id="@+id/nav_app"
