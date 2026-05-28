@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_user"
+        android:icon="@drawable/person_24px"
+        android:title="User" />
+
+    <item
+        android:id="@+id/nav_otp"
+        android:icon="@drawable/gpp_maybe_24px"
+        android:title="Mfa" />
+
+    <item
+        android:id="@+id/nav_app"
+        android:icon="@drawable/settings_24px"
+        android:title="App" />
+</menu>

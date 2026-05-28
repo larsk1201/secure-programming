@@ -12,4 +12,27 @@
     <string name="signup_input_password_confirm">Confirm password</string>
     <string name="signup_button">Sign up</string>
     <string name="signup_input_username">Username</string>
+    <string name="settings_input_username">Email</string>
+    <string name="settings_input_current_password">Current password</string>
+    <string name="settings_input_new_password">New Password</string>
+    <string name="settings_input_new_password_confirm">New Password confirm</string>
+    <string name="settings_input_verification_code">Verification code</string>
+    <string name="settings_button_update">Update</string>
+    <string name="settings_button_cancel">Cancel</string>
+    <string name="settings_mfa_disabled_info">You have not enabled any form of multifactor authentication just yet. MFA is required before you can start sending and receiving money, items and other goods. Please enable one of the available forms of multifactor authentication.</string>
+    <string name="settings_mfa_setup_cancel_setup">Cancel</string>
+    <string name="settings_mfa_setup_finish_setup">Finish</string>
+    <string name="settings_mfa_setup_totp">Enter this code in your MFA app of choice:</string>
+    <string name="settings_mfa_setup_recovery_code">Save this recovery code in a secure place. You will need this code in the case that you lose access to your TOTP token</string>
+    <string name="settings_mfa_setup_start_button">Setup</string>
+    <string name="settings_mfa_setup_test_code">Test MFA Code:</string>
+    <string name="settings_mfa_enabled_info">You have Multifactor authentication enabled! You are now able to execute trades and send/receive money.\nIf you wish to disable MFA for whatever reason (ex: Switching to a new phone), enter either an OTP code or your recovery code</string>
+    <string name="settings_mfa_enabled_otp_code">OTP Code:</string>
+    <string name="settings_mfa_enabled_recovery_code">Recovery code</string>
+    <string name="settings_mfa_enabled_disable_button">Disable</string>
+    <string name="settings_mfa_enabled_cancel_button">Cancel</string>
+    <string name="settings_app_biometric_login_switch">Biometric login required</string>
+    <string name="settings_app_auto_login_switch">Automatic login</string>
+    <string name="settings_app_logout_button">Logout</string>
+    <string name="settings_app_logout_everywhere_button">Logout everywhere</string>
 </resources>

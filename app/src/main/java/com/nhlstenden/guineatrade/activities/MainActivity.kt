@@ -1,7 +1,8 @@
 package com.nhlstenden.guineatrade.activities
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.nhlstenden.guineatrade.R
+import com.nhlstenden.guineatrade.datasources.SettingsDatasource
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import com.nhlstenden.guineatrade.fragments.HomeFragment
 import com.nhlstenden.guineatrade.fragments.InventoryFragment
@@ -22,11 +24,11 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var userDatasource: UserDatasource
+    @Inject lateinit var settingsDatasource: SettingsDatasource
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.d("MainActivity", userDatasource.username)
 
         val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_navigation)
         val viewPager: ViewPager2 = findViewById(R.id.view_page)
@@ -73,6 +75,13 @@ class MainActivity : AppCompatActivity() {
 
         greetingText.text = String.format(getText(R.string.profile_header_name).toString(), userDatasource.username)
         subText.text = String.format(getText(R.string.profile_header_subtitle).toString(), userDatasource.balance.toFloat() / 100.0)
+
+        val profileImage: ImageView = findViewById(R.id.profile_image)
+
+        profileImage.setOnClickListener {
+            val intent = Intent(this@MainActivity, ProfileActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private class MainPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
