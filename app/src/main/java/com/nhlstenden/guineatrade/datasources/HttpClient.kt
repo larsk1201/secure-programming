@@ -24,7 +24,7 @@ data class HttpClient(
 
     val backpackPrices: String = "$baseApiUrl/backpack/prices",
     val backpackItemsItemName: Function1<String, String> = { itemName: String -> "$baseApiUrl/backpack/items/$itemName" },
-    val backpackCurrencies: String = "$baseApiUrl/backpack/currencies",
+    val backpackCurrencies: String = "$baseApiUrl/backpack/currency",
 
     val paymentsCreate: String = "$baseApiUrl/payments/create",
     val paymentsPaymentId: Function1<Int, String> = { paymentId: Int -> "$$baseApiUrl/payments/$paymentId" },

@@ -17,7 +17,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Serializable
-data class Tokens(var jwt: String?, val refresh: String? = null)
+data class Tokens(var jwt: String?, var refresh: String? = null){
+    val jwtSave: String
+        get() = jwt ?: ""
+    val refreshSave: String
+        get() = refresh ?: ""
+
+}
 
 @Serializable
 data class AuthMe(

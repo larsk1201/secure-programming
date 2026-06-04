@@ -7,4 +7,15 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="tf_normal">#B2B2B2</color>
+    <color name="tf_unique">#FFD700</color>
+    <color name="tf_vintage">#476291</color>
+    <color name="tf_genuine">#4D7455</color>
+    <color name="tf_strange">#CF6A32</color>
+    <color name="tf_unusual">#8650AC</color>
+    <color name="tf_haunted">#38F3AB</color>
+    <color name="tf_collectors">#AA0000</color>
+    <color name="tf_decorated">#FAFAFA</color>
+    <color name="tf_community">#70B04A</color>
+    <color name="tf_valve">#A50F79</color>
 </resources>
