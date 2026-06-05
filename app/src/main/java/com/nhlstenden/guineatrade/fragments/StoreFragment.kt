@@ -34,18 +34,20 @@ class StoreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (this@StoreFragment.backpackDatasource.currencies == null) {
+        if (this@StoreFragment.backpackDatasource.prices == null) {
             lifecycleScope.launch {
                 Log.d("StoreFragment", this@StoreFragment::backpackDatasource.isInitialized.toString())
                 Log.d("StoreFragment", this@StoreFragment::userDatasource.isInitialized.toString())
                 val hasBackpack = async {
-                    this@StoreFragment.backpackDatasource.getCurrencies(this@StoreFragment.userDatasource.tokens.jwtSave)
+                    this@StoreFragment.backpackDatasource.getPrices(this@StoreFragment.userDatasource.tokens.jwtSave)
                 }.await()
                 if (!hasBackpack) {
                     Log.d("StoreFragment", "Unable to able to able")
                     return@launch
                 }
-                Log.d("StoreFragment", this@StoreFragment.backpackDatasource.currencies!!.cachedOn)
+                Log.d("StoreFragment",
+                    this@StoreFragment.backpackDatasource.prices!!.timestamp.toString()
+                )
 
             }
 

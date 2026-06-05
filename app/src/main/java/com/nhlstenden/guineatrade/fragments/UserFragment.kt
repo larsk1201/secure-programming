@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -78,12 +79,15 @@ class UserFragment : Fragment() {
             }
 
             lifecycleScope.launch {
-                if (!this@UserFragment.userDatasource.updateMe(
-                    totpCode,
-                    currentPassword,
-                    newPassword,
-                    confirmPassword,
-                )) {
+                val hasUpdatedPassword = async {
+                    this@UserFragment.userDatasource.updateMe(
+                        totpCode,
+                        currentPassword,
+                        newPassword,
+                        confirmPassword,
+                    )
+                }.await()
+                if (!hasUpdatedPassword) {
                     Toast.makeText(context, "Wrong email or password, unable to update", Toast.LENGTH_LONG).show()
                     return@launch
                 }

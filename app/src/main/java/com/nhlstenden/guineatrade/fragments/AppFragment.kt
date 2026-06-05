@@ -18,6 +18,7 @@ import com.nhlstenden.guineatrade.datasources.SettingsDatasource
 import com.nhlstenden.guineatrade.datasources.SettingsKeys
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,8 +46,12 @@ class AppFragment : Fragment() {
 
 //        Load settings from SettingsDatasource
         lifecycleScope.launch {
-            biometricEnabledSwitch.isChecked = this@AppFragment.settingsDatasource.load(SettingsKeys.BIOMETRIC_ENABLED, false)
-            autoLoginSwitch.isChecked = this@AppFragment.settingsDatasource.load(SettingsKeys.AUTO_LOGIN_ENABLED, false)
+            biometricEnabledSwitch.isChecked = async {
+                this@AppFragment.settingsDatasource.load(SettingsKeys.BIOMETRIC_ENABLED, false)
+            }.await()
+            autoLoginSwitch.isChecked = async {
+                this@AppFragment.settingsDatasource.load(SettingsKeys.AUTO_LOGIN_ENABLED, false)
+            }.await()
         }
 
 //        TODO: Finish logout buttons
