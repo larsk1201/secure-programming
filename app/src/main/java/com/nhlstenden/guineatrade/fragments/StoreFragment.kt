@@ -24,6 +24,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+data class GridViewModel(
+    val itemName: String,
+    val imageUrl: String,
+)
+
 @AndroidEntryPoint
 class StoreFragment : Fragment() {
 
@@ -49,7 +54,7 @@ class StoreFragment : Fragment() {
 
         cartSize.visibility = View.INVISIBLE
 
-        val gridAdapter = GridAdapter(requireContext(), ArrayList())
+        val gridAdapter = GridAdapter(requireContext(), ArrayList(), this)
         itemGrid.adapter = gridAdapter
 
         if (this@StoreFragment.backpackDatasource.prices == null) {
@@ -75,10 +80,7 @@ class StoreFragment : Fragment() {
         }
         lastUpdate.text = this@StoreFragment.backpackDatasource.formatInstantToString()
 
-        for ((counter, key) in this@StoreFragment.backpackDatasource.prices!!.items.keys.withIndex()) {
-            if (counter > 29) {
-                break
-            }
+        for (key: String in this@StoreFragment.backpackDatasource.prices!!.items.keys) {
             val gridViewModel = GridViewModel(
                 key,
                 this@StoreFragment.backpackDatasource.prices!!.items[key]?.icon ?: ""
@@ -89,14 +91,10 @@ class StoreFragment : Fragment() {
         adapter.notifyDataSetChanged()
     }
 
-    data class GridViewModel(
-        val itemName: String,
-        val imageUrl: String,
-    )
-
     class GridAdapter(
         context: Context,
-        list: ArrayList<GridViewModel>
+        list: ArrayList<GridViewModel>,
+        val parentFragment: Fragment
     ) : ArrayAdapter<GridViewModel>(context, 0, list) {
 
         override fun getView(position: Int, view: View?, parent: ViewGroup): View {
@@ -108,6 +106,13 @@ class StoreFragment : Fragment() {
             val model = getItem(position)!!
             val textView = itemView.findViewById<TextView>(R.id.weapon_name)
             val imageView = itemView.findViewById<ImageView>(R.id.weapon_icon)
+
+            itemView?.setOnClickListener {
+                Log.d("StoreFragment", model.itemName)
+                val dialog = ItemDialogFragment(model)
+
+                dialog.show(this@GridAdapter.parentFragment.parentFragmentManager, null)
+            }
 
             textView.text = model.itemName
             imageView.contentDescription = model.imageUrl
