@@ -49,5 +49,10 @@
         android:ems="10"
         android:inputType="text" />
 
+    <Button
+        android:id="@+id/button_save_steam"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save" />
 </LinearLayout>
 

@@ -15,6 +15,7 @@ data class HttpClient(
     val authMfaTotpRegister: String = "$baseApiUrl/auth/mfa/totp/register",
     val authMfaTotpVerify: String = "$baseApiUrl/auth/mfa/totp/verify",
     val authMfaTotpReset: String = "$baseApiUrl/auth/mfa/totp/reset",
+    val authSteam: String = "$baseApiUrl/auth/steam",
 
     val steamAuth: String = "$baseApiUrl/steam/auth",
     val steamAuthCallback: String = "$baseApiUrl/steam/auth/callback",

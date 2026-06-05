@@ -60,6 +60,12 @@ data class TotpTokens(
     val recovery: String,
 )
 
+@Serializable
+data class UpdateSteam(
+    val steamId: Long,
+    val tradeUrl: String,
+)
+
 @Singleton
 class UserDatasource @Inject constructor() {
     private val client = HttpClient()
@@ -297,5 +303,39 @@ class UserDatasource @Inject constructor() {
         }
 
         return@withContext true
+    }
+
+    suspend fun updateSteam(
+        steamId: Long,
+        tradeUrl: String
+    ): Boolean = withContext(Dispatchers.IO) {
+
+        val jsonBody = Json.encodeToString(
+            UpdateSteam(
+                tradeUrl = tradeUrl,
+                steamId = steamId
+            )
+        )
+
+        val body = jsonBody.toRequestBody(
+            "application/json".toMediaType()
+        )
+
+        val request = Request.Builder()
+            .url(this@UserDatasource.client.authSteam)
+            .patch(body)
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
+            .build()
+
+        try {
+            val result = this@UserDatasource.client.client
+                .newCall(request)
+                .execute()
+
+            return@withContext result.code == 204
+        } catch (_: Exception) {
+            return@withContext false
+        }
     }
 }
