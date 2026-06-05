@@ -13,6 +13,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.BackpackDatasource
 import com.nhlstenden.guineatrade.datasources.UserDatasource
@@ -45,11 +47,13 @@ class StoreFragment : Fragment() {
         val itemGrid = view.findViewById<GridView>(R.id.item_grid)
         val lastUpdate = view.findViewById<TextView>(R.id.last_update)
 
+        cartSize.visibility = View.INVISIBLE
+
         val gridAdapter = GridAdapter(requireContext(), ArrayList())
         itemGrid.adapter = gridAdapter
 
         for (i in 0..29) {
-            gridAdapter.add(GridViewModel("Shotgun $i", "Shotgun"))
+            gridAdapter.add(GridViewModel("Shotgun $i", "https://portfolio.infinite-night.com/favicon.ico"))
         }
         gridAdapter.notifyDataSetChanged()
 
@@ -91,6 +95,13 @@ class StoreFragment : Fragment() {
 
             textView.text = model.itemName
             imageView.contentDescription = model.imageUrl
+
+            Glide.with(context)
+                .load(model.imageUrl)
+                .placeholder(R.drawable.item_not_found)
+                .error(R.drawable.item_not_found)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(imageView)
 
             return itemView
         }
