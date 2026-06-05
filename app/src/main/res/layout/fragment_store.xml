@@ -76,12 +76,11 @@
     </androidx.cardview.widget.CardView>
 
 
-
     <GridView
         android:id="@+id/item_grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:numColumns="3"
-        android:layout_margin="16dp"/>
+        android:layout_margin="16dp"
+        android:numColumns="3" />
 
 </LinearLayout>
