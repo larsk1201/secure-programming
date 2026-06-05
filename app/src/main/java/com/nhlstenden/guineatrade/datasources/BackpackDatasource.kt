@@ -1,6 +1,7 @@
 package com.nhlstenden.guineatrade.datasources
 
 import android.content.Context
+import android.icu.util.TimeZone
 import android.util.Log
 import com.nhlstenden.guineatrade.R
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -14,6 +15,11 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import okhttp3.Request
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -127,5 +133,23 @@ class BackpackDatasource @Inject constructor(
     private fun setupUnusuals(): HashMap<String, String> {
         val resource = this.context.resources.openRawResource(R.raw.unusuals)
         return Json.decodeFromStream<HashMap<String, String>>(resource)
+    }
+
+    fun formatInstantToString(): String {
+        if (this.prices == null) {
+            return "loading..."
+        }
+        val zonedDateTime = this.prices!!.timestamp.atZone(ZoneId.systemDefault())
+
+        val currentDate = LocalDate.from(zonedDateTime)
+        val currentTime = LocalTime.of(zonedDateTime.hour, zonedDateTime.minute)
+
+        val today = LocalDate.now()
+
+        return when (currentDate) {
+            today -> "Today @ ${currentTime.format(DateTimeFormatter.ISO_LOCAL_TIME)}"
+            today.plusDays(1) -> "Yesterday @ ${ currentTime.format(DateTimeFormatter.ISO_LOCAL_TIME) }"
+            else -> "Unknown @ 00:00"
+        }
     }
 }

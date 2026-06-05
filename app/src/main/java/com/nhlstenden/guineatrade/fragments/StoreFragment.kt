@@ -54,8 +54,8 @@ class StoreFragment : Fragment() {
                 Log.d("StoreFragment",
                     this@StoreFragment.backpackDatasource.prices!!.timestamp.toString()
                 )
-                val timestamp = this@StoreFragment.backpackDatasource.prices!!.timestamp
-                lastUpdate.text = timestamp.toString()
+                val timestamp = this@StoreFragment.backpackDatasource.formatInstantToString()
+                lastUpdate.text = timestamp
             }
             Log.d("StoreFragment", this@StoreFragment.backpackDatasource.unusuals.getOrDefault("13", "Not found :/"))
         }
