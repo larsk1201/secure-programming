@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.GridView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.nhlstenden.guineatrade.R
@@ -34,6 +36,10 @@ class StoreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val cartSize = view.findViewById<TextView>(R.id.cart_size)
+        val itemGrid = view.findViewById<GridView>(R.id.item_grid)
+        val lastUpdate = view.findViewById<TextView>(R.id.last_update)
+
         if (this@StoreFragment.backpackDatasource.prices == null) {
             lifecycleScope.launch {
                 Log.d("StoreFragment", this@StoreFragment::backpackDatasource.isInitialized.toString())
@@ -48,6 +54,8 @@ class StoreFragment : Fragment() {
                 Log.d("StoreFragment",
                     this@StoreFragment.backpackDatasource.prices!!.timestamp.toString()
                 )
+                val timestamp = this@StoreFragment.backpackDatasource.prices!!.timestamp
+                lastUpdate.text = timestamp.toString()
             }
             Log.d("StoreFragment", this@StoreFragment.backpackDatasource.unusuals.getOrDefault("13", "Not found :/"))
         }
