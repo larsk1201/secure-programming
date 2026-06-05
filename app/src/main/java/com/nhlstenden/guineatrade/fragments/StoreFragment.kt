@@ -48,9 +48,8 @@ class StoreFragment : Fragment() {
                 Log.d("StoreFragment",
                     this@StoreFragment.backpackDatasource.prices!!.timestamp.toString()
                 )
-
             }
-
+            Log.d("StoreFragment", this@StoreFragment.backpackDatasource.unusuals.getOrDefault("13", "Not found :/"))
         }
     }
 }

@@ -1,7 +1,9 @@
 package com.nhlstenden.guineatrade.datasources
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.content.Context
+import android.util.Log
+import com.nhlstenden.guineatrade.R
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Contextual
@@ -10,7 +12,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import java.time.Instant
 import javax.inject.Inject
@@ -32,8 +33,9 @@ data class Item(
 
 @Serializable
 data class ItemPair(
-    val craftable: HashMap<String, Int>,
-    val uncraftable: HashMap<String, Int>,
+    val craftable: HashMap<String, Int> = HashMap(),
+    @SerialName("non-craftable")
+    val uncraftable: HashMap<String, Int> = HashMap(),
 )
 
 @Serializable
@@ -88,10 +90,13 @@ enum class Qualty {
 }
 
 @Singleton
-class BackpackDatasource @Inject constructor() {
+class BackpackDatasource @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
     private val client = HttpClient()
 
     var prices: PriceCache? = null
+    var unusuals = this.setupUnusuals()
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun getPrices(jwt: String): Boolean = withContext(Dispatchers.IO) {
@@ -110,10 +115,17 @@ class BackpackDatasource @Inject constructor() {
             }
 
             this@BackpackDatasource.prices = Json.decodeFromStream<PriceCache>(result.body.byteStream())
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("BackpackDatasource", e.message.toString())
             return@withContext false
         }
 
         return@withContext true
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    private fun setupUnusuals(): HashMap<String, String> {
+        val resource = this.context.resources.openRawResource(R.raw.unusuals)
+        return Json.decodeFromStream<HashMap<String, String>>(resource)
     }
 }
