@@ -15,6 +15,7 @@ import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.activities.MainActivity
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -60,7 +61,10 @@ class SignupFragment : Fragment() {
             }
 
             lifecycleScope.launch {
-                if (!this@SignupFragment.userDatasource.signup(name, email, password, passwordConfirm)) {
+                val hasSingedUp = async {
+                    this@SignupFragment.userDatasource.signup(name, email, password, passwordConfirm)
+                }.await()
+                if (!hasSingedUp) {
                     Toast.makeText(context, "Unable to create new account", Toast.LENGTH_SHORT).show()
                     return@launch
                 }

@@ -22,6 +22,7 @@ import com.nhlstenden.guineatrade.datasources.SettingsKeys
 import com.nhlstenden.guineatrade.datasources.Tokens
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
@@ -45,8 +46,12 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         lifecycleScope.launch {
-            val autoLoginEnabled = this@LoginFragment.settingsDatasource.load(SettingsKeys.AUTO_LOGIN_ENABLED, false)
-            val biometricLoginEnabled = this@LoginFragment.settingsDatasource.load(SettingsKeys.BIOMETRIC_ENABLED, false)
+            val autoLoginEnabled = async {
+                this@LoginFragment.settingsDatasource.load(SettingsKeys.AUTO_LOGIN_ENABLED, false)
+            }.await()
+            val biometricLoginEnabled = async {
+                this@LoginFragment.settingsDatasource.load(SettingsKeys.BIOMETRIC_ENABLED, false)
+            }.await()
 
             if (!autoLoginEnabled) {
                 return@launch
@@ -57,7 +62,9 @@ class LoginFragment : Fragment() {
                 }
             }
 
-            val refreshToken = this@LoginFragment.settingsDatasource.load(SettingsKeys.LOGIN_KEY, "")
+            val refreshToken = async {
+                this@LoginFragment.settingsDatasource.load(SettingsKeys.LOGIN_KEY, "")
+            }.await()
             this@LoginFragment.userDatasource.tokens = Tokens("", refreshToken)
 
             if (!this@LoginFragment.userDatasource.refreshToken()) {
@@ -88,7 +95,10 @@ class LoginFragment : Fragment() {
             }
 
             lifecycleScope.launch {
-                if (!this@LoginFragment.userDatasource.login(email, password)) {
+                val hasLoggedIn = async {
+                    this@LoginFragment.userDatasource.login(email, password)
+                }.await()
+                if (!hasLoggedIn) {
                     Toast.makeText(context, "Invalid credentials, unable to login", Toast.LENGTH_SHORT).show()
                     return@launch
                 }

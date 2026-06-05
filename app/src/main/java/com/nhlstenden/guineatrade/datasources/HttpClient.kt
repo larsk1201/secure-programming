@@ -23,8 +23,6 @@ data class HttpClient(
     val steamInventoryAppId: Function1<Int, String> = { appId: Int -> "$$baseApiUrl/steam/inventory/$appId" },
 
     val backpackPrices: String = "$baseApiUrl/backpack/prices",
-    val backpackItemsItemName: Function1<String, String> = { itemName: String -> "$baseApiUrl/backpack/items/$itemName" },
-    val backpackCurrencies: String = "$baseApiUrl/backpack/currencies",
 
     val paymentsCreate: String = "$baseApiUrl/payments/create",
     val paymentsPaymentId: Function1<Int, String> = { paymentId: Int -> "$$baseApiUrl/payments/$paymentId" },

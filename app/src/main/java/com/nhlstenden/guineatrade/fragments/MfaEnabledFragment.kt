@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,7 +49,10 @@ class MfaEnabledFragment : Fragment() {
             val isRecoveryCode = !recoveryCode.isEmpty()
             val code = if (isRecoveryCode) recoveryCode else otpCode
             lifecycleScope.launch {
-                if (!this@MfaEnabledFragment.userDatasource.deactivateTOTPCode(code, isRecoveryCode)) {
+                val unableToDisable = async {
+                    this@MfaEnabledFragment.userDatasource.deactivateTOTPCode(code, isRecoveryCode)
+                }.await()
+                if (!unableToDisable) {
                     Toast.makeText(context, "Unable to deactivate MFA", Toast.LENGTH_LONG).show()
                     return@launch
                 }

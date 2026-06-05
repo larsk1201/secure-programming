@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -51,7 +52,9 @@ class MfaDisabledFragment : Fragment() {
 
         startSetupButton.setOnClickListener {
             lifecycleScope.launch {
-                val totpToken = userDatasource.registerTOTPToken()
+                val totpToken = async {
+                    userDatasource.registerTOTPToken()
+                }.await()
                 if (totpToken.isSuccess) {
                     val tokens = totpToken.getOrNull()
                     setupPrompt.visibility = View.VISIBLE
@@ -79,7 +82,9 @@ class MfaDisabledFragment : Fragment() {
         val finishButton = view.findViewById<Button>(R.id.mfa_finish_setup)
         finishButton.setOnClickListener {
             lifecycleScope.launch {
-                val success = userDatasource.validateTOTPCode(totpTokenInput.text.toString())
+                val success = async {
+                    userDatasource.validateTOTPCode(totpTokenInput.text.toString())
+                }.await()
                 if (success) {
                     Toast.makeText(context, "Successfully registered MFA", Toast.LENGTH_LONG).show()
                     userDatasource.authMe()
@@ -93,7 +98,9 @@ class MfaDisabledFragment : Fragment() {
         cancelButton.setOnClickListener {
             setupPrompt.visibility = View.GONE
             lifecycleScope.launch {
-                val success = userDatasource.deactivateTOTPCode(recoveryTokenText.text.toString(), true)
+                val success = async {
+                    this@MfaDisabledFragment.userDatasource.deactivateTOTPCode(recoveryTokenText.text.toString(), false)
+                }.await()
                 if (success) {
                     Toast.makeText(context, "Successfully deleted MFA", Toast.LENGTH_LONG).show()
                     userDatasource.authMe()

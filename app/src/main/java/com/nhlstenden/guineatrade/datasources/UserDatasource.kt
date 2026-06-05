@@ -17,14 +17,22 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Serializable
-data class Tokens(var jwt: String?, val refresh: String? = null)
+data class Tokens(var jwt: String?, var refresh: String? = null){
+    val jwtSave: String
+        get() = jwt ?: ""
+    val refreshSave: String
+        get() = refresh ?: ""
+
+}
 
 @Serializable
 data class AuthMe(
     val email: String,
     val name: String,
     val balance: Int,
-    val mfaEnabled: Boolean
+    val mfaEnabled: Boolean,
+    val steamId: Int,
+    val tradeUrl: String,
 )
 
 @Serializable
@@ -104,7 +112,8 @@ class UserDatasource @Inject constructor() {
 
             this@UserDatasource.tokens = Json.decodeFromStream<Tokens>(result.body.byteStream())
             this@UserDatasource.authMe()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
 
@@ -153,7 +162,8 @@ class UserDatasource @Inject constructor() {
             if (result.code == 202) {
                 return@withContext true
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
 
@@ -178,7 +188,8 @@ class UserDatasource @Inject constructor() {
             }
 
             this@UserDatasource.login(email, password)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
 
@@ -253,7 +264,8 @@ class UserDatasource @Inject constructor() {
                 return@withContext false
             }
 
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
 
@@ -279,7 +291,8 @@ class UserDatasource @Inject constructor() {
                 return@withContext false
             }
 
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
 
