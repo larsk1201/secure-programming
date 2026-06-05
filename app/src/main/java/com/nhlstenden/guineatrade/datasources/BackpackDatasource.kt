@@ -20,6 +20,7 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.Formatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -145,10 +146,10 @@ class BackpackDatasource @Inject constructor(
         val currentTime = LocalTime.of(zonedDateTime.hour, zonedDateTime.minute)
 
         val today = LocalDate.now()
-
+        val format = DateTimeFormatter.ofPattern("HH:mm")
         return when (currentDate) {
-            today -> "Today @ ${currentTime.format(DateTimeFormatter.ISO_LOCAL_TIME)}"
-            today.plusDays(1) -> "Yesterday @ ${ currentTime.format(DateTimeFormatter.ISO_LOCAL_TIME) }"
+            today -> "Today @ ${currentTime.format(format)}"
+            today.plusDays(1) -> "Yesterday @ ${ currentTime.format(format) }"
             else -> "Unknown @ 00:00"
         }
     }
