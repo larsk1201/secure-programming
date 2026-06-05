@@ -1,33 +1,24 @@
 package com.nhlstenden.guineatrade.fragments
 
-import android.graphics.Bitmap
-import android.net.ConnectivityManager
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.GridView
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.BackpackDatasource
-import com.nhlstenden.guineatrade.datasources.HttpClient
-import com.nhlstenden.guineatrade.datasources.TotpTokens
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.Cache
-import okhttp3.ConnectionPool
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import java.net.URL
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -54,6 +45,14 @@ class StoreFragment : Fragment() {
         val itemGrid = view.findViewById<GridView>(R.id.item_grid)
         val lastUpdate = view.findViewById<TextView>(R.id.last_update)
 
+        val gridAdapter = GridAdapter(requireContext(), ArrayList())
+        itemGrid.adapter = gridAdapter
+
+        for (i in 0..29) {
+            gridAdapter.add(GridViewModel("Shotgun $i", "Shotgun"))
+        }
+        gridAdapter.notifyDataSetChanged()
+
         if (this@StoreFragment.backpackDatasource.prices == null) {
             lifecycleScope.launch {
                 val hasBackpack = async {
@@ -67,6 +66,33 @@ class StoreFragment : Fragment() {
                 lastUpdate.text = this@StoreFragment.backpackDatasource.formatInstantToString()
             }
             Log.d("StoreFragment", this@StoreFragment.backpackDatasource.unusuals.getOrDefault("13", "Not found :/"))
+        }
+    }
+
+    data class GridViewModel(
+        val itemName: String,
+        val imageUrl: String,
+    )
+
+    class GridAdapter(
+        context: Context,
+        list: ArrayList<GridViewModel>
+    ) : ArrayAdapter<GridViewModel>(context, 0, list) {
+
+        override fun getView(position: Int, view: View?, parent: ViewGroup): View {
+            var itemView = view
+            if (itemView == null) {
+                itemView = LayoutInflater.from(context).inflate(R.layout.card_item, parent, false)
+            }
+
+            val model = getItem(position)!!
+            val textView = itemView.findViewById<TextView>(R.id.weapon_name)
+            val imageView = itemView.findViewById<ImageView>(R.id.weapon_icon)
+
+            textView.text = model.itemName
+            imageView.contentDescription = model.imageUrl
+
+            return itemView
         }
     }
 }

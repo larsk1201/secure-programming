@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -65,7 +65,6 @@
                     android:layout_weight="1"
                     android:background="#C73E62"
                     android:paddingHorizontal="4dp"
-                    android:text="0"
                     android:textColor="@color/white" />
 
             </androidx.cardview.widget.CardView>
@@ -80,7 +79,9 @@
         android:id="@+id/item_grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:numColumns="3" />
+        android:layout_marginTop="16dp"
+        android:horizontalSpacing="6dp"
+        android:numColumns="3"
+        android:verticalSpacing="6dp" />
 
 </LinearLayout>
