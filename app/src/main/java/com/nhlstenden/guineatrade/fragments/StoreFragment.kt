@@ -52,11 +52,6 @@ class StoreFragment : Fragment() {
         val gridAdapter = GridAdapter(requireContext(), ArrayList())
         itemGrid.adapter = gridAdapter
 
-        for (i in 0..29) {
-            gridAdapter.add(GridViewModel("Shotgun $i", "https://portfolio.infinite-night.com/favicon.ico"))
-        }
-        gridAdapter.notifyDataSetChanged()
-
         if (this@StoreFragment.backpackDatasource.prices == null) {
             lifecycleScope.launch {
                 val hasBackpack = async {
@@ -64,13 +59,34 @@ class StoreFragment : Fragment() {
                 }.await()
                 if (!hasBackpack) {
                     Toast.makeText(context, "Unable to get pricing data", Toast.LENGTH_SHORT).show()
-                    lastUpdate.text = getString(R.string.store_no_price_data)
                     return@launch
                 }
-                lastUpdate.text = this@StoreFragment.backpackDatasource.formatInstantToString()
+                populatePage(lastUpdate, gridAdapter)
             }
-            Log.d("StoreFragment", this@StoreFragment.backpackDatasource.unusuals.getOrDefault("13", "Not found :/"))
+        } else {
+            populatePage(lastUpdate, gridAdapter)
         }
+    }
+
+    fun populatePage(lastUpdate: TextView, adapter: GridAdapter) {
+        if (this@StoreFragment.backpackDatasource.prices == null) {
+            lastUpdate.text = getString(R.string.store_no_price_data)
+            return
+        }
+        lastUpdate.text = this@StoreFragment.backpackDatasource.formatInstantToString()
+
+        for ((counter, key) in this@StoreFragment.backpackDatasource.prices!!.items.keys.withIndex()) {
+            if (counter > 29) {
+                break
+            }
+            val gridViewModel = GridViewModel(
+                key,
+                this@StoreFragment.backpackDatasource.prices!!.items[key]?.icon ?: ""
+            )
+            adapter.add(gridViewModel)
+        }
+
+        adapter.notifyDataSetChanged()
     }
 
     data class GridViewModel(
