@@ -49,11 +49,7 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(weaponIcon)
 
-        view.findViewById<Button>(R.id.item_popup_ok).setOnClickListener {
-            this@ItemDialogFragment.dismiss()
-        }
-
-        view.findViewById<Button>(R.id.item_popup_cancel).setOnClickListener {
+        view.findViewById<Button>(R.id.close_button).setOnClickListener {
             this@ItemDialogFragment.dismiss()
         }
 
