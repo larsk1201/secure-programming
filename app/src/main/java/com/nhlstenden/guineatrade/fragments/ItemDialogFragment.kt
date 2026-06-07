@@ -199,9 +199,11 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
                         }
 
                         buyButton.setOnClickListener {
+//                            TODO: Add item to cart
                             Log.d("ItemDialogFragment", "Sold item with effect ${effect.effectName} for $realPrice")
                         }
                         sellButton.setOnClickListener {
+//                            TODO: Add item to cart
                             Log.d("ItemDialogFragment", "Sold item with effect ${effect.effectName} for $realPrice")
                         }
 

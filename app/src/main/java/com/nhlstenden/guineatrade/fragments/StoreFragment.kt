@@ -52,7 +52,7 @@ class StoreFragment : Fragment() {
         val itemGrid = view.findViewById<GridView>(R.id.item_grid)
         val lastUpdate = view.findViewById<TextView>(R.id.last_update)
 
-        cartSize.visibility = View.INVISIBLE
+        cartSize.visibility = View.GONE
 
         val gridAdapter = GridAdapter(requireContext(), ArrayList(), this)
         itemGrid.adapter = gridAdapter

@@ -37,9 +37,9 @@
                 android:id="@+id/cardView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:backgroundTint="@color/tf_collectors"
-                app:cardCornerRadius="16dp">
+                android:layout_marginVertical="16dp"
+                android:elevation="16dp"
+                app:cardCornerRadius="8dp">
 
                 <TextView
                     android:id="@+id/item_popup_name"
