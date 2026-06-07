@@ -64,27 +64,33 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
         val itemList = ArrayList<Item>()
         for ((quality, itemPair) in itemPrices!!) {
             if (!itemPair.craftable.isEmpty()) {
+                val effectList = ArrayList<Effect>()
                 for ((key, value) in itemPair.craftable) {
-
+                    effectList.add(Effect(
+                        this.backpackDatasource.unusuals[key] ?: "Default",
+                        key,
+                        value,
+                    ))
                 }
                 itemList.add(Item(
                     quality,
                     "Craftable",
-                    listOf(Effect(
-                        this.backpackDatasource.unusuals["13"] ?: "Default",
-                        "13",
-                        12345,
-                    ))
+                    effectList
                 ))
             }
             if (!itemPair.uncraftable.isEmpty()) {
-                for ((key, value) in itemPair.uncraftable) {
-
+                val effectList = ArrayList<Effect>()
+                for ((key, value) in itemPair.craftable) {
+                    effectList.add(Effect(
+                        this.backpackDatasource.unusuals[key] ?: "Default",
+                        key,
+                        value,
+                    ))
                 }
                 itemList.add(Item(
                     quality,
                     "Non-Craftable",
-                    emptyList()
+                    effectList
                 ))
             }
         }
@@ -137,7 +143,7 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
             val effects = itemView.findViewById<RecyclerView>(R.id.item_effect_list)
 
             fun bind(item: Item) {
-                effectName.text = "${item.effectName.toString()} - ${item.craftability}"
+                effectName.text = "${item.effectName} - ${item.craftability}"
                 itemCard.setCardBackgroundColor(item.effectName.toColour(itemView.context))
 
                 val adapter = EffectAdapter(item.effects)
@@ -165,8 +171,9 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
                     val effectName = effectView.findViewById<TextView>(R.id.effect_name)
 
                     fun bind(effect: Effect) {
+                        val priceString = "$%.2f".format(effect.price.toDouble() / 100.0)
                         effectName.text = effect.effectName
-                        effectPrice.text = effect.price.toString()
+                        effectPrice.text = priceString
                     }
                 }
             }
