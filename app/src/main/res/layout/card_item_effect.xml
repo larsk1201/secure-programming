@@ -34,16 +34,13 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Space
-            android:id="@+id/space"
-            android:layout_width="wrap_content"
-            android:layout_height="8dp" />
-
         <LinearLayout
             android:id="@+id/buy_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="4dp">
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -66,7 +63,8 @@
             android:id="@+id/sell_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="4dp">
+            android:layout_marginVertical="4dp"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -88,7 +86,8 @@
             android:id="@+id/button_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="4dp">
+            android:layout_marginVertical="4dp"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/sell_button"

@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.Group
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +21,8 @@ import com.nhlstenden.guineatrade.datasources.BackpackDatasource
 import com.nhlstenden.guineatrade.datasources.Qualty
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 
 @AndroidEntryPoint
 class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
@@ -176,11 +180,22 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
                     val buyButton = effectView.findViewById<Button>(R.id.buy_button)
                     val sellButton = effectView.findViewById<Button>(R.id.sell_button)
 
+
+                    val toggleableGroup = listOf<LinearLayout>(
+                        effectView.findViewById(R.id.buy_row),
+                        effectView.findViewById(R.id.sell_row),
+                        effectView.findViewById(R.id.button_row)
+                    )
+
                     fun bind(effect: Effect) {
                         val realPrice = effect.price.toDouble() / 100.0
 
                         effectView.setOnClickListener {
-                            Log.d("ItemDialogFragment", effect.effectName)
+                            if (toggleableGroup.first().isVisible) {
+                                toggleableGroup.forEach { it -> it.visibility = View.GONE }
+                            } else {
+                                toggleableGroup.forEach { it -> it.visibility = View.VISIBLE }
+                            }
                         }
 
                         buyPrice.text = "$%.2f".format(realPrice * 1.1)
