@@ -70,7 +70,11 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
                 itemList.add(Item(
                     quality,
                     "Craftable",
-                    emptyList()
+                    listOf(Effect(
+                        this.backpackDatasource.unusuals["13"] ?: "Default",
+                        "13",
+                        12345,
+                    ))
                 ))
             }
             if (!itemPair.uncraftable.isEmpty()) {
@@ -107,6 +111,7 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
     )
 
     data class Effect(
+        val effectName: String,
         val effectId: String,
         val price: Int,
     )
@@ -134,6 +139,36 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
             fun bind(item: Item) {
                 effectName.text = "${item.effectName.toString()} - ${item.craftability}"
                 itemCard.setCardBackgroundColor(item.effectName.toColour(itemView.context))
+
+                val adapter = EffectAdapter(item.effects)
+                effects.setLayoutManager(LinearLayoutManager(itemView.context));
+                effects.adapter = adapter
+            }
+
+            class EffectAdapter(private val effects: List<Effect>) : RecyclerView.Adapter<EffectAdapter.ViewHolder>() {
+
+                override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.card_item_effect, parent, false)
+                    return ViewHolder(view)
+                }
+
+                override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+                    holder.bind(effects[position])
+                }
+
+                override fun getItemCount(): Int {
+                    return effects.size
+                }
+
+                class ViewHolder(effectView: View) : RecyclerView.ViewHolder(effectView) {
+                    val effectPrice = effectView.findViewById<TextView>(R.id.effect_price)
+                    val effectName = effectView.findViewById<TextView>(R.id.effect_name)
+
+                    fun bind(effect: Effect) {
+                        effectName.text = effect.effectName
+                        effectPrice.text = effect.price.toString()
+                    }
+                }
             }
         }
     }
