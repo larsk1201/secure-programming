@@ -1,8 +1,11 @@
 package com.nhlstenden.guineatrade.datasources
 
 import android.content.Context
-import android.icu.util.TimeZone
 import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.core.content.ContextCompat
 import com.nhlstenden.guineatrade.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -18,9 +21,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Formatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -93,7 +94,24 @@ enum class Qualty {
     COLLECTORS,
 
     @SerialName("Decorated")
-    DECORATED,
+    DECORATED;
+
+    fun toColour(context: Context): Int {
+        return when (this) {
+            UNIQUE -> ContextCompat.getColor(context, R.color.tf_unique)
+            VINTAGE -> ContextCompat.getColor(context, R.color.tf_vintage)
+            GENUINE -> ContextCompat.getColor(context, R.color.tf_genuine)
+            STRANGE -> ContextCompat.getColor(context, R.color.tf_strange)
+            UNUSUAL -> ContextCompat.getColor(context, R.color.tf_unusual)
+            HAUNTED -> ContextCompat.getColor(context, R.color.tf_haunted)
+            COLLECTORS -> ContextCompat.getColor(context, R.color.tf_collectors)
+            DECORATED -> ContextCompat.getColor(context, R.color.tf_decorated)
+            COMMUNITY -> ContextCompat.getColor(context, R.color.tf_community)
+            VALVE -> ContextCompat.getColor(context, R.color.tf_valve)
+            else -> ContextCompat.getColor(context, R.color.tf_normal)
+        }
+    }
+
 }
 
 @Singleton

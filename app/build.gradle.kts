@@ -43,8 +43,11 @@ android {
 }
 
 dependencies {
+    implementation(libs.ads.mobile.sdk)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.biometric)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.ui)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
