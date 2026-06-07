@@ -1,6 +1,7 @@
 package com.nhlstenden.guineatrade.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -167,14 +168,25 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
                     return effects.size
                 }
 
-                class ViewHolder(effectView: View) : RecyclerView.ViewHolder(effectView) {
+                class ViewHolder(val effectView: View) : RecyclerView.ViewHolder(effectView) {
                     val effectPrice = effectView.findViewById<TextView>(R.id.effect_price)
                     val effectName = effectView.findViewById<TextView>(R.id.effect_name)
+                    val buyPrice = effectView.findViewById<TextView>(R.id.buy_price)
+                    val sellPrice = effectView.findViewById<TextView>(R.id.sell_price)
+                    val buyButton = effectView.findViewById<Button>(R.id.buy_button)
+                    val sellButton = effectView.findViewById<Button>(R.id.sell_button)
 
                     fun bind(effect: Effect) {
-                        val priceString = "$%.2f".format(effect.price.toDouble() / 100.0)
+                        val realPrice = effect.price.toDouble() / 100.0
+
+                        effectView.setOnClickListener {
+                            Log.d("ItemDialogFragment", effect.effectName)
+                        }
+
+                        buyPrice.text = "$%.2f".format(realPrice * 1.1)
+                        sellPrice.text = "$%.2f".format(realPrice * 0.9)
                         effectName.text = effect.effectName
-                        effectPrice.text = priceString
+                        effectPrice.text = "$%.2f".format(realPrice)
                     }
                 }
             }
