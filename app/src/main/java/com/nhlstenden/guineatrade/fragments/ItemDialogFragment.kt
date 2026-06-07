@@ -60,12 +60,15 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.item_popup_details)
 
         val itemPrices = this.backpackDatasource.prices?.items[this.gridViewModel.itemName]?.prices
-
         val itemList = ArrayList<Item>()
-        for ((quality, itemPair) in itemPrices!!) {
+
+        val sortedItemPrices = itemPrices?.toSortedMap()?.reversed()
+        for ((quality, itemPair) in sortedItemPrices!!) {
             if (!itemPair.craftable.isEmpty()) {
                 val effectList = ArrayList<Effect>()
-                for ((key, value) in itemPair.craftable) {
+                val sortedCraftableItems = itemPair.craftable.toSortedMap(compareBy { it.toInt() })
+
+                for ((key, value) in sortedCraftableItems) {
                     effectList.add(Effect(
                         this.backpackDatasource.unusuals[key] ?: "Default",
                         key,
@@ -80,7 +83,9 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
             }
             if (!itemPair.uncraftable.isEmpty()) {
                 val effectList = ArrayList<Effect>()
-                for ((key, value) in itemPair.craftable) {
+                val sortedUncraftableItems = itemPair.craftable.toSortedMap()
+
+                for ((key, value) in sortedUncraftableItems) {
                     effectList.add(Effect(
                         this.backpackDatasource.unusuals[key] ?: "Default",
                         key,
