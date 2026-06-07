@@ -31,7 +31,7 @@ data class AuthMe(
     val name: String,
     val balance: Int,
     val mfaEnabled: Boolean,
-    val steamId: Int,
+    val steamId: Long,
     val tradeUrl: String,
 )
 
@@ -75,12 +75,16 @@ class UserDatasource @Inject constructor() {
     private var _hasMFA: MutableLiveData<Boolean> = MutableLiveData(false)
     private var _balance: MutableLiveData<Int> = MutableLiveData(0)
     private var _tokens: MutableLiveData<Tokens> = MutableLiveData()
+    private var _steamId: MutableLiveData<Long> = MutableLiveData()
+    private var _tradeUrl: MutableLiveData<String> = MutableLiveData()
 
     val usernameLiveData: LiveData<String> get() = _username
     val emailLiveData: LiveData<String> get() = _email
     val hasMFALiveData: LiveData<Boolean> get() = _hasMFA
     val balanceLiveData: LiveData<Int> get() = _balance
     val tokensLiveData: LiveData<Tokens> get() = _tokens
+    val stealIdLiveData: LiveData<Long> get() = _steamId
+    val tradeUrlLiveData: LiveData<String> get() = _tradeUrl
 
     var username: String
         get() = _username.value ?: ""
@@ -97,6 +101,12 @@ class UserDatasource @Inject constructor() {
     var tokens: Tokens
         get() = _tokens.value ?: Tokens("", "")
         set(value) { _tokens.postValue(value) }
+    var steamId: Long
+        get() = _steamId.value ?: 0
+        set(value) { _steamId.postValue(value) }
+    var tradeUrl: String
+        get() = _tradeUrl.value ?: ""
+        set(value) { _tradeUrl.postValue(value) }
 
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -143,6 +153,8 @@ class UserDatasource @Inject constructor() {
         this@UserDatasource.username = credentials.name
         this@UserDatasource.balance = credentials.balance
         this@UserDatasource.hasMFA = credentials.mfaEnabled
+        this@UserDatasource.steamId = credentials.steamId
+        this@UserDatasource.tradeUrl = credentials.tradeUrl
     }
 
     suspend fun updateMe(totpCode: String, currentPassword: String, newPassword: String, newPasswordVerify: String): Boolean = withContext(Dispatchers.IO) {
@@ -333,8 +345,10 @@ class UserDatasource @Inject constructor() {
                 .newCall(request)
                 .execute()
 
+            this@UserDatasource.authMe()
             return@withContext result.code == 204
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
     }
