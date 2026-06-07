@@ -13,6 +13,7 @@ import com.nhlstenden.guineatrade.datasources.UserDatasource
 import com.nhlstenden.guineatrade.fragments.AppFragment
 import com.nhlstenden.guineatrade.fragments.MfaDisabledFragment
 import com.nhlstenden.guineatrade.fragments.MfaEnabledFragment
+import com.nhlstenden.guineatrade.fragments.SteamFragment
 import com.nhlstenden.guineatrade.fragments.UserFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -39,6 +40,7 @@ class ProfileActivity: AppCompatActivity() {
                 R.id.nav_user -> ProfilePage.USER.position
                 R.id.nav_otp -> ProfilePage.MFA.position
                 R.id.nav_app -> ProfilePage.APP.position
+                R.id.nav_steam -> ProfilePage.STEAM.position
                 else -> ProfilePage.USER.position
             }
 
@@ -51,6 +53,7 @@ class ProfileActivity: AppCompatActivity() {
                     ProfilePage.USER -> R.id.nav_user
                     ProfilePage.MFA -> R.id.nav_otp
                     ProfilePage.APP -> R.id.nav_app
+                    ProfilePage.STEAM -> R.id.nav_steam
                 }
             }
         })
@@ -75,13 +78,14 @@ class ProfileActivity: AppCompatActivity() {
             return if (this.userDatasource.hasMFA) MfaEnabledFragment() else MfaDisabledFragment()
         }
 
-        override fun getItemCount(): Int = 3
+        override fun getItemCount(): Int = 4
 
         override fun createFragment(position: Int): Fragment {
             val fragment = when (ProfilePage.entries[position]) {
                 ProfilePage.USER -> UserFragment()
                 ProfilePage.MFA -> getMfaFragment()
                 ProfilePage.APP -> AppFragment()
+                ProfilePage.STEAM -> SteamFragment()
             }
 
             return fragment
@@ -92,5 +96,6 @@ class ProfileActivity: AppCompatActivity() {
         USER(0),
         MFA(1),
         APP(2),
+        STEAM(3),
     }
 }

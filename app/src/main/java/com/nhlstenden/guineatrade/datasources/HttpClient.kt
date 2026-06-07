@@ -15,6 +15,7 @@ data class HttpClient(
     val authMfaTotpRegister: String = "$baseApiUrl/auth/mfa/totp/register",
     val authMfaTotpVerify: String = "$baseApiUrl/auth/mfa/totp/verify",
     val authMfaTotpReset: String = "$baseApiUrl/auth/mfa/totp/reset",
+    val authSteam: String = "$baseApiUrl/auth/steam",
 
     val steamAuth: String = "$baseApiUrl/steam/auth",
     val steamAuthCallback: String = "$baseApiUrl/steam/auth/callback",
@@ -23,8 +24,6 @@ data class HttpClient(
     val steamInventoryAppId: Function1<Int, String> = { appId: Int -> "$$baseApiUrl/steam/inventory/$appId" },
 
     val backpackPrices: String = "$baseApiUrl/backpack/prices",
-    val backpackItemsItemName: Function1<String, String> = { itemName: String -> "$baseApiUrl/backpack/items/$itemName" },
-    val backpackCurrencies: String = "$baseApiUrl/backpack/currencies",
 
     val paymentsCreate: String = "$baseApiUrl/payments/create",
     val paymentsPaymentId: Function1<Int, String> = { paymentId: Int -> "$$baseApiUrl/payments/$paymentId" },

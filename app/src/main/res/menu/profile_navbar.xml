@@ -15,4 +15,10 @@
         android:id="@+id/nav_app"
         android:icon="@drawable/settings_24px"
         android:title="App" />
+
+    <item
+        android:id="@+id/nav_steam"
+        android:icon="@drawable/steam_icon"
+        android:title="Steam"
+        />
 </menu>

@@ -17,14 +17,22 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Serializable
-data class Tokens(var jwt: String?, val refresh: String? = null)
+data class Tokens(var jwt: String?, var refresh: String? = null){
+    val jwtSave: String
+        get() = jwt ?: ""
+    val refreshSave: String
+        get() = refresh ?: ""
+
+}
 
 @Serializable
 data class AuthMe(
     val email: String,
     val name: String,
     val balance: Int,
-    val mfaEnabled: Boolean
+    val mfaEnabled: Boolean,
+    val steamId: Long,
+    val tradeUrl: String,
 )
 
 @Serializable
@@ -52,6 +60,12 @@ data class TotpTokens(
     val recovery: String,
 )
 
+@Serializable
+data class UpdateSteam(
+    val steamId: Long? = null,
+    val tradeUrl: String? = null,
+)
+
 @Singleton
 class UserDatasource @Inject constructor() {
     private val client = HttpClient()
@@ -61,12 +75,16 @@ class UserDatasource @Inject constructor() {
     private var _hasMFA: MutableLiveData<Boolean> = MutableLiveData(false)
     private var _balance: MutableLiveData<Int> = MutableLiveData(0)
     private var _tokens: MutableLiveData<Tokens> = MutableLiveData()
+    private var _steamId: MutableLiveData<Long> = MutableLiveData()
+    private var _tradeUrl: MutableLiveData<String> = MutableLiveData()
 
     val usernameLiveData: LiveData<String> get() = _username
     val emailLiveData: LiveData<String> get() = _email
     val hasMFALiveData: LiveData<Boolean> get() = _hasMFA
     val balanceLiveData: LiveData<Int> get() = _balance
     val tokensLiveData: LiveData<Tokens> get() = _tokens
+    val steamIdLiveData: LiveData<Long> get() = _steamId
+    val tradeUrlLiveData: LiveData<String> get() = _tradeUrl
 
     var username: String
         get() = _username.value ?: ""
@@ -83,6 +101,12 @@ class UserDatasource @Inject constructor() {
     var tokens: Tokens
         get() = _tokens.value ?: Tokens("", "")
         set(value) { _tokens.postValue(value) }
+    var steamId: Long
+        get() = _steamId.value ?: 0
+        set(value) { _steamId.postValue(value) }
+    var tradeUrl: String
+        get() = _tradeUrl.value ?: ""
+        set(value) { _tradeUrl.postValue(value) }
 
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -104,7 +128,8 @@ class UserDatasource @Inject constructor() {
 
             this@UserDatasource.tokens = Json.decodeFromStream<Tokens>(result.body.byteStream())
             this@UserDatasource.authMe()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
 
@@ -128,6 +153,8 @@ class UserDatasource @Inject constructor() {
         this@UserDatasource.username = credentials.name
         this@UserDatasource.balance = credentials.balance
         this@UserDatasource.hasMFA = credentials.mfaEnabled
+        this@UserDatasource.steamId = credentials.steamId
+        this@UserDatasource.tradeUrl = credentials.tradeUrl
     }
 
     suspend fun updateMe(totpCode: String, currentPassword: String, newPassword: String, newPasswordVerify: String): Boolean = withContext(Dispatchers.IO) {
@@ -153,7 +180,8 @@ class UserDatasource @Inject constructor() {
             if (result.code == 202) {
                 return@withContext true
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
 
@@ -178,7 +206,8 @@ class UserDatasource @Inject constructor() {
             }
 
             this@UserDatasource.login(email, password)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
 
@@ -253,7 +282,8 @@ class UserDatasource @Inject constructor() {
                 return@withContext false
             }
 
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
 
@@ -279,10 +309,47 @@ class UserDatasource @Inject constructor() {
                 return@withContext false
             }
 
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
 
         return@withContext true
+    }
+
+    suspend fun updateSteam(
+        steamId: Long?,
+        tradeUrl: String?,
+    ): Boolean = withContext(Dispatchers.IO) {
+
+        val jsonBody = Json.encodeToString(
+            UpdateSteam(
+                tradeUrl = tradeUrl,
+                steamId = steamId
+            )
+        )
+
+        val body = jsonBody.toRequestBody(
+            "application/json".toMediaType()
+        )
+
+        val request = Request.Builder()
+            .url(this@UserDatasource.client.authSteam)
+            .patch(body)
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
+            .build()
+
+        try {
+            val result = this@UserDatasource.client.client
+                .newCall(request)
+                .execute()
+
+            this@UserDatasource.authMe()
+            return@withContext result.code == 204
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
+            return@withContext false
+        }
     }
 }
