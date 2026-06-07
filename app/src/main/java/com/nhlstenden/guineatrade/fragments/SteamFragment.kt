@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,6 +50,13 @@ class SteamFragment : Fragment() {
         val saveButton =
             view.findViewById<Button>(R.id.button_save_steam)
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            userDatasource.authMe()
+
+            steamIdInput.setText(userDatasource.steamIdLiveData.value?.toString() ?: "")
+            tradeUrlInput.setText(userDatasource.tradeUrlLiveData.value ?: "")
+        }
+
         saveButton.setOnClickListener {
 
             val steamIdText = steamIdInput.text.toString()
@@ -64,11 +72,13 @@ class SteamFragment : Fragment() {
 
             lifecycleScope.launch {
 
-                if (!userDatasource.updateSteam(
+                val hasSteamId = async {
+                    userDatasource.updateSteam(
                         steamId,
                         tradeUrl
                     )
-                ) {
+                }.await()
+                if (!hasSteamId) {
                     Toast.makeText(
                         context,
                         "Unable to save Steam settings",

@@ -83,7 +83,7 @@ class UserDatasource @Inject constructor() {
     val hasMFALiveData: LiveData<Boolean> get() = _hasMFA
     val balanceLiveData: LiveData<Int> get() = _balance
     val tokensLiveData: LiveData<Tokens> get() = _tokens
-    val stealIdLiveData: LiveData<Long> get() = _steamId
+    val steamIdLiveData: LiveData<Long> get() = _steamId
     val tradeUrlLiveData: LiveData<String> get() = _tradeUrl
 
     var username: String
