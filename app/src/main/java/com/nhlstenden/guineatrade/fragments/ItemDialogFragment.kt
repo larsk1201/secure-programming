@@ -16,8 +16,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.BackpackDatasource
 import com.nhlstenden.guineatrade.datasources.Qualty
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
 
     @Inject
@@ -57,14 +59,33 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.item_popup_details)
 
-//        val item = this.backpackDatasource.prices?.items[this.gridViewModel.itemName]
+        val itemPrices = this.backpackDatasource.prices?.items[this.gridViewModel.itemName]?.prices
 
-        val items = listOf(Item(
-            Qualty.STRANGE,
-            "Craftable",
-            emptyList()
-        ))
-        val adapter = ItemAdapter(items)
+        val itemList = ArrayList<Item>()
+        for ((quality, itemPair) in itemPrices!!) {
+            if (!itemPair.craftable.isEmpty()) {
+                for ((key, value) in itemPair.craftable) {
+
+                }
+                itemList.add(Item(
+                    quality,
+                    "Craftable",
+                    emptyList()
+                ))
+            }
+            if (!itemPair.uncraftable.isEmpty()) {
+                for ((key, value) in itemPair.uncraftable) {
+
+                }
+                itemList.add(Item(
+                    quality,
+                    "Non-Craftable",
+                    emptyList()
+                ))
+            }
+        }
+
+        val adapter = ItemAdapter(itemList)
         recyclerView.setLayoutManager(LinearLayoutManager(this@ItemDialogFragment.context));
         recyclerView.adapter = adapter
     }
