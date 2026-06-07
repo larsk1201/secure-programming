@@ -198,6 +198,13 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
                             }
                         }
 
+                        buyButton.setOnClickListener {
+                            Log.d("ItemDialogFragment", "Sold item with effect ${effect.effectName} for $realPrice")
+                        }
+                        sellButton.setOnClickListener {
+                            Log.d("ItemDialogFragment", "Sold item with effect ${effect.effectName} for $realPrice")
+                        }
+
                         buyPrice.text = "$%.2f".format(realPrice * 1.1)
                         sellPrice.text = "$%.2f".format(realPrice * 0.9)
                         effectName.text = effect.effectName
