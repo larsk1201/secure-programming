@@ -57,26 +57,23 @@ class SteamFragment : Fragment() {
 
         saveButton.setOnClickListener {
 
-            val steamIdText = steamIdInput.text.toString()
-            val steamId = steamIdText.toLongOrNull()
+            val steamIdText = steamIdInput.text.toString().trim()
+            val tradeUrlText = tradeUrlInput.text.toString().trim()
 
-            if (steamId == null) {
-                Toast.makeText(context, "Invalid Steam ID", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
+            val steamId: Long? =
+                steamIdText.takeIf { it.isNotEmpty() }?.toLongOrNull()
 
-            val tradeUrl =
-                tradeUrlInput.text.toString()
+            val tradeUrl: String? =
+                tradeUrlText.takeIf { it.isNotEmpty() }
 
             lifecycleScope.launch {
 
-                val hasSteamId = async {
-                    userDatasource.updateSteam(
-                        steamId,
-                        tradeUrl
-                    )
-                }.await()
-                if (!hasSteamId) {
+                val success = userDatasource.updateSteam(
+                    steamId = steamId,
+                    tradeUrl = tradeUrl
+                )
+
+                if (!success) {
                     Toast.makeText(
                         context,
                         "Unable to save Steam settings",

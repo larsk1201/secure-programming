@@ -62,8 +62,8 @@ data class TotpTokens(
 
 @Serializable
 data class UpdateSteam(
-    val steamId: Long,
-    val tradeUrl: String,
+    val steamId: Long? = null,
+    val tradeUrl: String? = null,
 )
 
 @Singleton
@@ -318,8 +318,8 @@ class UserDatasource @Inject constructor() {
     }
 
     suspend fun updateSteam(
-        steamId: Long,
-        tradeUrl: String
+        steamId: Long?,
+        tradeUrl: String?,
     ): Boolean = withContext(Dispatchers.IO) {
 
         val jsonBody = Json.encodeToString(
