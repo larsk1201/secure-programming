@@ -51,8 +51,6 @@ class SteamFragment : Fragment() {
             view.findViewById<Button>(R.id.button_save_steam)
 
         viewLifecycleOwner.lifecycleScope.launch {
-            userDatasource.authMe()
-
             steamIdInput.setText(userDatasource.steamIdLiveData.value?.toString() ?: "")
             tradeUrlInput.setText(userDatasource.tradeUrlLiveData.value ?: "")
         }
