@@ -36,6 +36,7 @@ data class PriceCache(
 data class Item(
     val icon: String,
     val defindex: List<Int>,
+    val marketHashName: String,
     val prices: HashMap<Qualty, ItemPair>
 )
 
