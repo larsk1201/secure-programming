@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.GridView
 import android.widget.ImageView
 import android.widget.TextView
@@ -49,6 +50,8 @@ class StoreFragment : Fragment() {
 
         val itemGrid = view.findViewById<GridView>(R.id.item_grid)
         val lastUpdate = view.findViewById<TextView>(R.id.last_update)
+        val searchButton = view.findViewById<ImageView>(R.id.search_button)
+        val searchPattern = view.findViewById<EditText>(R.id.search_pattern)
 
         if (this@StoreFragment.backpackDatasource.prices == null) {
             lifecycleScope.launch {
@@ -71,6 +74,19 @@ class StoreFragment : Fragment() {
         } else {
             populatePage(lastUpdate, itemGrid)
         }
+
+        searchButton.setOnClickListener {
+            val pattern = searchPattern.text.toString()
+
+            try {
+                val gridAdapter = GridAdapter(requireContext(), searchItems(pattern), this)
+                itemGrid.adapter = gridAdapter
+                gridAdapter.notifyDataSetChanged()
+            } catch (e: Exception) {
+                Log.d("StoreFragment", e.message.toString())
+                Toast.makeText(context, "Not a valid search query", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     fun populatePage(lastUpdate: TextView, itemGrid: GridView) {
@@ -87,7 +103,7 @@ class StoreFragment : Fragment() {
     }
 
     fun searchItems(filter: String): ArrayList<Item> {
-        val pattern = Regex(filter)
+        val pattern = Regex(filter, RegexOption.IGNORE_CASE)
 
         val list = ArrayList<Item>()
         for (item: Item in this@StoreFragment.backpackDatasource.prices!!.items.values) {
