@@ -50,9 +50,6 @@ class StoreFragment : Fragment() {
         val itemGrid = view.findViewById<GridView>(R.id.item_grid)
         val lastUpdate = view.findViewById<TextView>(R.id.last_update)
 
-        val gridAdapter = GridAdapter(requireContext(), ArrayList(), this)
-        itemGrid.adapter = gridAdapter
-
         if (this@StoreFragment.backpackDatasource.prices == null) {
             lifecycleScope.launch {
                 val hasBackpack = async {
@@ -69,25 +66,37 @@ class StoreFragment : Fragment() {
                     Toast.makeText(context, "Unable to get pricing data", Toast.LENGTH_SHORT).show()
                     return@launch
                 }
-                populatePage(lastUpdate, gridAdapter)
+                populatePage(lastUpdate, itemGrid)
             }
         } else {
-            populatePage(lastUpdate, gridAdapter)
+            populatePage(lastUpdate, itemGrid)
         }
     }
 
-    fun populatePage(lastUpdate: TextView, adapter: GridAdapter) {
+    fun populatePage(lastUpdate: TextView, itemGrid: GridView) {
         if (this@StoreFragment.backpackDatasource.prices == null) {
             lastUpdate.text = getString(R.string.store_no_price_data)
             return
         }
-        lastUpdate.text = this@StoreFragment.backpackDatasource.formatInstantToString()
 
+        val gridAdapter = GridAdapter(requireContext(), searchItems(""), this)
+        itemGrid.adapter = gridAdapter
+        gridAdapter.notifyDataSetChanged()
+
+        lastUpdate.text = this@StoreFragment.backpackDatasource.formatInstantToString()
+    }
+
+    fun searchItems(filter: String): ArrayList<Item> {
+        val pattern = Regex(filter)
+
+        val list = ArrayList<Item>()
         for (item: Item in this@StoreFragment.backpackDatasource.prices!!.items.values) {
-            adapter.add(item)
+            if (pattern.containsMatchIn(item.marketHashName)) {
+                list.add(item)
+            }
         }
 
-        adapter.notifyDataSetChanged()
+        return list
     }
 
     class GridAdapter(
