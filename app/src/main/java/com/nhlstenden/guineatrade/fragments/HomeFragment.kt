@@ -12,12 +12,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nhlstenden.guineatrade.R
-import com.nhlstenden.guineatrade.api.SteamApi
+import com.nhlstenden.guineatrade.datasources.InventoryDatasource
+import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
+
+    @Inject
+    lateinit var inventoryDatasource: InventoryDatasource
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,13 +39,6 @@ class HomeFragment : Fragment() {
         val searchButton =
             view.findViewById<Button>(R.id.searchSteamId)
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://steamcommunity.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val api = retrofit.create(SteamApi::class.java)
-
         val profileName =
             view.findViewById<TextView>(R.id.profileName)
 
@@ -49,47 +46,42 @@ class HomeFragment : Fragment() {
             view.findViewById<RecyclerView>(R.id.itemsRecyclerView)
 
         searchButton.setOnClickListener {
+
             val steamId = steamIdInput.text.toString()
 
             lifecycleScope.launch {
-                try
-                {
-                    val response = api.getInventory(steamId)
-                    val inventoryText = "Inventory of $steamId"
 
-                    profileName.text = inventoryText
+                val response = inventoryDatasource.getInventory(steamId)
 
-                    val descriptionMap = response.descriptions.associateBy {
-                        "${it.classid}_${it.instanceid}"
-                    }
-
-                    val inventoryItems = mutableListOf<InventoryItem>()
-
-                    response.assets.forEach { asset ->
-
-                        val key = "${asset.classid}_${asset.instanceid}"
-
-                        val description = descriptionMap[key]
-
-                        if (description != null)
-                        {
-                            inventoryItems.add(
-                                InventoryItem(
-                                    name = description.name,
-                                    iconUrl = description.iconUrl
-                                )
-                            )
-                        }
-                    }
-                    val adapter = InventoryAdapter(inventoryItems)
-
-                    itemsRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
-                    itemsRecyclerView.adapter = adapter
+                if (response == null) {
+                    profileName.text = "Failed to load inventory"
+                    return@launch
                 }
-                catch (e: Exception)
-                {
-                    e.printStackTrace()
+
+                profileName.text = "Inventory of $steamId"
+
+                val descriptionMap = response.descriptions.associateBy {
+                    "${it.classid}_${it.instanceid}"
                 }
+
+                val inventoryItems = response.assets.mapNotNull { asset ->
+
+                    val key = "${asset.classid}_${asset.instanceid}"
+                    val description = descriptionMap[key]
+
+                    description?.let {
+                        InventoryItem(
+                            name = it.name,
+                            iconUrl = it.icon_url
+                        )
+                    }
+                }
+
+                itemsRecyclerView.layoutManager =
+                    GridLayoutManager(requireContext(), 2)
+
+                itemsRecyclerView.adapter =
+                    InventoryAdapter(inventoryItems)
             }
         }
         return view
