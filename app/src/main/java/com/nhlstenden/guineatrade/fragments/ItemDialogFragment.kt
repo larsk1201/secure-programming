@@ -10,7 +10,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.Group
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,10 +17,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.BackpackDatasource
-import com.nhlstenden.guineatrade.datasources.Qualty
+import com.nhlstenden.guineatrade.datasources.Quality
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import androidx.core.view.isGone
 import androidx.core.view.isVisible
 
 @AndroidEntryPoint
@@ -117,7 +115,7 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
     }
 
     data class Item(
-        val effectName: Qualty,
+        val effectName: Quality,
         val craftability: String,
         val effects: List<Effect>,
     )

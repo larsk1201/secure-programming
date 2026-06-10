@@ -2,9 +2,6 @@ package com.nhlstenden.guineatrade.datasources
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.core.content.ContextCompat
 import com.nhlstenden.guineatrade.R
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -37,7 +34,7 @@ data class Item(
     val icon: String,
     val defindex: List<Int>,
     val marketHashName: String,
-    val prices: HashMap<Qualty, ItemPair>
+    val prices: HashMap<Quality, ItemPair>
 )
 
 @Serializable
@@ -48,7 +45,7 @@ data class ItemPair(
 )
 
 @Serializable
-enum class Qualty {
+enum class Quality {
     @SerialName("Normal")
     NORMAL,
 
