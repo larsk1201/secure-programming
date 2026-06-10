@@ -17,17 +17,12 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.BackpackDatasource
+import com.nhlstenden.guineatrade.datasources.Item
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-
-data class GridViewModel(
-    val itemName: String,
-    val imageUrl: String,
-)
 
 @AndroidEntryPoint
 class StoreFragment : Fragment() {
@@ -80,12 +75,8 @@ class StoreFragment : Fragment() {
         }
         lastUpdate.text = this@StoreFragment.backpackDatasource.formatInstantToString()
 
-        for (key: String in this@StoreFragment.backpackDatasource.prices!!.items.keys) {
-            val gridViewModel = GridViewModel(
-                key,
-                this@StoreFragment.backpackDatasource.prices!!.items[key]?.icon ?: ""
-            )
-            adapter.add(gridViewModel)
+        for (item: Item in this@StoreFragment.backpackDatasource.prices!!.items.values) {
+            adapter.add(item)
         }
 
         adapter.notifyDataSetChanged()
@@ -93,9 +84,9 @@ class StoreFragment : Fragment() {
 
     class GridAdapter(
         context: Context,
-        list: ArrayList<GridViewModel>,
+        list: ArrayList<Item>,
         val parentFragment: Fragment
-    ) : ArrayAdapter<GridViewModel>(context, 0, list) {
+    ) : ArrayAdapter<Item>(context, 0, list) {
 
         override fun getView(position: Int, view: View?, parent: ViewGroup): View {
             var itemView = view
@@ -108,17 +99,17 @@ class StoreFragment : Fragment() {
             val imageView = itemView.findViewById<ImageView>(R.id.weapon_icon)
 
             itemView?.setOnClickListener {
-                Log.d("StoreFragment", model.itemName)
+                Log.d("StoreFragment", model.marketHashName)
                 val dialog = ItemDialogFragment(model)
 
                 dialog.show(this@GridAdapter.parentFragment.parentFragmentManager, null)
             }
 
-            textView.text = model.itemName
-            imageView.contentDescription = model.imageUrl
+            textView.text = model.marketHashName
+            imageView.contentDescription = model.icon
 
             Glide.with(context)
-                .load(model.imageUrl)
+                .load(model.icon)
                 .placeholder(R.drawable.item_not_found)
                 .error(R.drawable.item_not_found)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
