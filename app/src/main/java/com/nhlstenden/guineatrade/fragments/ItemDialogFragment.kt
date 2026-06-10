@@ -23,7 +23,7 @@ import javax.inject.Inject
 import androidx.core.view.isVisible
 
 @AndroidEntryPoint
-class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
+class ItemDialogFragment(val item: com.nhlstenden.guineatrade.datasources.Item): DialogFragment() {
 
     @Inject
     lateinit var backpackDatasource: BackpackDatasource
@@ -43,10 +43,10 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
         val weaponText = view.findViewById<TextView>(R.id.item_popup_name)
         val weaponIcon = view.findViewById<ImageView>(R.id.item_popup_icon)
 
-        weaponText.text = gridViewModel.itemName
+        weaponText.text = item.marketHashName
 
         Glide.with(requireContext())
-            .load(gridViewModel.imageUrl)
+            .load(item.icon)
             .placeholder(R.drawable.item_not_found)
             .error(R.drawable.item_not_found)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -58,7 +58,7 @@ class ItemDialogFragment(val gridViewModel: GridViewModel): DialogFragment() {
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.item_popup_details)
 
-        val itemPrices = this.backpackDatasource.prices?.items[this.gridViewModel.itemName]?.prices
+        val itemPrices = this.backpackDatasource.prices?.items[item.marketHashName]?.prices
         val itemList = ArrayList<Item>()
 
         val sortedItemPrices = itemPrices?.toSortedMap()?.reversed()
