@@ -35,8 +35,7 @@ class HomeFragment : Fragment() {
     lateinit var userDatasource: UserDatasource
 
     data class HomeSteamItem(
-        val name: String,
-        val imageUrl: String,
+        val item: Item,
         val value: Int
     )
 
@@ -151,8 +150,7 @@ class HomeFragment : Fragment() {
             }
             .map { entry ->
                 HomeSteamItem(
-                    name = entry.key,
-                    imageUrl = entry.value.icon,
+                    item = entry.value,
                     value = getHighestItemValueForQuality(entry.value, quality)
                 )
             }
@@ -174,8 +172,7 @@ class HomeFragment : Fragment() {
             val item = priceCache.items[name] ?: return@mapNotNull null
 
             HomeSteamItem(
-                name = name,
-                imageUrl = item.icon,
+                item = item,
                 value = getHighestItemValue(item)
             )
         }
@@ -222,11 +219,11 @@ class HomeFragment : Fragment() {
             val icon: ImageView = itemView.findViewById(R.id.weapon_icon)
             val name: TextView = itemView.findViewById(R.id.weapon_name)
 
-            name.text = item.name
-            icon.contentDescription = item.imageUrl
+            name.text = item.item.marketHashName
+            icon.contentDescription = item.item.icon
 
             Glide.with(requireContext())
-                .load(item.imageUrl)
+                .load(item.item.icon)
                 .placeholder(R.drawable.item_not_found)
                 .error(R.drawable.item_not_found)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -234,10 +231,7 @@ class HomeFragment : Fragment() {
 
             itemView.setOnClickListener {
                 val dialog = ItemDialogFragment(
-                    GridViewModel(
-                        itemName = item.name,
-                        imageUrl = item.imageUrl
-                    )
+                    item.item
                 )
 
                 dialog.show(parentFragmentManager, null)
