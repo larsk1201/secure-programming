@@ -94,9 +94,7 @@ class StoreFragment : Fragment() {
             return
         }
 
-        val gridAdapter = GridAdapter(requireContext(), searchItems(""), this)
-        itemGrid.adapter = gridAdapter
-        gridAdapter.notifyDataSetChanged()
+        updateGrid("", itemGrid)
 
         lastUpdate.text = this@StoreFragment.backpackDatasource.formatInstantToString()
     }
