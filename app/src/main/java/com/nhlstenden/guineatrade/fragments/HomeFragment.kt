@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -23,7 +24,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.widget.Button
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -52,6 +52,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupSteamWarning(view)
+        setupMfaWarning(view)
 
         val unusualGrid: GridLayout = view.findViewById(R.id.unusual_items_grid)
         val collectorsGrid: GridLayout = view.findViewById(R.id.collectors_items_grid)
@@ -89,6 +90,32 @@ class HomeFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        view?.let {
+            setupSteamWarning(it)
+            setupMfaWarning(it)
+        }
+    }
+
+    private fun setupMfaWarning(view: View) {
+        val warningCard: View = view.findViewById(R.id.mfa_setup_warning)
+        val configureButton: Button = view.findViewById(R.id.mfa_setup_button)
+
+        warningCard.visibility = if (!userDatasource.hasMFA) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+
+        configureButton.setOnClickListener {
+            val intent = Intent(requireContext(), ProfileActivity::class.java)
+            intent.putExtra("open_tab", "mfa")
+            startActivity(intent)
+        }
+    }
+
     private fun setupSteamWarning(view: View) {
         val warningCard: View = view.findViewById(R.id.steam_setup_warning)
         val configureButton: Button = view.findViewById(R.id.steam_setup_button)
@@ -107,14 +134,6 @@ class HomeFragment : Fragment() {
             val intent = Intent(requireContext(), ProfileActivity::class.java)
             intent.putExtra("open_tab", "steam")
             startActivity(intent)
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        view?.let {
-            setupSteamWarning(it)
         }
     }
 
