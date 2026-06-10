@@ -8,16 +8,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <TextView
-            android:id="@+id/today_most_valuable_title"
+            android:id="@+id/unusual_items_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Most Valuable Items of Today"
+            android:text="Most Valuable Unusual Items"
             android:textSize="18sp"
             android:textStyle="bold" />
 
         <GridLayout
-            android:id="@+id/today_most_valuable_grid"
+            android:id="@+id/unusual_items_grid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -25,16 +26,50 @@
             android:rowCount="2" />
 
         <TextView
-            android:id="@+id/user_most_valuable_title"
+            android:id="@+id/collectors_items_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Your Most Valuable Items"
+            android:text="Most Valuable Collector's Items"
             android:textSize="18sp"
             android:textStyle="bold" />
 
         <GridLayout
-            android:id="@+id/user_most_valuable_grid"
+            android:id="@+id/collectors_items_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:columnCount="3"
+            android:rowCount="2" />
+
+        <TextView
+            android:id="@+id/strange_items_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Most Valuable Strange Items"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:id="@+id/strange_items_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:columnCount="3"
+            android:rowCount="2" />
+
+        <TextView
+            android:id="@+id/unique_items_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Most Valuable Unique Items"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:id="@+id/unique_items_grid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

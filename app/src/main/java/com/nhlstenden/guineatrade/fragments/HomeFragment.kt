@@ -7,14 +7,34 @@ import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.nhlstenden.guineatrade.R
+import com.nhlstenden.guineatrade.datasources.BackpackDatasource
+import com.nhlstenden.guineatrade.datasources.Item
+import com.nhlstenden.guineatrade.datasources.Quality
+import com.nhlstenden.guineatrade.datasources.UserDatasource
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
+
+    @Inject
+    lateinit var backpackDatasource: BackpackDatasource
+
+    @Inject
+    lateinit var userDatasource: UserDatasource
 
     data class HomeSteamItem(
         val name: String,
-        val imageResId: Int
+        val imageUrl: String,
+        val value: Int
     )
 
     override fun onCreateView(
@@ -22,33 +42,90 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
+        return inflater.inflate(R.layout.fragment_home, container, false)
+    }
 
-        val todayGrid: GridLayout = view.findViewById(R.id.today_most_valuable_grid)
-        val userGrid: GridLayout = view.findViewById(R.id.user_most_valuable_grid)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        val todayItems = listOf(
-            HomeSteamItem("Golden Frying Pan", R.drawable.shopping_cart_24px),
-            HomeSteamItem("Australium Rocket Launcher", R.drawable.shopping_cart_24px),
-            HomeSteamItem("Australium Scattergun", R.drawable.shopping_cart_24px),
-            HomeSteamItem("Burning Team Captain", R.drawable.shopping_cart_24px),
-            HomeSteamItem("Golden Wrench", R.drawable.shopping_cart_24px),
-            HomeSteamItem("Max's Head", R.drawable.shopping_cart_24px),
-        ).take(6)
+        val unusualGrid: GridLayout = view.findViewById(R.id.unusual_items_grid)
+        val collectorsGrid: GridLayout = view.findViewById(R.id.collectors_items_grid)
+        val strangeGrid: GridLayout = view.findViewById(R.id.strange_items_grid)
+        val uniqueGrid: GridLayout = view.findViewById(R.id.unique_items_grid)
 
-        val userItems = listOf(
-            HomeSteamItem("Strange Rocket Launcher", R.drawable.shopping_cart_24px),
-            HomeSteamItem("Unusual Hat", R.drawable.shopping_cart_24px),
-            HomeSteamItem("Mann Co. Key", R.drawable.shopping_cart_24px),
-            HomeSteamItem("Festive Scattergun", R.drawable.shopping_cart_24px),
-            HomeSteamItem("Tour of Duty Ticket", R.drawable.shopping_cart_24px),
-            HomeSteamItem("Killstreak Kit", R.drawable.shopping_cart_24px),
-        ).take(6)
+        lifecycleScope.launch {
+            if (backpackDatasource.prices == null) {
+                val success = async {
+                    backpackDatasource.getPrices(userDatasource.tokens.jwtSave)
+                }.await()
 
-        addItemsToGrid(todayGrid, todayItems)
-        addItemsToGrid(userGrid, userItems)
+                if (!success) {
+                    Toast.makeText(context, "Unable to get pricing data", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+            }
 
-        return view
+            addItemsToGrid(
+                unusualGrid,
+                getMostValuableByQuality(Quality.UNUSUAL)
+            )
+
+            addItemsToGrid(
+                collectorsGrid,
+                getMostValuableByQuality(Quality.COLLECTORS)
+            )
+
+            addItemsToGrid(
+                strangeGrid,
+                getMostValuableByQuality(Quality.STRANGE)
+            )
+
+            addItemsToGrid(
+                uniqueGrid,
+                getMostValuableByQuality(Quality.UNIQUE)
+            )
+        }
+    }
+
+    private fun getMostValuableByQuality(
+        quality: Quality
+    ): List<HomeSteamItem> {
+        val priceCache = backpackDatasource.prices ?: return emptyList()
+
+        return priceCache.items
+            .filter { entry ->
+                entry.value.prices.containsKey(quality)
+            }
+            .filterNot { entry ->
+                entry.key.contains("Strangifier", ignoreCase = true)
+            }
+            .filterNot { entry ->
+                entry.key.contains("Upgrade to Premium", ignoreCase = true)
+            }
+            .map { entry ->
+                HomeSteamItem(
+                    name = entry.key,
+                    imageUrl = entry.value.icon,
+                    value = getHighestItemValueForQuality(entry.value, quality)
+                )
+            }
+            .filter { item ->
+                item.value > 0
+            }
+            .sortedByDescending { item ->
+                item.value
+            }
+            .take(6)
+    }
+
+    private fun getHighestItemValueForQuality(
+        item: Item,
+        quality: Quality
+    ): Int {
+        val itemPair = item.prices[quality] ?: return 0
+
+        return (itemPair.craftable.values + itemPair.uncraftable.values)
+            .maxOrNull() ?: 0
     }
 
     private fun addItemsToGrid(
@@ -66,10 +143,29 @@ class HomeFragment : Fragment() {
 
             val icon: ImageView = itemView.findViewById(R.id.weapon_icon)
             val name: TextView = itemView.findViewById(R.id.weapon_name)
-            val cardHeight = (150 * resources.displayMetrics.density).toInt()
 
-            icon.setImageResource(item.imageResId)
             name.text = item.name
+            icon.contentDescription = item.imageUrl
+
+            Glide.with(requireContext())
+                .load(item.imageUrl)
+                .placeholder(R.drawable.item_not_found)
+                .error(R.drawable.item_not_found)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(icon)
+
+            itemView.setOnClickListener {
+                val dialog = ItemDialogFragment(
+                    GridViewModel(
+                        itemName = item.name,
+                        imageUrl = item.imageUrl
+                    )
+                )
+
+                dialog.show(parentFragmentManager, null)
+            }
+
+            val cardHeight = (150 * resources.displayMetrics.density).toInt()
 
             val params = GridLayout.LayoutParams().apply {
                 width = 0
