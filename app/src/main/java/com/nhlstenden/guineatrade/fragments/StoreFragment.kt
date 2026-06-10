@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.BackpackDatasource
+import com.nhlstenden.guineatrade.datasources.SteamBotDatasource
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
@@ -36,6 +37,9 @@ class StoreFragment : Fragment() {
     lateinit var userDatasource: UserDatasource
     @Inject
     lateinit var backpackDatasource: BackpackDatasource
+
+    @Inject
+    lateinit var steamBotDatasource: SteamBotDatasource
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,6 +67,13 @@ class StoreFragment : Fragment() {
                     this@StoreFragment.backpackDatasource.getPrices(this@StoreFragment.userDatasource.tokens.jwtSave)
                 }.await()
                 if (!hasBackpack) {
+                    Toast.makeText(context, "Unable to get pricing data", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+                val hasSteamData = async {
+                    this@StoreFragment.steamBotDatasource.getInventoryData(this@StoreFragment.userDatasource.tokens.jwtSave)
+                }.await()
+                if (!hasSteamData) {
                     Toast.makeText(context, "Unable to get pricing data", Toast.LENGTH_SHORT).show()
                     return@launch
                 }
