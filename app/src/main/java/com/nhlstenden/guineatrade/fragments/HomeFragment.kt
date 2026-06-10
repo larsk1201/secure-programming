@@ -52,6 +52,7 @@ class HomeFragment : Fragment() {
         val collectorsGrid: GridLayout = view.findViewById(R.id.collectors_items_grid)
         val strangeGrid: GridLayout = view.findViewById(R.id.strange_items_grid)
         val uniqueGrid: GridLayout = view.findViewById(R.id.unique_items_grid)
+        val metalGrid: GridLayout = view.findViewById(R.id.metal_grid)
 
         lifecycleScope.launch {
             if (backpackDatasource.prices == null) {
@@ -65,24 +66,20 @@ class HomeFragment : Fragment() {
                 }
             }
 
-            addItemsToGrid(
-                unusualGrid,
-                getMostValuableByQuality(Quality.UNUSUAL)
-            )
+            addItemsToGrid(unusualGrid, getMostValuableByQuality(Quality.UNUSUAL))
+            addItemsToGrid(collectorsGrid, getMostValuableByQuality(Quality.COLLECTORS))
+            addItemsToGrid(strangeGrid, getMostValuableByQuality(Quality.STRANGE))
+            addItemsToGrid(uniqueGrid, getMostValuableByQuality(Quality.UNIQUE))
 
             addItemsToGrid(
-                collectorsGrid,
-                getMostValuableByQuality(Quality.COLLECTORS)
-            )
-
-            addItemsToGrid(
-                strangeGrid,
-                getMostValuableByQuality(Quality.STRANGE)
-            )
-
-            addItemsToGrid(
-                uniqueGrid,
-                getMostValuableByQuality(Quality.UNIQUE)
+                metalGrid,
+                getItemsByExactNames(
+                    listOf(
+                        "Refined Metal",
+                        "Reclaimed Metal",
+                        "Scrap Metal"
+                    )
+                )
             )
         }
     }
@@ -97,10 +94,7 @@ class HomeFragment : Fragment() {
                 entry.value.prices.containsKey(quality)
             }
             .filterNot { entry ->
-                entry.key.contains("Strangifier", ignoreCase = true)
-            }
-            .filterNot { entry ->
-                entry.key.contains("Upgrade to Premium", ignoreCase = true)
+                isExcludedShowcaseItem(entry.key)
             }
             .map { entry ->
                 HomeSteamItem(
@@ -118,6 +112,22 @@ class HomeFragment : Fragment() {
             .take(6)
     }
 
+    private fun getItemsByExactNames(
+        names: List<String>
+    ): List<HomeSteamItem> {
+        val priceCache = backpackDatasource.prices ?: return emptyList()
+
+        return names.mapNotNull { name ->
+            val item = priceCache.items[name] ?: return@mapNotNull null
+
+            HomeSteamItem(
+                name = name,
+                imageUrl = item.icon,
+                value = getHighestItemValue(item)
+            )
+        }
+    }
+
     private fun getHighestItemValueForQuality(
         item: Item,
         quality: Quality
@@ -128,13 +138,28 @@ class HomeFragment : Fragment() {
             .maxOrNull() ?: 0
     }
 
+    private fun getHighestItemValue(item: Item): Int {
+        return item.prices.values
+            .flatMap { itemPair ->
+                itemPair.craftable.values + itemPair.uncraftable.values
+            }
+            .maxOrNull() ?: 0
+    }
+
+    private fun isExcludedShowcaseItem(name: String): Boolean {
+        return name.contains("Strangifier", ignoreCase = true) ||
+                name.contains("Upgrade to Premium", ignoreCase = true)
+    }
+
     private fun addItemsToGrid(
         grid: GridLayout,
         items: List<HomeSteamItem>
     ) {
         grid.removeAllViews()
 
-        items.take(6).forEach { item ->
+        val visibleItems = items.take(6)
+
+        visibleItems.forEach { item ->
             val itemView = layoutInflater.inflate(
                 R.layout.card_item,
                 grid,
@@ -165,17 +190,26 @@ class HomeFragment : Fragment() {
                 dialog.show(parentFragmentManager, null)
             }
 
-            val cardHeight = (150 * resources.displayMetrics.density).toInt()
-
-            val params = GridLayout.LayoutParams().apply {
-                width = 0
-                height = cardHeight
-                columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-                setMargins(6, 6, 6, 6)
-            }
-
-            itemView.layoutParams = params
+            itemView.layoutParams = createGridParams()
             grid.addView(itemView)
+        }
+
+        repeat((3 - visibleItems.size % 3) % 3) {
+            val placeholder = View(requireContext())
+            placeholder.layoutParams = createGridParams()
+            placeholder.visibility = View.INVISIBLE
+            grid.addView(placeholder)
+        }
+    }
+
+    private fun createGridParams(): GridLayout.LayoutParams {
+        val cardHeight = (150 * resources.displayMetrics.density).toInt()
+
+        return GridLayout.LayoutParams().apply {
+            width = 0
+            height = cardHeight
+            columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
+            setMargins(6, 6, 6, 6)
         }
     }
 }
