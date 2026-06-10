@@ -35,6 +35,11 @@ class ProfileActivity: AppCompatActivity() {
         val profilePageAdapter = ProfilePageAdapter(this, userDatasource)
         viewPager.adapter = profilePageAdapter
 
+        if (intent.getStringExtra("open_tab") == "steam") {
+            viewPager.currentItem = ProfilePage.STEAM.position
+            settingsNavigation.selectedItemId = R.id.nav_steam
+        }
+
         settingsNavigation.setOnItemSelectedListener { item ->
             viewPager.currentItem = when (item.itemId) {
                 R.id.nav_user -> ProfilePage.USER.position

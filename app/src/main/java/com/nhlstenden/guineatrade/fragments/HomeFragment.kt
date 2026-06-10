@@ -1,5 +1,6 @@
 package com.nhlstenden.guineatrade.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.nhlstenden.guineatrade.R
+import com.nhlstenden.guineatrade.activities.ProfileActivity
 import com.nhlstenden.guineatrade.datasources.BackpackDatasource
 import com.nhlstenden.guineatrade.datasources.Item
 import com.nhlstenden.guineatrade.datasources.Quality
@@ -21,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.widget.Button
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -47,6 +50,8 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupSteamWarning(view)
 
         val unusualGrid: GridLayout = view.findViewById(R.id.unusual_items_grid)
         val collectorsGrid: GridLayout = view.findViewById(R.id.collectors_items_grid)
@@ -81,6 +86,35 @@ class HomeFragment : Fragment() {
                     )
                 )
             )
+        }
+    }
+
+    private fun setupSteamWarning(view: View) {
+        val warningCard: View = view.findViewById(R.id.steam_setup_warning)
+        val configureButton: Button = view.findViewById(R.id.steam_setup_button)
+
+        val missingSteamSetup =
+            userDatasource.steamId == 0L ||
+                    userDatasource.tradeUrl.isBlank()
+
+        warningCard.visibility = if (missingSteamSetup) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+
+        configureButton.setOnClickListener {
+            val intent = Intent(requireContext(), ProfileActivity::class.java)
+            intent.putExtra("open_tab", "steam")
+            startActivity(intent)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        view?.let {
+            setupSteamWarning(it)
         }
     }
 
