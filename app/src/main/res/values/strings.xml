@@ -35,4 +35,7 @@
     <string name="settings_app_auto_login_switch">Automatic login</string>
     <string name="settings_app_logout_button">Logout</string>
     <string name="settings_app_logout_everywhere_button">Logout everywhere</string>
+    <string name="store_no_price_data">No pricing data available</string>
+    <string name="store_getting_price_data">getting price data...</string>
+    <string name="store_last_update">Last update:</string>
 </resources>

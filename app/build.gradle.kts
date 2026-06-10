@@ -45,12 +45,17 @@ android {
 dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.biometric)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.ui)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.glide)
+    annotationProcessor(libs.compiler)
 
     implementation(libs.androidx.datastore.preferences)
 

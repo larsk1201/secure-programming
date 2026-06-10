@@ -1,7 +1,10 @@
 package com.nhlstenden.guineatrade.datasources
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.content.Context
+import android.util.Log
+import androidx.core.content.ContextCompat
+import com.nhlstenden.guineatrade.R
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Contextual
@@ -10,9 +13,12 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,17 +33,19 @@ data class PriceCache(
 data class Item(
     val icon: String,
     val defindex: List<Int>,
-    val prices: HashMap<Qualty, ItemPair>
+    val marketHashName: String,
+    val prices: HashMap<Quality, ItemPair>
 )
 
 @Serializable
 data class ItemPair(
-    val craftable: HashMap<String, Int>,
-    val uncraftable: HashMap<String, Int>,
+    val craftable: HashMap<String, Int> = HashMap(),
+    @SerialName("non-craftable")
+    val uncraftable: HashMap<String, Int> = HashMap(),
 )
 
 @Serializable
-enum class Qualty {
+enum class Quality {
     @SerialName("Normal")
     NORMAL,
 
@@ -84,14 +92,34 @@ enum class Qualty {
     COLLECTORS,
 
     @SerialName("Decorated")
-    DECORATED,
+    DECORATED;
+
+    fun toColour(context: Context): Int {
+        return when (this) {
+            UNIQUE -> ContextCompat.getColor(context, R.color.tf_unique)
+            VINTAGE -> ContextCompat.getColor(context, R.color.tf_vintage)
+            GENUINE -> ContextCompat.getColor(context, R.color.tf_genuine)
+            STRANGE -> ContextCompat.getColor(context, R.color.tf_strange)
+            UNUSUAL -> ContextCompat.getColor(context, R.color.tf_unusual)
+            HAUNTED -> ContextCompat.getColor(context, R.color.tf_haunted)
+            COLLECTORS -> ContextCompat.getColor(context, R.color.tf_collectors)
+            DECORATED -> ContextCompat.getColor(context, R.color.tf_decorated)
+            COMMUNITY -> ContextCompat.getColor(context, R.color.tf_community)
+            VALVE -> ContextCompat.getColor(context, R.color.tf_valve)
+            else -> ContextCompat.getColor(context, R.color.tf_normal)
+        }
+    }
+
 }
 
 @Singleton
-class BackpackDatasource @Inject constructor() {
+class BackpackDatasource @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
     private val client = HttpClient()
 
     var prices: PriceCache? = null
+    var unusuals = this.setupUnusuals()
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun getPrices(jwt: String): Boolean = withContext(Dispatchers.IO) {
@@ -110,10 +138,35 @@ class BackpackDatasource @Inject constructor() {
             }
 
             this@BackpackDatasource.prices = Json.decodeFromStream<PriceCache>(result.body.byteStream())
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("BackpackDatasource", e.message.toString())
             return@withContext false
         }
 
         return@withContext true
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    private fun setupUnusuals(): HashMap<String, String> {
+        val resource = this.context.resources.openRawResource(R.raw.unusuals)
+        return Json.decodeFromStream<HashMap<String, String>>(resource)
+    }
+
+    fun formatInstantToString(): String {
+        if (this.prices == null) {
+            return "loading..."
+        }
+        val zonedDateTime = this.prices!!.timestamp.atZone(ZoneId.systemDefault())
+
+        val currentDate = LocalDate.from(zonedDateTime)
+        val currentTime = LocalTime.of(zonedDateTime.hour, zonedDateTime.minute)
+
+        val today = LocalDate.now()
+        val format = DateTimeFormatter.ofPattern("HH:mm")
+        return when (currentDate) {
+            today -> "Today @ ${currentTime.format(format)}"
+            today.plusDays(1) -> "Yesterday @ ${ currentTime.format(format) }"
+            else -> "Unknown @ 00:00"
+        }
     }
 }
