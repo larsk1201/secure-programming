@@ -52,11 +52,8 @@ class StoreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val cartSize = view.findViewById<TextView>(R.id.cart_size)
         val itemGrid = view.findViewById<GridView>(R.id.item_grid)
         val lastUpdate = view.findViewById<TextView>(R.id.last_update)
-
-        cartSize.visibility = View.GONE
 
         val gridAdapter = GridAdapter(requireContext(), ArrayList(), this)
         itemGrid.adapter = gridAdapter
