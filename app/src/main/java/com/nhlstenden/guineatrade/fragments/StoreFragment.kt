@@ -2,7 +2,9 @@ package com.nhlstenden.guineatrade.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,7 @@ import android.widget.GridView
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -77,15 +80,11 @@ class StoreFragment : Fragment() {
 
         searchButton.setOnClickListener {
             val pattern = searchPattern.text.toString()
-
-            try {
-                val gridAdapter = GridAdapter(requireContext(), searchItems(pattern), this)
-                itemGrid.adapter = gridAdapter
-                gridAdapter.notifyDataSetChanged()
-            } catch (e: Exception) {
-                Log.d("StoreFragment", e.message.toString())
-                Toast.makeText(context, "Not a valid search query", Toast.LENGTH_SHORT).show()
-            }
+            updateGrid(pattern, itemGrid)
+        }
+        searchPattern.addTextChangedListener {
+            val searchText = searchPattern.text.toString()
+            updateGrid(searchText, itemGrid)
         }
     }
 
@@ -100,6 +99,17 @@ class StoreFragment : Fragment() {
         gridAdapter.notifyDataSetChanged()
 
         lastUpdate.text = this@StoreFragment.backpackDatasource.formatInstantToString()
+    }
+
+    fun updateGrid(filter: String, itemGrid: GridView) {
+        try {
+            val gridAdapter = GridAdapter(requireContext(), searchItems(filter), this)
+            itemGrid.adapter = gridAdapter
+            gridAdapter.notifyDataSetChanged()
+        } catch (e: Exception) {
+            Log.d("StoreFragment", e.message.toString())
+            Toast.makeText(context, "Not a valid search query", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun searchItems(filter: String): ArrayList<Item> {
