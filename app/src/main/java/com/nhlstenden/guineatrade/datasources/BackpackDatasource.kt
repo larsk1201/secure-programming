@@ -27,7 +27,15 @@ data class PriceCache(
     val cachedOn: String,
     val items: HashMap<String, Item>,
     @Contextual val timestamp: Instant = Instant.parse(cachedOn)
-)
+) {
+    fun getSpecificPricing(itemHashName: String, quality: Quality, craftable: String, effectId: String? = null): Int? {
+        val itemPair: ItemPair? = items[itemHashName]?.prices[quality]
+        if (itemPair != null) {
+            return (if (craftable.contentEquals("craftable")) itemPair.craftable else itemPair.uncraftable)[effectId ?: "0"]
+        }
+        return null
+    }
+}
 
 @Serializable
 data class Item(
@@ -35,7 +43,34 @@ data class Item(
     val defindex: List<Int>,
     val marketHashName: String,
     val prices: HashMap<Quality, ItemPair>
-)
+){
+    fun getSpecificPricingData(quality: Quality, craftable: String): HashMap<String, Int>? {
+        val itemPair = prices[quality]
+        return if (craftable == "craftable") itemPair?.craftable else itemPair?.uncraftable
+    }
+
+    fun getSpecificPricingData(category: Category): HashMap<String, Int>? {
+       return getSpecificPricingData(category.quality, category.craftable)
+    }
+
+    fun getCategories(): List<Category> {
+        return prices.flatMap { (quality, itemPair) ->
+            buildList {
+                if (itemPair.craftable.isNotEmpty()) { add(Category(quality, "craftable")) }
+                if (itemPair.uncraftable.isNotEmpty()) { add(Category(quality, "uncraftable")) }
+            }
+        }
+    }
+}
+
+data class Category(
+    val quality: Quality,
+    val craftable: String
+) {
+    fun toName(): String {
+        return "${quality.name} - $craftable"
+    }
+}
 
 @Serializable
 data class ItemPair(
@@ -144,6 +179,10 @@ class BackpackDatasource @Inject constructor(
         }
 
         return@withContext true
+    }
+
+    fun getUnusualName(id: String): String {
+        return unusuals[id] ?: "Default"
     }
 
     @OptIn(ExperimentalSerializationApi::class)
