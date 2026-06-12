@@ -21,6 +21,8 @@ import com.nhlstenden.guineatrade.datasources.Quality
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import androidx.core.view.isVisible
+//import com.nhlstenden.guineatrade.datasources.CartDatasource
+//import com.nhlstenden.guineatrade.datasources.CartItemType
 import com.nhlstenden.guineatrade.datasources.Category
 import com.nhlstenden.guineatrade.datasources.Item
 import com.nhlstenden.guineatrade.utils.Pricing
@@ -60,48 +62,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.item_popup_details)
 
-        val itemPrices = this.backpackDatasource.prices?.items[item.marketHashName]?.prices
-        val itemList = ArrayList<Item>()
-
-        val sortedItemPrices = itemPrices?.toSortedMap()?.reversed()
-        for ((quality, itemPair) in sortedItemPrices!!) {
-            if (!itemPair.craftable.isEmpty()) {
-                val effectList = ArrayList<Effect>()
-                val sortedCraftableItems = itemPair.craftable.toSortedMap(compareBy { it.toInt() })
-
-                for ((key, value) in sortedCraftableItems) {
-                    effectList.add(Effect(
-                        this.backpackDatasource.unusuals[key] ?: "Default",
-                        key,
-                        value,
-                    ))
-                }
-                itemList.add(Item(
-                    quality,
-                    "Craftable",
-                    effectList
-                ))
-            }
-            if (!itemPair.uncraftable.isEmpty()) {
-                val effectList = ArrayList<Effect>()
-                val sortedUncraftableItems = itemPair.craftable.toSortedMap()
-
-                for ((key, value) in sortedUncraftableItems) {
-                    effectList.add(Effect(
-                        this.backpackDatasource.unusuals[key] ?: "Default",
-                        key,
-                        value,
-                    ))
-                }
-                itemList.add(Item(
-                    quality,
-                    "Non-Craftable",
-                    effectList
-                ))
-            }
-        }
-
-        val adapter = ItemAdapter(itemList)
+        // cartDatasource
         val adapter = this.backpackDatasource.prices?.items[item.marketHashName]?.let { ItemAdapter(it, backpackDatasource) }
         recyclerView.setLayoutManager(LinearLayoutManager(this@ItemDialogFragment.context));
         recyclerView.adapter = adapter
@@ -117,19 +78,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
         }
     }
 
-    data class Item(
-        val effectName: Quality,
-        val craftability: String,
-        val effects: List<Effect>,
-    )
-
-    data class Effect(
-        val effectName: String,
-        val effectId: String,
-        val price: Int,
-    )
-
-    class ItemAdapter(private val items: List<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
+    //, private val cartDatasource: CartDatasource
     class ItemAdapter(private val item: Item, private val backpackDatasource: BackpackDatasource) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
         val categories: List<Category> = item.getCategories()
 
@@ -139,8 +88,8 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(items[position])
             val category: Category = categories[position]
+            // cartDatasource,
             holder.bind(item, backpackDatasource,category)
         }
 
@@ -153,20 +102,18 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
             val effectName: TextView = itemView.findViewById(R.id.item_effect_name)
             val effects: RecyclerView = itemView.findViewById(R.id.item_effect_list)
 
-            fun bind(item: Item) {
-                effectName.text = "${item.effectName} - ${item.craftability}"
-                itemCard.setCardBackgroundColor(item.effectName.toColour(itemView.context))
+            // cartDatasource: CartDatasource,
             fun bind(item: Item,  backpackDatasource: BackpackDatasource, category: Category) {
                 effectName.text = category.toName()
                 itemCard.setCardBackgroundColor(category.quality.toColour(itemView.context))
 
-                val adapter = EffectAdapter(item.effects)
+                // cartDatasource,
                 val adapter = EffectAdapter(item,  backpackDatasource, category)
                 effects.setLayoutManager(LinearLayoutManager(itemView.context));
                 effects.adapter = adapter
             }
 
-            class EffectAdapter(private val effects: List<Effect>) : RecyclerView.Adapter<EffectAdapter.ViewHolder>() {
+            // private val cartDatasource: CartDatasource,
             class EffectAdapter(private val item: Item, private val backpackDatasource: BackpackDatasource,  private val category: Category) : RecyclerView.Adapter<EffectAdapter.ViewHolder>() {
                 val effects = item.getSpecificPricingData(category)?.entries?.toList() ?: emptyList()
 
@@ -176,9 +123,9 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
                 }
 
                 override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-                    holder.bind(effects[position])
                     val effectData = effects[position]
                     // cartDatasource,
+                    holder.bind(item, backpackDatasource, category, effectData.key, effectData.value)
                 }
 
                 override fun getItemCount(): Int {
@@ -199,8 +146,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
                         effectView.findViewById(R.id.button_row)
                     )
 
-                    fun bind(effect: Effect) {
-                        val realPrice = effect.price.toDouble() / 100.0
+                    // cartDatasource: CartDatasource,
                     fun bind(item: Item, backpackDatasource: BackpackDatasource,  category: Category, effectId: String, price: Int) {
                         val realPrice = price.toDouble() / 100.0
                         val effectDisplayName = backpackDatasource.getUnusualName(effectId)
@@ -214,13 +160,11 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
                         }
 
                         buyButton.setOnClickListener {
-//                            TODO: Add item to cart
-                            Log.d("ItemDialogFragment", "Sold item with effect ${effect.effectName} for $realPrice")
+//                            cartDatasource.addItem(item, category, effectId, CartItemType.BUY)
                             Log.d("ItemDialogFragment", "Sold item with effect $effectDisplayName for $realPrice")
                         }
                         sellButton.setOnClickListener {
-//                            TODO: Add item to cart
-                            Log.d("ItemDialogFragment", "Sold item with effect ${effect.effectName} for $realPrice")
+//                            cartDatasource.addItem(item, category, effectId, CartItemType.SELL)
                             Log.d("ItemDialogFragment", "Sold item with effect $effectDisplayName for $realPrice")
                         }
 
