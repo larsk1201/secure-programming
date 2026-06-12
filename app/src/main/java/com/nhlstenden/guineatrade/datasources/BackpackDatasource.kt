@@ -148,13 +148,10 @@ enum class Quality {
 }
 
 @Singleton
-class BackpackDatasource @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
+class BackpackDatasource @Inject constructor() {
     private val client = HttpClient()
 
     var prices: PriceCache? = null
-    var unusuals = this.setupUnusuals()
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun getPrices(jwt: String): Boolean = withContext(Dispatchers.IO) {
@@ -179,16 +176,6 @@ class BackpackDatasource @Inject constructor(
         }
 
         return@withContext true
-    }
-
-    fun getUnusualName(id: String): String {
-        return unusuals[id] ?: "Default"
-    }
-
-    @OptIn(ExperimentalSerializationApi::class)
-    private fun setupUnusuals(): HashMap<String, String> {
-        val resource = this.context.resources.openRawResource(R.raw.unusuals)
-        return Json.decodeFromStream<HashMap<String, String>>(resource)
     }
 
     fun formatInstantToString(): String {
