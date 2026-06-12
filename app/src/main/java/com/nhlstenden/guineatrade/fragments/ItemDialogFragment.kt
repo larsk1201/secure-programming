@@ -17,12 +17,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.BackpackDatasource
-import com.nhlstenden.guineatrade.datasources.Quality
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import androidx.core.view.isVisible
-//import com.nhlstenden.guineatrade.datasources.CartDatasource
-//import com.nhlstenden.guineatrade.datasources.CartItemType
 import com.nhlstenden.guineatrade.datasources.Category
 import com.nhlstenden.guineatrade.datasources.Item
 import com.nhlstenden.guineatrade.utils.Pricing
@@ -62,7 +59,6 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.item_popup_details)
 
-        // cartDatasource
         val adapter = this.backpackDatasource.prices?.items[item.marketHashName]?.let { ItemAdapter(it, backpackDatasource) }
         recyclerView.setLayoutManager(LinearLayoutManager(this@ItemDialogFragment.context));
         recyclerView.adapter = adapter
@@ -78,7 +74,6 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
         }
     }
 
-    //, private val cartDatasource: CartDatasource
     class ItemAdapter(private val item: Item, private val backpackDatasource: BackpackDatasource) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
         val categories: List<Category> = item.getCategories()
 
@@ -89,7 +84,6 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val category: Category = categories[position]
-            // cartDatasource,
             holder.bind(item, backpackDatasource,category)
         }
 
@@ -102,18 +96,15 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
             val effectName: TextView = itemView.findViewById(R.id.item_effect_name)
             val effects: RecyclerView = itemView.findViewById(R.id.item_effect_list)
 
-            // cartDatasource: CartDatasource,
             fun bind(item: Item,  backpackDatasource: BackpackDatasource, category: Category) {
                 effectName.text = category.toName()
                 itemCard.setCardBackgroundColor(category.quality.toColour(itemView.context))
 
-                // cartDatasource,
                 val adapter = EffectAdapter(item,  backpackDatasource, category)
                 effects.setLayoutManager(LinearLayoutManager(itemView.context));
                 effects.adapter = adapter
             }
 
-            // private val cartDatasource: CartDatasource,
             class EffectAdapter(private val item: Item, private val backpackDatasource: BackpackDatasource,  private val category: Category) : RecyclerView.Adapter<EffectAdapter.ViewHolder>() {
                 val effects = item.getSpecificPricingData(category)?.entries?.toList() ?: emptyList()
 
@@ -124,7 +115,6 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
 
                 override fun onBindViewHolder(holder: ViewHolder, position: Int) {
                     val effectData = effects[position]
-                    // cartDatasource,
                     holder.bind(item, backpackDatasource, category, effectData.key, effectData.value)
                 }
 
@@ -146,8 +136,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
                         effectView.findViewById(R.id.button_row)
                     )
 
-                    // cartDatasource: CartDatasource,
-                    fun bind(item: Item, backpackDatasource: BackpackDatasource,  category: Category, effectId: String, price: Int) {
+                    fun bind(item: Item, backpackDatasource: BackpackDatasource, category: Category, effectId: String, price: Int) {
                         val realPrice = price.toDouble() / 100.0
                         val effectDisplayName = backpackDatasource.getUnusualName(effectId)
 
@@ -160,11 +149,9 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
                         }
 
                         buyButton.setOnClickListener {
-//                            cartDatasource.addItem(item, category, effectId, CartItemType.BUY)
                             Log.d("ItemDialogFragment", "Sold item with effect $effectDisplayName for $realPrice")
                         }
                         sellButton.setOnClickListener {
-//                            cartDatasource.addItem(item, category, effectId, CartItemType.SELL)
                             Log.d("ItemDialogFragment", "Sold item with effect $effectDisplayName for $realPrice")
                         }
 
