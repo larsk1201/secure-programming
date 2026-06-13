@@ -80,14 +80,12 @@ class InventoryAdapter(
 
             val textView = TextView(context)
 
-            textView.text = """
-            info that'll be here soon:
-            - value
-            - rarity
-            - amount owned
-            - in stock
-            - esitmated price
-            """.trimIndent()
+            textView.text = buildString {
+                appendLine("Amount owned: ${item.quantity}")
+                appendLine("Value: will be added soon")
+                appendLine("Rarity: will be added soon")
+                appendLine("Estimated price: will be added soon")
+            }
 
             textView.textSize = 16f
 

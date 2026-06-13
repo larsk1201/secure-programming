@@ -47,15 +47,19 @@ class InventoryFragment : Fragment() {
                 "${it.classid}_${it.instanceid}"
             }
 
-            val inventoryItems = response.assets.mapNotNull { asset ->
+            val groupedAssets = response.assets.groupBy {
+                "${it.classid}_${it.instanceid}"
+            }
 
-                val key = "${asset.classid}_${asset.instanceid}"
+            val inventoryItems = groupedAssets.mapNotNull { (key, assets) ->
+
                 val description = descriptionMap[key]
 
                 description?.let {
                     InventoryItem(
                         name = it.name,
-                        iconUrl = it.icon_url
+                        iconUrl = it.icon_url,
+                        quantity = assets.size
                     )
                 }
             }
