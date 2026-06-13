@@ -8,26 +8,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
 
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-
-        <EditText
-            android:id="@+id/steamIdInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter Steam ID"
-            android:importantForAutofill="no"
-            android:inputType="text" />
-
-        <Button
-            android:id="@+id/searchSteamId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Search" />
 
         <TextView
             android:id="@+id/profileName"
