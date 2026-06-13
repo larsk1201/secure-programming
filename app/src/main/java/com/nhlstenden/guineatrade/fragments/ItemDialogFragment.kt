@@ -23,6 +23,7 @@ import androidx.core.view.isVisible
 import com.nhlstenden.guineatrade.datasources.Category
 import com.nhlstenden.guineatrade.datasources.Item
 import com.nhlstenden.guineatrade.utils.Pricing
+import com.nhlstenden.guineatrade.utils.Strangifier
 import com.nhlstenden.guineatrade.utils.Unusuals
 
 @AndroidEntryPoint
@@ -139,7 +140,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
 
                     fun bind(item: Item, category: Category, effectId: String, price: Int) {
                         val realPrice = price.toDouble() / 100.0
-                        val effectDisplayName = Unusuals.getUnusualName(effectId)
+                        var effectDisplayName = if (item.marketHashName != ("Strangifier")) Unusuals.getUnusualName(effectId) else Strangifier.getStrangifierName(effectId)
 
                         effectView.setOnClickListener {
                             if (toggleableGroup.first().isVisible) {
