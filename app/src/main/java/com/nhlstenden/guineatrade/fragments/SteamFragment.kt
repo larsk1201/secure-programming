@@ -1,7 +1,6 @@
 package com.nhlstenden.guineatrade.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -87,6 +85,8 @@ class SteamFragment : Fragment() {
                     "Steam settings saved",
                     Toast.LENGTH_LONG
                 ).show()
+
+                requireActivity().finish()
             }
         }
     }
