@@ -45,7 +45,6 @@ class InventoryItemDialogFragment(
             appendLine("Amount owned: ${item.quantity}")
             appendLine("Value: will be added soon")
             appendLine("Rarity: will be added soon")
-            appendLine("Estimated price: will be added soon")
         }
 
         closeButton.setOnClickListener {
