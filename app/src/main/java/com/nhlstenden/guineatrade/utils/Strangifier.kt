@@ -6,14 +6,14 @@ import kotlinx.serialization.json.Json
 
 class Strangifier {
     companion object {
-        private lateinit var unusuals: Map<String, String>
+        private lateinit var strangifiers: Map<String, String>
 
         fun init(context: Context) {
-            unusuals = Json.decodeFromString(
+            strangifiers = Json.decodeFromString(
                 context.resources.openRawResource(R.raw.strangifier).bufferedReader().use { it.readText() }
             )
         }
 
-        fun getStrangifierName(id: String): String = unusuals[id] ?: "Default"
+        fun getStrangifierName(id: String): String = strangifiers[id] ?: "Default"
     }
 }

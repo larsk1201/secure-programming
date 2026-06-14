@@ -46,7 +46,10 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
         val weaponText = view.findViewById<TextView>(R.id.item_popup_name)
         val weaponIcon = view.findViewById<ImageView>(R.id.item_popup_icon)
 
-        weaponText.text = item.marketHashName
+        weaponText.text = when(item.marketHashName) {
+            "Refined Metal", "Reclaimed Metal", "Scrap Metal" -> item.marketHashName + " (x20)"
+            else -> item.marketHashName
+        } as CharSequence?
 
         Glide.with(requireContext())
             .load(item.icon)
