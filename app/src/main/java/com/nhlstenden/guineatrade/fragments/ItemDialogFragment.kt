@@ -23,6 +23,7 @@ import androidx.core.view.isVisible
 import com.nhlstenden.guineatrade.datasources.Category
 import com.nhlstenden.guineatrade.datasources.Item
 import com.nhlstenden.guineatrade.utils.Pricing
+import com.nhlstenden.guineatrade.utils.Strangifier
 import com.nhlstenden.guineatrade.utils.Unusuals
 
 @AndroidEntryPoint
@@ -45,7 +46,10 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
         val weaponText = view.findViewById<TextView>(R.id.item_popup_name)
         val weaponIcon = view.findViewById<ImageView>(R.id.item_popup_icon)
 
-        weaponText.text = item.marketHashName
+        weaponText.text = when(item.marketHashName) {
+            "Refined Metal", "Reclaimed Metal", "Scrap Metal" -> item.marketHashName + " (x20)"
+            else -> item.marketHashName
+        } as CharSequence?
 
         Glide.with(requireContext())
             .load(item.icon)
@@ -139,7 +143,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
 
                     fun bind(item: Item, category: Category, effectId: String, price: Int) {
                         val realPrice = price.toDouble() / 100.0
-                        val effectDisplayName = Unusuals.getUnusualName(effectId)
+                        var effectDisplayName = if (item.marketHashName != ("Strangifier")) Unusuals.getUnusualName(effectId) else Strangifier.getStrangifierName(effectId)
 
                         effectView.setOnClickListener {
                             if (toggleableGroup.first().isVisible) {
