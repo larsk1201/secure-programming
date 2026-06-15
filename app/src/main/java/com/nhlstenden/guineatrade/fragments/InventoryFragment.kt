@@ -1,12 +1,16 @@
 package com.nhlstenden.guineatrade.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -26,6 +30,8 @@ class InventoryFragment : Fragment() {
 
     @Inject
     lateinit var userDatasource: UserDatasource
+
+    private var inventoryItems = listOf<InventoryItem>()
 
     private fun loadInventory(
         steamId: String,
@@ -51,7 +57,7 @@ class InventoryFragment : Fragment() {
                 "${it.classid}_${it.instanceid}"
             }
 
-            val inventoryItems = groupedAssets.mapNotNull { (key, assets) ->
+            inventoryItems = groupedAssets.mapNotNull { (key, assets) ->
 
                 val description = descriptionMap[key]
 
@@ -66,8 +72,39 @@ class InventoryFragment : Fragment() {
             itemsRecyclerView.layoutManager =
                 GridLayoutManager(requireContext(), 3)
 
+            updateGrid("", itemsRecyclerView)
+        }
+    }
+
+    private fun updateGrid(
+        filter: String,
+        itemsRecyclerView: RecyclerView
+    ) {
+        try {
+            val filteredItems = searchItems(filter)
+
             itemsRecyclerView.adapter =
-                InventoryAdapter(inventoryItems)
+                InventoryAdapter(filteredItems)
+
+        } catch (e: Exception) {
+            Log.d("InventoryFragment", e.message.toString())
+            Toast.makeText(
+                context,
+                "Not a valid search query",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun searchItems(
+        filter: String
+    ): List<InventoryItem> {
+
+        val pattern =
+            Regex(filter, RegexOption.IGNORE_CASE)
+
+        return inventoryItems.filter {
+            pattern.containsMatchIn(it.name)
         }
     }
 
@@ -86,6 +123,22 @@ class InventoryFragment : Fragment() {
 
         val itemsRecyclerView =
             view.findViewById<RecyclerView>(R.id.itemsRecyclerView)
+
+        val searchButton =
+            view.findViewById<ImageView>(R.id.search_button)
+
+        val searchPattern =
+            view.findViewById<EditText>(R.id.search_pattern)
+
+        searchButton.setOnClickListener {
+            val pattern = searchPattern.text.toString()
+            updateGrid(pattern, itemsRecyclerView)
+        }
+
+        searchPattern.addTextChangedListener {
+            val searchText = searchPattern.text.toString()
+            updateGrid(searchText, itemsRecyclerView)
+        }
 
         val steamId = userDatasource.steamId
 
