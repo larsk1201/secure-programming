@@ -15,7 +15,7 @@
 
         <activity
             android:name=".activities.LoginActivity"
-            android:exported="false"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GuineaTrade"
             android:windowSoftInputMode="adjustPan"
