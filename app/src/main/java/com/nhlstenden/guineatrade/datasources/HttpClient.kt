@@ -4,7 +4,8 @@ import okhttp3.OkHttpClient
 
 data class HttpClient(
     val client: OkHttpClient = OkHttpClient(),
-    val baseApiUrl: String = "https://secprog.infinite-night.com/api/v1",
+//    val baseApiUrl: String = "https://secprog.infinite-night.com/api/v1",
+    val baseApiUrl: String = "http://10.230.150.134:3000/api/v1",
 
     val authRegister: String = "$baseApiUrl/auth/register",
     val authLogin: String = "$baseApiUrl/auth/login",

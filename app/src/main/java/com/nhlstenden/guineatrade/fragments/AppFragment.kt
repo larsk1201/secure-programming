@@ -1,5 +1,6 @@
 package com.nhlstenden.guineatrade.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.nhlstenden.guineatrade.R
+import com.nhlstenden.guineatrade.activities.LoginActivity
 import com.nhlstenden.guineatrade.datasources.SettingsDatasource
 import com.nhlstenden.guineatrade.datasources.SettingsKeys
 import com.nhlstenden.guineatrade.datasources.UserDatasource
@@ -21,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class AppFragment : Fragment() {
@@ -54,15 +57,30 @@ class AppFragment : Fragment() {
             }.await()
         }
 
-//        TODO: Finish logout buttons
         logoutButton.setOnClickListener {
             Log.d("AppFragment", "Logged out")
-//            this@AppFragment.userDatasource.logoutEverywhere()
+            lifecycleScope.launch {
+                val hasLoggedOut = async {
+                    this@AppFragment.userDatasource.logout()
+                }.await()
+                if (hasLoggedOut) {
+                    Toast.makeText(context, "Logged Out", Toast.LENGTH_LONG).show()
+                    this@AppFragment.goToLogin()
+                }
+            }
         }
 
         logoutEverywhereButton.setOnClickListener {
             Log.d("AppFragment", "Logged out everywhere")
-//            this@AppFragment.userDatasource.logoutEverywhere()
+            lifecycleScope.launch {
+                val hasLoggedOut = async {
+                    this@AppFragment.userDatasource.logoutEverywhere()
+                }.await()
+                if (hasLoggedOut) {
+                    Toast.makeText(context, "Logged out everywhere", Toast.LENGTH_LONG).show()
+                    this@AppFragment.goToLogin()
+                }
+            }
         }
 
         autoLoginSwitch.setOnCheckedChangeListener { button, isChecked ->
@@ -112,5 +130,12 @@ class AppFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun goToLogin() {
+        val intent = Intent(context, LoginActivity::class.java)
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
+        activity?.finish()
     }
 }
