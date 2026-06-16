@@ -47,12 +47,10 @@ data class SignUp(
 )
 
 @Serializable
-data class UpdateMe(
-    val email: String,
-    val currentPassword: String,
-    val newPassword: String,
-    val newPasswordVerify: String,
-){}
+data class UpdatePassword (
+    val password: String,
+    val passwordVerify: String,
+)
 
 @Serializable
 data class TotpTokens(
@@ -157,16 +155,12 @@ class UserDatasource @Inject constructor() {
         this@UserDatasource.tradeUrl = credentials.tradeUrl
     }
 
-    suspend fun updateMe(totpCode: String, currentPassword: String, newPassword: String, newPasswordVerify: String): Boolean = withContext(Dispatchers.IO) {
-        val jsonBody = Json.encodeToString(UpdateMe(this@UserDatasource.email,
-            currentPassword,
-            newPassword,
-            newPasswordVerify,
-        ))
+    suspend fun updateMe(totpCode: String, newPassword: String, newPasswordVerify: String): Boolean = withContext(Dispatchers.IO) {
+        val jsonBody = Json.encodeToString(UpdatePassword(newPassword, newPasswordVerify))
         val body = jsonBody.toRequestBody("application/json".toMediaType())
         val requestBuilder = Request.Builder()
             .url(this@UserDatasource.client.authMe)
-            .patch(body!!)
+            .patch(body)
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
 
