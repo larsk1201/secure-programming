@@ -89,32 +89,13 @@
         android:layout_width="match_parent"
         android:layout_height="32dp" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/mfa_finish_setup"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/mfa_finish_setup"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/settings_mfa_setup_finish_setup"
-            app:cornerRadius="16dp" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".5" />
-
-        <Button
-            android:id="@+id/mfa_cancel_setup"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/settings_mfa_setup_cancel_setup"
-            app:cornerRadius="16dp"
-            tools:cornerRadius="16dp" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="32dp"
+        android:text="@string/settings_mfa_setup_finish_setup"
+        app:cornerRadius="16dp" />
 
 </LinearLayout>
 

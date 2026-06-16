@@ -1,6 +1,7 @@
 package com.nhlstenden.guineatrade.activities
 
 import android.os.Bundle
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -32,6 +33,11 @@ class ProfileActivity : AppCompatActivity() {
 
         val settingsNavigation: BottomNavigationView = findViewById(R.id.profile_navigation)
         val viewPager: ViewPager2 = findViewById(R.id.profile_viewpager)
+
+        val backButton: Button = findViewById(R.id.back_button)
+        backButton.setOnClickListener {
+            finish()
+        }
 
         val profilePageAdapter = ProfilePageAdapter(this, userDatasource)
         viewPager.adapter = profilePageAdapter

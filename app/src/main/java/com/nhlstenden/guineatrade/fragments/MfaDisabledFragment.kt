@@ -93,21 +93,5 @@ class MfaDisabledFragment : Fragment() {
                 }
             }
         }
-
-        val cancelButton = view.findViewById<Button>(R.id.mfa_cancel_setup)
-        cancelButton.setOnClickListener {
-            setupPrompt.visibility = View.GONE
-            lifecycleScope.launch {
-                val success = async {
-                    this@MfaDisabledFragment.userDatasource.deactivateTOTPCode(recoveryTokenText.text.toString(), false)
-                }.await()
-                if (success) {
-                    Toast.makeText(context, "Successfully deleted MFA", Toast.LENGTH_LONG).show()
-                    userDatasource.authMe()
-                } else {
-                    Toast.makeText(context, "Failed to delete MFA, try again", Toast.LENGTH_LONG).show()
-                }
-            }
-        }
     }
 }

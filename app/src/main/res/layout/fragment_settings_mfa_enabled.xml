@@ -59,32 +59,14 @@
             android:layout_weight="1"
             android:inputType="textNoSuggestions" />
 
-        <LinearLayout
+        <Button
+            android:id="@+id/mfa_enabled_confirm"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="32dp"
+            android:text="@string/settings_mfa_enabled_disable_button"
+            app:cornerRadius="16dp" />
 
-            <Button
-                android:id="@+id/mfa_enabled_confirm"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/settings_mfa_enabled_disable_button"
-                app:cornerRadius="16dp" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".5" />
-
-            <Button
-                android:id="@+id/mfa_enabled_cancel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/settings_mfa_enabled_cancel_button"
-                app:cornerRadius="16dp"
-                tools:cornerRadius="16dp" />
-        </LinearLayout>
     </LinearLayout>
 </ScrollView>
 
