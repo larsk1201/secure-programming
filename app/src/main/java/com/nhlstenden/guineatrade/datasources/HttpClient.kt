@@ -17,16 +17,8 @@ data class HttpClient(
     val authMfaTotpReset: String = "$baseApiUrl/auth/mfa/totp/reset",
     val authSteam: String = "$baseApiUrl/auth/steam",
 
-    val userInventory: (String) -> String =
-        { steamId ->
-            "$baseApiUrl/user/inventory/$steamId"
-        },
-
-    val steamAuth: String = "$baseApiUrl/steam/auth",
-    val steamAuthCallback: String = "$baseApiUrl/steam/auth/callback",
-    val steamProfile: String = "$baseApiUrl/steam/profile",
     val steamInventory: String = "$baseApiUrl/steam/inventory",
-    val steamInventoryAppId: Function1<Int, String> = { appId: Int -> "$$baseApiUrl/steam/inventory/$appId" },
+    val userInventory: String = "$baseApiUrl/user/inventory",
 
     val backpackPrices: String = "$baseApiUrl/backpack/prices",
 
