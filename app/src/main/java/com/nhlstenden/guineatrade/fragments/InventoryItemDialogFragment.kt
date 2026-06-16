@@ -8,11 +8,12 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import coil.load
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.nhlstenden.guineatrade.R
 
 class InventoryItemDialogFragment(
-    private val item: InventoryItem
+    private val itemCounter: ItemCounter
 ) : DialogFragment() {
 
     override fun onCreateView(
@@ -31,18 +32,17 @@ class InventoryItemDialogFragment(
         val info = view.findViewById<TextView>(R.id.dialogItemInfo)
         val closeButton = view.findViewById<Button>(R.id.closeButton)
 
-        name.text = item.name
+        name.text = itemCounter.name
 
-        image.load(
-            "https://community.akamai.steamstatic.com/economy/image/${item.iconUrl}"
-        ) {
-            placeholder(R.drawable.app_icon)
-            error(R.drawable.app_icon)
-            fallback(R.drawable.app_icon)
-        }
+        Glide.with(requireContext())
+            .load(itemCounter.iconUrl)
+            .placeholder(R.drawable.item_not_found)
+            .error(R.drawable.item_not_found)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into(image)
 
         info.text = buildString {
-            appendLine("Amount owned: ${item.quantity}")
+            appendLine("Amount owned: ${itemCounter.quantity}")
             appendLine("Value: will be added soon")
             appendLine("Rarity: will be added soon")
         }
