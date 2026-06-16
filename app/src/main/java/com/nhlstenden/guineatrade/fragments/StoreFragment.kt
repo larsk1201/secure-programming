@@ -2,9 +2,7 @@ package com.nhlstenden.guineatrade.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.text.TextWatcher
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +20,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.BackpackDatasource
 import com.nhlstenden.guineatrade.datasources.Item
-import com.nhlstenden.guineatrade.datasources.SteamBotDatasource
+import com.nhlstenden.guineatrade.datasources.ItemDatasource
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
@@ -38,7 +36,7 @@ class StoreFragment : Fragment() {
     lateinit var backpackDatasource: BackpackDatasource
 
     @Inject
-    lateinit var steamBotDatasource: SteamBotDatasource
+    lateinit var itemDatasource: ItemDatasource
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,12 +63,14 @@ class StoreFragment : Fragment() {
                     Toast.makeText(context, "Unable to get pricing data", Toast.LENGTH_SHORT).show()
                     return@launch
                 }
-                val hasSteamData = async {
-                    this@StoreFragment.steamBotDatasource.getInventoryData(this@StoreFragment.userDatasource.tokens.jwtSave)
-                }.await()
-                if (!hasSteamData) {
-                    Toast.makeText(context, "Unable to get pricing data", Toast.LENGTH_SHORT).show()
-                    return@launch
+                if (this@StoreFragment.itemDatasource.isEmpty()) {
+                    val hasSteamData = async {
+                        this@StoreFragment.itemDatasource.setupInventories()
+                    }.await()
+                    if (!hasSteamData) {
+                        Toast.makeText(context, "Unable to get pricing data", Toast.LENGTH_SHORT).show()
+                        return@launch
+                    }
                 }
                 populatePage(lastUpdate, itemGrid)
             }
