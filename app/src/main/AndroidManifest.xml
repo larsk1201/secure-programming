@@ -41,6 +41,14 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GuineaTrade">
         </activity>
+
+        <activity
+            android:name=".activities.CheckoutActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.GuineaTrade">
+        </activity>
     </application>
 
 </manifest>
