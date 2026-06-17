@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">GuineaTrade</string>
+    <string name="app_name" translatable="false">GuineaTrade</string>
     <string name="profile_header_name">Hey, %s</string>
-    <string name="profile_header_subtitle">$ %.2f</string>
-    <string name="login_title">GuineaTrade</string>
-    <string name="login_subtitle">Ready to get rich</string>
+    <string name="profile_header_subtitle" translatable="false">$ %.2f</string>
+    <string name="login_title" translatable="false">GuineaTrade</string>
+    <string name="login_subtitle" translatable="false">Ready to get rich</string>
     <string name="login_input_email">Email address</string>
     <string name="login_input_password">Password</string>
     <string name="login_button">Log in</string>
@@ -18,19 +18,16 @@
     <string name="settings_input_new_password_confirm">New Password confirm</string>
     <string name="settings_input_verification_code">Verification code</string>
     <string name="settings_button_update">Update</string>
-    <string name="settings_button_cancel">Cancel</string>
     <string name="settings_mfa_disabled_info">You have not enabled any form of multifactor authentication just yet. MFA is required before you can start sending and receiving money, items and other goods. Please enable one of the available forms of multifactor authentication.</string>
-    <string name="settings_mfa_setup_cancel_setup">Cancel</string>
     <string name="settings_mfa_setup_finish_setup">Finish</string>
     <string name="settings_mfa_setup_totp">Enter this code in your MFA app of choice:</string>
     <string name="settings_mfa_setup_recovery_code">Save this recovery code in a secure place. You will need this code in the case that you lose access to your TOTP token</string>
     <string name="settings_mfa_setup_start_button">Setup</string>
     <string name="settings_mfa_setup_test_code">Test MFA Code:</string>
-    <string name="settings_mfa_enabled_info">You have Multifactor authentication enabled! You are now able to execute trades and send/receive money.\nIf you wish to disable MFA for whatever reason (ex: Switching to a new phone), enter either an OTP code or your recovery code</string>
+    <string name="settings_mfa_enabled_info">You have Multifactor authentication enabled! You are now able to execute trades and send/receive money. If you wish to disable MFA for whatever reason (ex: Switching to a new phone), enter either an OTP code or your recovery code</string>
     <string name="settings_mfa_enabled_otp_code">OTP Code:</string>
     <string name="settings_mfa_enabled_recovery_code">Recovery code</string>
     <string name="settings_mfa_enabled_disable_button">Disable</string>
-    <string name="settings_mfa_enabled_cancel_button">Cancel</string>
     <string name="settings_app_biometric_login_switch">Biometric login required</string>
     <string name="settings_app_auto_login_switch">Automatic login</string>
     <string name="settings_app_logout_button">Logout</string>
@@ -41,4 +38,34 @@
     <string name="failed_to_load_inventory">Failed to load inventory</string>
     <string name="my_inventory">My Inventory</string>
     <string name="no_steam_account_linked">No Steam account linked</string>
+    <string name="bottom_nav_home">Home</string>
+    <string name="bottom_nav_store">Store</string>
+    <string name="bottom_nav_inventory">Inventory</string>
+    <string name="login_nav_login">Login</string>
+    <string name="login_nav_signup">Sign up</string>
+    <string name="profile_nav_user">User</string>
+    <string name="profile_nav_mfa">MFA</string>
+    <string name="profile_nav_app">App</string>
+    <string name="profile_nav_steam" translatable="false">Steam</string>
+    <string name="home_notification_mfa_titel">Secure your account</string>
+    <string name="home_notification_mfa_description">Enable two-factor authentication to better protect your account.</string>
+    <string name="home_notification_mfa_button">Enable MFA</string>
+    <string name="home_notification_steam_title">Complete your Steam setup</string>
+    <string name="home_notification_steam_description">Add your Steam ID and Trade URL before trading items.</string>
+    <string name="home_notification_steam_button">Configure Steam</string>
+    <string name="home_items_valuable_unusual">Most Valuable Unusual Items</string>
+    <string name="home_items_valuable_collectors">Most Valuable Collector\'s Items</string>
+    <string name="home_items_valuable_strange">Most Valuable Strange Items</string>
+    <string name="home_items_valuable_unique">Most Valuable Unique Items</string>
+    <string name="home_items_metal">Metal</string>
+    <string name="inventory_titel">My Inventory</string>
+    <string name="settings_steam_id" translatable="false">Steam ID</string>
+    <string name="settings_steam_trade_url" translatable="false">Steam trade URL</string>
+    <string name="settings_steam_confirm_button">Save</string>
+    <string name="inventory_card_item_info">Info</string>
+    <string name="inventory_card_item_close">Close</string>
+    <string name="profile_go_back_button">Go back</string>
+    <string name="backpack_time_format_today">Today @ %s</string>
+    <string name="backpack_time_format_yesterday">Yesterday @ %s</string>
+    <string name="backpack_time_format_days_ago">%d Days ago @ %s</string>
 </resources>
