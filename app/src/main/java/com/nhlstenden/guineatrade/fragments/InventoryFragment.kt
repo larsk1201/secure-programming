@@ -43,11 +43,11 @@ class InventoryFragment : Fragment() {
             val response = inventoryDatasource.getInventory(steamId)
 
             if (response == null) {
-                profileName.text = "Failed to load inventory"
+                profileName.text = getString(R.string.failed_to_load_inventory)
                 return@launch
             }
 
-            profileName.text = "My Inventory"
+            profileName.text = getString(R.string.my_inventory)
 
             val descriptionMap = response.descriptions.associateBy {
                 "${it.classid}_${it.instanceid}"
@@ -149,7 +149,7 @@ class InventoryFragment : Fragment() {
                 itemsRecyclerView
             )
         } else {
-            profileName.text = "No Steam account linked"
+            profileName.text = getString(R.string.no_steam_account_linked)
         }
         return view
     }
