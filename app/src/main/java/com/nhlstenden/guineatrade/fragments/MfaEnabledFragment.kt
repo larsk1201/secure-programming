@@ -36,7 +36,6 @@ class MfaEnabledFragment : Fragment() {
         val otpCodeForm = view.findViewById<EditText>(R.id.mfa_enabled_totp_code)
         val recoveryCodeForm = view.findViewById<EditText>(R.id.mfa_enabled_recovery_code)
         val confirmButton = view.findViewById<Button>(R.id.mfa_enabled_confirm)
-        val cancelButton = view.findViewById<Button>(R.id.mfa_enabled_cancel)
 
         confirmButton.setOnClickListener {
             val otpCode = otpCodeForm.text.toString()
@@ -59,10 +58,6 @@ class MfaEnabledFragment : Fragment() {
                 userDatasource.authMe()
                 Toast.makeText(context, "Deactivated MFA", Toast.LENGTH_LONG).show()
             }
-        }
-
-        cancelButton.setOnClickListener {
-            activity?.finish()
         }
     }
 }

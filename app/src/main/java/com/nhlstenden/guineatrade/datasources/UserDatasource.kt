@@ -47,12 +47,10 @@ data class SignUp(
 )
 
 @Serializable
-data class UpdateMe(
-    val email: String,
-    val currentPassword: String,
-    val newPassword: String,
-    val newPasswordVerify: String,
-){}
+data class UpdatePassword (
+    val password: String,
+    val passwordVerify: String,
+)
 
 @Serializable
 data class TotpTokens(
@@ -157,16 +155,12 @@ class UserDatasource @Inject constructor() {
         this@UserDatasource.tradeUrl = credentials.tradeUrl
     }
 
-    suspend fun updateMe(totpCode: String, currentPassword: String, newPassword: String, newPasswordVerify: String): Boolean = withContext(Dispatchers.IO) {
-        val jsonBody = Json.encodeToString(UpdateMe(this@UserDatasource.email,
-            currentPassword,
-            newPassword,
-            newPasswordVerify,
-        ))
+    suspend fun updateMe(totpCode: String, newPassword: String, newPasswordVerify: String): Boolean = withContext(Dispatchers.IO) {
+        val jsonBody = Json.encodeToString(UpdatePassword(newPassword, newPasswordVerify))
         val body = jsonBody.toRequestBody("application/json".toMediaType())
         val requestBuilder = Request.Builder()
             .url(this@UserDatasource.client.authMe)
-            .patch(body!!)
+            .patch(body)
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
 
@@ -351,5 +345,51 @@ class UserDatasource @Inject constructor() {
             Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
+    }
+
+    suspend fun logout(): Boolean = withContext(Dispatchers.IO) {
+        val jsonBody = Json.encodeToString(this@UserDatasource.tokens)
+        val body = jsonBody.toRequestBody("application/json".toMediaType())
+        val request = Request.Builder()
+            .url(this@UserDatasource.client.authLogout)
+            .post(body)
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
+
+        try {
+            val result = this@UserDatasource.client.client.newCall(request.build()).execute()
+
+            if (result.code != 204) {
+                return@withContext false
+            }
+
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
+            return@withContext false
+        }
+
+        return@withContext true
+    }
+
+    suspend fun logoutEverywhere(): Boolean = withContext(Dispatchers.IO)  {
+        val request = Request.Builder()
+            .url(this@UserDatasource.client.authLogoutAll)
+            .post(RequestBody.EMPTY)
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
+
+        try {
+            val result = this@UserDatasource.client.client.newCall(request.build()).execute()
+
+            if (result.code != 204) {
+                return@withContext false
+            }
+
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
+            return@withContext false
+        }
+
+        return@withContext true
     }
 }
