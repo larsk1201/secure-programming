@@ -1,10 +1,6 @@
 package com.nhlstenden.guineatrade.datasources
 
-import android.content.Context
 import android.util.Log
-import androidx.core.content.ContextCompat
-import com.nhlstenden.guineatrade.R
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Contextual
@@ -79,82 +75,11 @@ data class ItemPair(
     val uncraftable: HashMap<String, Int> = HashMap(),
 )
 
-@Serializable
-enum class Quality {
-    @SerialName("Normal")
-    NORMAL,
-
-    @SerialName("Genuine")
-    GENUINE,
-
-    @SerialName("Rarity2")
-    RARITY_2,
-
-    @SerialName("Vintage")
-    VINTAGE,
-
-    @SerialName("Rarity3")
-    RARITY_3,
-
-    @SerialName("Unusual")
-    UNUSUAL,
-
-    @SerialName("Unique")
-    UNIQUE,
-
-    @SerialName("Community")
-    COMMUNITY,
-
-    @SerialName("Valve")
-    VALVE,
-
-    @SerialName("Self-Made")
-    SELF_MADE,
-
-    @SerialName("Customized")
-    CUSTOMIZED,
-
-    @SerialName("Strange")
-    STRANGE,
-
-    @SerialName("Completed")
-    COMPLETED,
-
-    @SerialName("Haunted")
-    HAUNTED,
-
-    @SerialName("Collectors")
-    COLLECTORS,
-
-    @SerialName("Decorated")
-    DECORATED;
-
-    fun toColour(context: Context): Int {
-        return when (this) {
-            UNIQUE -> ContextCompat.getColor(context, R.color.tf_unique)
-            VINTAGE -> ContextCompat.getColor(context, R.color.tf_vintage)
-            GENUINE -> ContextCompat.getColor(context, R.color.tf_genuine)
-            STRANGE -> ContextCompat.getColor(context, R.color.tf_strange)
-            UNUSUAL -> ContextCompat.getColor(context, R.color.tf_unusual)
-            HAUNTED -> ContextCompat.getColor(context, R.color.tf_haunted)
-            COLLECTORS -> ContextCompat.getColor(context, R.color.tf_collectors)
-            DECORATED -> ContextCompat.getColor(context, R.color.tf_decorated)
-            COMMUNITY -> ContextCompat.getColor(context, R.color.tf_community)
-            VALVE -> ContextCompat.getColor(context, R.color.tf_valve)
-            else -> ContextCompat.getColor(context, R.color.tf_normal)
-        }
-    }
-
-}
-
 @Singleton
-class BackpackDatasource @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
+class BackpackDatasource @Inject constructor() {
     private val client = HttpClient()
 
     var prices: PriceCache? = null
-    var unusuals = this.setupUnusuals()
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun getPrices(jwt: String): Boolean = withContext(Dispatchers.IO) {
@@ -179,16 +104,6 @@ class BackpackDatasource @Inject constructor(
         }
 
         return@withContext true
-    }
-
-    fun getUnusualName(id: String): String {
-        return unusuals[id] ?: "Default"
-    }
-
-    @OptIn(ExperimentalSerializationApi::class)
-    private fun setupUnusuals(): HashMap<String, String> {
-        val resource = this.context.resources.openRawResource(R.raw.unusuals)
-        return Json.decodeFromStream<HashMap<String, String>>(resource)
     }
 
     fun formatInstantToString(): String {

@@ -7,10 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.GridView
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -18,6 +20,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.BackpackDatasource
 import com.nhlstenden.guineatrade.datasources.Item
+import com.nhlstenden.guineatrade.datasources.ItemDatasource
 import com.nhlstenden.guineatrade.datasources.UserDatasource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
@@ -32,6 +35,9 @@ class StoreFragment : Fragment() {
     @Inject
     lateinit var backpackDatasource: BackpackDatasource
 
+    @Inject
+    lateinit var itemDatasource: ItemDatasource
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,14 +49,10 @@ class StoreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val cartSize = view.findViewById<TextView>(R.id.cart_size)
         val itemGrid = view.findViewById<GridView>(R.id.item_grid)
         val lastUpdate = view.findViewById<TextView>(R.id.last_update)
-
-        cartSize.visibility = View.GONE
-
-        val gridAdapter = GridAdapter(requireContext(), ArrayList(), this)
-        itemGrid.adapter = gridAdapter
+        val searchButton = view.findViewById<ImageView>(R.id.search_button)
+        val searchPattern = view.findViewById<EditText>(R.id.search_pattern)
 
         if (this@StoreFragment.backpackDatasource.prices == null) {
             lifecycleScope.launch {
@@ -61,25 +63,64 @@ class StoreFragment : Fragment() {
                     Toast.makeText(context, "Unable to get pricing data", Toast.LENGTH_SHORT).show()
                     return@launch
                 }
-                populatePage(lastUpdate, gridAdapter)
+                if (this@StoreFragment.itemDatasource.isEmpty()) {
+                    val hasSteamData = async {
+                        this@StoreFragment.itemDatasource.setupInventories()
+                    }.await()
+                    if (!hasSteamData) {
+                        Toast.makeText(context, "Unable to get pricing data", Toast.LENGTH_SHORT).show()
+                        return@launch
+                    }
+                }
+                populatePage(lastUpdate, itemGrid)
             }
         } else {
-            populatePage(lastUpdate, gridAdapter)
+            populatePage(lastUpdate, itemGrid)
+        }
+
+        searchButton.setOnClickListener {
+            val pattern = searchPattern.text.toString()
+            updateGrid(pattern, itemGrid)
+        }
+        searchPattern.addTextChangedListener {
+            val searchText = searchPattern.text.toString()
+            updateGrid(searchText, itemGrid)
         }
     }
 
-    fun populatePage(lastUpdate: TextView, adapter: GridAdapter) {
+    fun populatePage(lastUpdate: TextView, itemGrid: GridView) {
         if (this@StoreFragment.backpackDatasource.prices == null) {
             lastUpdate.text = getString(R.string.store_no_price_data)
             return
         }
-        lastUpdate.text = this@StoreFragment.backpackDatasource.formatInstantToString()
 
+        updateGrid("", itemGrid)
+
+        lastUpdate.text = this@StoreFragment.backpackDatasource.formatInstantToString()
+    }
+
+    fun updateGrid(filter: String, itemGrid: GridView) {
+        try {
+            val gridAdapter = GridAdapter(requireContext(), searchItems(filter), this)
+            itemGrid.adapter = gridAdapter
+            gridAdapter.notifyDataSetChanged()
+        } catch (e: Exception) {
+            Log.d("StoreFragment", e.message.toString())
+            Toast.makeText(context, "Not a valid search query", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun searchItems(filter: String): ArrayList<Item> {
+        val pattern = Regex(filter, RegexOption.IGNORE_CASE)
+
+        val list = ArrayList<Item>()
         for (item: Item in this@StoreFragment.backpackDatasource.prices!!.items.values) {
-            adapter.add(item)
+            if (pattern.containsMatchIn(item.marketHashName)) {
+                list.add(item)
+            }
         }
 
-        adapter.notifyDataSetChanged()
+        return list
     }
 
     class GridAdapter(

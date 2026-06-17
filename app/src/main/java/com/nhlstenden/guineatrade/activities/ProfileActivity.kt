@@ -21,9 +21,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProfileActivity: AppCompatActivity() {
+class ProfileActivity : AppCompatActivity() {
 
-    @Inject lateinit var userDatasource: UserDatasource
+    @Inject
+    lateinit var userDatasource: UserDatasource
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +59,8 @@ class ProfileActivity: AppCompatActivity() {
             }
         })
 
+        openRequestedTab(viewPager, settingsNavigation)
+
         this.userDatasource.hasMFALiveData.observe(this) { hasMFA ->
             val otpMenuItem = settingsNavigation.menu.findItem(R.id.nav_otp)
             otpMenuItem.setIcon(R.drawable.gpp_maybe_24px)
@@ -68,27 +71,49 @@ class ProfileActivity: AppCompatActivity() {
                     if (hasMFA) R.drawable.verified_user_24px
                     else R.drawable.gpp_bad_24px
                 )
-//                TODO: Find proper way to refresh MFA fragment
             }
         }
     }
-    
-    private class ProfilePageAdapter(activity: FragmentActivity, val userDatasource: UserDatasource) : FragmentStateAdapter(activity) {
+
+    private fun openRequestedTab(
+        viewPager: ViewPager2,
+        settingsNavigation: BottomNavigationView
+    ) {
+        when (intent.getStringExtra("open_tab")) {
+            "steam" -> {
+                viewPager.currentItem = ProfilePage.STEAM.position
+                settingsNavigation.selectedItemId = R.id.nav_steam
+            }
+
+            "mfa" -> {
+                viewPager.currentItem = ProfilePage.MFA.position
+                settingsNavigation.selectedItemId = R.id.nav_otp
+            }
+        }
+    }
+
+    private class ProfilePageAdapter(
+        activity: FragmentActivity,
+        val userDatasource: UserDatasource
+    ) : FragmentStateAdapter(activity) {
+
         fun getMfaFragment(): Fragment {
-            return if (this.userDatasource.hasMFA) MfaEnabledFragment() else MfaDisabledFragment()
+            return if (this.userDatasource.hasMFA) {
+                MfaEnabledFragment()
+            } else {
+                MfaDisabledFragment()
+            }
         }
 
         override fun getItemCount(): Int = 4
 
         override fun createFragment(position: Int): Fragment {
-            val fragment = when (ProfilePage.entries[position]) {
+            return when (ProfilePage.entries[position]) {
                 ProfilePage.USER -> UserFragment()
                 ProfilePage.MFA -> getMfaFragment()
                 ProfilePage.APP -> AppFragment()
                 ProfilePage.STEAM -> SteamFragment()
             }
-
-            return fragment
         }
     }
 

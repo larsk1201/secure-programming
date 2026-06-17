@@ -16,58 +16,51 @@
             android:layout_height="wrap_content"
             android:layout_margin="12dp">
 
-            <TextView
-                android:id="@+id/textView"
+            <LinearLayout
+                android:id="@+id/linearLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/store_last_update"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/last_update"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.5" />
-
-            <TextView
-                android:id="@+id/last_update"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/store_getting_price_data"
-                android:textSize="12sp"
+                android:layout_height="0dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.5">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/store_last_update"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/last_update"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/store_getting_price_data"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/search_pattern"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/search_button"
+                app:layout_constraintStart_toEndOf="@+id/linearLayout"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.5" />
 
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/search_button"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/shopping_cart_24px"
-                app:layout_constraintBottom_toTopOf="@+id/cardView"
+                android:src="@drawable/search_24px"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.5" />
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="-5dp"
-                android:background="#C73E62"
-                app:cardCornerRadius="16dp"
-                app:layout_constraintEnd_toEndOf="@+id/imageView2"
-                app:layout_constraintTop_toBottomOf="@+id/imageView2">
-
-                <TextView
-                    android:id="@+id/cart_size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="#C73E62"
-                    android:paddingHorizontal="4dp"
-                    android:textColor="@color/white" />
-
-            </androidx.cardview.widget.CardView>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

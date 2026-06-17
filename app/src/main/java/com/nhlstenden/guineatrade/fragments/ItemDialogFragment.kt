@@ -23,6 +23,8 @@ import androidx.core.view.isVisible
 import com.nhlstenden.guineatrade.datasources.Category
 import com.nhlstenden.guineatrade.datasources.Item
 import com.nhlstenden.guineatrade.utils.Pricing
+import com.nhlstenden.guineatrade.utils.Strangifier
+import com.nhlstenden.guineatrade.utils.Unusuals
 
 @AndroidEntryPoint
 class ItemDialogFragment(val item: Item): DialogFragment() {
@@ -44,7 +46,10 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
         val weaponText = view.findViewById<TextView>(R.id.item_popup_name)
         val weaponIcon = view.findViewById<ImageView>(R.id.item_popup_icon)
 
-        weaponText.text = item.marketHashName
+        weaponText.text = when(item.marketHashName) {
+            "Refined Metal", "Reclaimed Metal", "Scrap Metal" -> item.marketHashName + " (x20)"
+            else -> item.marketHashName
+        } as CharSequence?
 
         Glide.with(requireContext())
             .load(item.icon)
@@ -59,7 +64,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.item_popup_details)
 
-        val adapter = this.backpackDatasource.prices?.items[item.marketHashName]?.let { ItemAdapter(it, backpackDatasource) }
+        val adapter = this.backpackDatasource.prices?.items[item.marketHashName]?.let { ItemAdapter(it) }
         recyclerView.setLayoutManager(LinearLayoutManager(this@ItemDialogFragment.context));
         recyclerView.adapter = adapter
     }
@@ -74,7 +79,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
         }
     }
 
-    class ItemAdapter(private val item: Item, private val backpackDatasource: BackpackDatasource) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
+    class ItemAdapter(private val item: Item) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
         val categories: List<Category> = item.getCategories()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -84,7 +89,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val category: Category = categories[position]
-            holder.bind(item, backpackDatasource,category)
+            holder.bind(item, category)
         }
 
         override fun getItemCount(): Int {
@@ -96,16 +101,16 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
             val effectName: TextView = itemView.findViewById(R.id.item_effect_name)
             val effects: RecyclerView = itemView.findViewById(R.id.item_effect_list)
 
-            fun bind(item: Item,  backpackDatasource: BackpackDatasource, category: Category) {
+            fun bind(item: Item, category: Category) {
                 effectName.text = category.toName()
                 itemCard.setCardBackgroundColor(category.quality.toColour(itemView.context))
 
-                val adapter = EffectAdapter(item,  backpackDatasource, category)
+                val adapter = EffectAdapter(item, category)
                 effects.setLayoutManager(LinearLayoutManager(itemView.context));
                 effects.adapter = adapter
             }
 
-            class EffectAdapter(private val item: Item, private val backpackDatasource: BackpackDatasource,  private val category: Category) : RecyclerView.Adapter<EffectAdapter.ViewHolder>() {
+            class EffectAdapter(private val item: Item,  private val category: Category) : RecyclerView.Adapter<EffectAdapter.ViewHolder>() {
                 val effects = item.getSpecificPricingData(category)?.entries?.toList() ?: emptyList()
 
                 override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -115,7 +120,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
 
                 override fun onBindViewHolder(holder: ViewHolder, position: Int) {
                     val effectData = effects[position]
-                    holder.bind(item, backpackDatasource, category, effectData.key, effectData.value)
+                    holder.bind(item, category, effectData.key, effectData.value)
                 }
 
                 override fun getItemCount(): Int {
@@ -136,9 +141,9 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
                         effectView.findViewById(R.id.button_row)
                     )
 
-                    fun bind(item: Item, backpackDatasource: BackpackDatasource, category: Category, effectId: String, price: Int) {
+                    fun bind(item: Item, category: Category, effectId: String, price: Int) {
                         val realPrice = price.toDouble() / 100.0
-                        val effectDisplayName = backpackDatasource.getUnusualName(effectId)
+                        var effectDisplayName = if (item.marketHashName != ("Strangifier")) Unusuals.getUnusualName(effectId) else Strangifier.getStrangifierName(effectId)
 
                         effectView.setOnClickListener {
                             if (toggleableGroup.first().isVisible) {
