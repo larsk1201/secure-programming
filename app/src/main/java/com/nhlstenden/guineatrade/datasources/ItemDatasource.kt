@@ -92,7 +92,7 @@ data class InventoryItem(
     val marketHashName: String,
     val craftability: Boolean,
     val quality: Quality,
-    val unusual: String?
+    val unusual: String? = null
 )
 
 @Singleton
@@ -140,7 +140,7 @@ class ItemDatasource @Inject constructor(
                 this@ItemDatasource.botInventory = data
             }
         } catch (e: Exception) {
-            Log.d("BackpackDatasource", e.message.toString())
+            Log.d("ItemDatasource", e.message.toString())
             return@withContext false
         }
 
