@@ -19,6 +19,8 @@ data class HttpClient(
 
     val steamInventory: String = "$baseApiUrl/steam/inventory",
     val userInventory: String = "$baseApiUrl/user/inventory",
+    val steamStock: String = "$baseApiUrl/steam/stock",
+    val userStock: String = "$baseApiUrl/user/stock",
 
     val backpackPrices: String = "$baseApiUrl/backpack/prices",
 

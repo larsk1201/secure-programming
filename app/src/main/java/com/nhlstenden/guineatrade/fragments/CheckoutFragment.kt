@@ -48,7 +48,7 @@ class CheckoutFragment : Fragment() {
 
         val adapter = CartAdapter(
             requireContext(),
-            ArrayList(cartDatasource.items.value)
+            ArrayList(cartDatasource.cart.value)
         ) { it.getPrice(backpackDatasource) }
 
         cartListing.adapter = adapter
@@ -84,9 +84,9 @@ class CheckoutFragment : Fragment() {
             val itemQuantity = itemView.findViewById<TextView>(R.id.item_quantity)
             val itemImage = itemView.findViewById<ImageView>(R.id.item_image)
 
-            itemName.text = item.itemName
+            itemName.text = item.getFirst().marketHashName
             itemPrice.text = Pricing.toFormattedPriceString(getItemPrice(item))
-            itemQuantity.text = "x${item.quantity}"
+            itemQuantity.text = "x${item.items.size}"
 
             Glide.with(context)
                 .load(item.imageUrl)

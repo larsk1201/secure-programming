@@ -1,5 +1,8 @@
 package com.nhlstenden.guineatrade.datasources
 
+import android.content.Context
+import androidx.core.content.ContextCompat
+import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.utils.Pricing
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,77 +16,99 @@ enum class CartItemType {
     SELL,
 }
 
+enum class ButtonColor {
+    OUT_OF_STOCK,
+    HAS_STOCK;
+
+    fun toColour(context: Context): Int {
+        return when (this) {
+            OUT_OF_STOCK -> ContextCompat.getColor(context, R.color.gray)
+            HAS_STOCK -> ContextCompat.getColor(context, R.color.purple_700)
+        }
+    }
+}
+
 data class CartItem(
-    val itemName: String,
-    val quality: Quality,
-    val effectId: String,
-    val craftable: String,
-
-    val defindex: List<Int>,
-    val assetId: String,
-
+    val items: List<InventoryItem>,
     val imageUrl: String,
-    var quantity: Int = 1,
     var type: CartItemType = CartItemType.BUY
 ) {
     fun getPrice(backpackDatasource: BackpackDatasource): Double {
-        return backpackDatasource.prices?.getSpecificPricing(itemName, quality, craftable, effectId)
-            ?.div(100)?.times(quantity)?.times((if (type == CartItemType.SELL) Pricing.SELL_MODIFIER else Pricing.BUY_MODIFIER)) ?: 0.0
+        return backpackDatasource.prices?.getSpecificPricing(items[0])
+            ?.div(100)?.times(items.size)?.times((if (type == CartItemType.SELL) Pricing.SELL_MODIFIER else Pricing.BUY_MODIFIER)) ?: 0.0
+    }
+
+    fun getFirst(): InventoryItem {
+        return items[0]
     }
 }
 
 @Singleton
 class CartDatasource @Inject constructor(){
-    private val _items = MutableStateFlow<List<CartItem>>(emptyList())
-    val items: StateFlow<List<CartItem>> = _items
+    private val _cart = MutableStateFlow<List<CartItem>>(emptyList())
+    val cart: StateFlow<List<CartItem>> = _cart
 
     @Inject
     lateinit var backpackDatasource: BackpackDatasource
+    @Inject
+    lateinit var itemDatasource: ItemDatasource
 
-    fun addItem(item: CartItem) {
-        val current = _items.value.toMutableList()
+
+    fun getSpecificStock(stock: List<Stock>, marketHashName: String, quality: Quality, isCraftable: Boolean, effect: String = "0"): Stock? {
+        return stock.find {
+            it.marketHashName == marketHashName
+                    && it.quality == quality
+                    && it.craftability == isCraftable
+                    && it.unusual == effect
+        }
+    }
+
+    fun getSpecificBotStock(marketHashName: String, quality: Quality, isCraftable: Boolean, effect: String = "0"): Stock? {
+        return getSpecificStock(itemDatasource.botStock, marketHashName, quality, isCraftable, effect)
+    }
+
+    fun getSpecificUserStock(marketHashName: String, quality: Quality, isCraftable: Boolean, effect: String = "0"): Stock? {
+        return getSpecificStock(itemDatasource.userStock, marketHashName, quality, isCraftable, effect)
+    }
+
+    fun addItem(item: InventoryItem, type: CartItemType) {
+        val current = _cart.value.toMutableList()
 
         val existing = current.find {
-            it.defindex == item.defindex
+            it.getFirst().classid == item.classid &&
+            it.getFirst().instanceid == item.instanceid
         }
 
         if (existing != null) {
-            existing.quantity++
+            existing.items
         } else {
-            current.add(item)
+            current.add(CartItem(listOf(item).toMutableList(), "", type))
         }
 
-        _items.value = current
+        _cart.value = current
     }
 
-    fun addItem(item: Item, category: Category, effectId: String, type: CartItemType) {
-        // TODO: Implement AssetID
-        addItem(CartItem(item.marketHashName, category.quality, effectId, category.craftable, item.defindex,  "", item.icon, type = type))
-    }
-
-    fun removeItem(productId: Int) {
-        val current = _items.value.toMutableList()
+    fun removeItem(item: InventoryItem) {
+        val current = _cart.value.toMutableList()
 
         val existing = current.find {
-            it.defindex.contains(productId)
+            it.items.contains(item)
         }
 
-        if (existing != null) {
-            existing.quantity--
-        }
+        existing?.items?.filter { it != item }
 
-        _items.value = current
+        _cart.value = current
     }
 
-    fun clearItem(productId: Int) {
-        _items.value = _items.value.filter { !it.defindex.contains(productId) }
+    fun clearItem(cartItem: CartItem) {
+        _cart.value = _cart.value.filter { it != cartItem }
     }
 
     fun clearCart() {
-        _items.value = emptyList()
+        _cart.value = emptyList()
     }
 
     fun getTotalPrice(): Double {
-        return _items.value.sumOf { it.getPrice(backpackDatasource) }
+        return _cart.value.sumOf { it.getPrice(backpackDatasource) }
     }
 }
