@@ -46,7 +46,7 @@ class InventoryFragment : Fragment() {
         profileName: TextView,
         itemGridView: GridView,
     ) {
-        profileName.text = "My Inventory"
+        profileName.text = getString(R.string.my_inventory)
 
         lifecycleScope.launch {
 
