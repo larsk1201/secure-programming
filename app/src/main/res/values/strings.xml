@@ -47,7 +47,7 @@
     <string name="profile_nav_mfa">MFA</string>
     <string name="profile_nav_app">App</string>
     <string name="profile_nav_steam" translatable="false">Steam</string>
-    <string name="home_notification_mfa_titel">Secure your account</string>
+    <string name="home_notification_mfa_title">Secure your account</string>
     <string name="home_notification_mfa_description">Enable two-factor authentication to better protect your account.</string>
     <string name="home_notification_mfa_button">Enable MFA</string>
     <string name="home_notification_steam_title">Complete your Steam setup</string>
@@ -58,7 +58,7 @@
     <string name="home_items_valuable_strange">Most Valuable Strange Items</string>
     <string name="home_items_valuable_unique">Most Valuable Unique Items</string>
     <string name="home_items_metal">Metal</string>
-    <string name="inventory_titel">My Inventory</string>
+    <string name="inventory_title">My Inventory</string>
     <string name="settings_steam_id" translatable="false">Steam ID</string>
     <string name="settings_steam_trade_url" translatable="false">Steam trade URL</string>
     <string name="settings_steam_confirm_button">Save</string>
