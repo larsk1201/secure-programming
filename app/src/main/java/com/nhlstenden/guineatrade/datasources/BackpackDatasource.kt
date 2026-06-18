@@ -31,10 +31,6 @@ data class PriceCache(
         }
         return null
     }
-
-    fun getSpecificPricing(item: InventoryItem): Int? {
-        return getSpecificPricing(item.marketHashName, item.quality, item.craftability, item.unusual)
-    }
 }
 
 @Serializable

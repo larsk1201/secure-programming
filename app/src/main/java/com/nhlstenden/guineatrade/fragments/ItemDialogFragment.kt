@@ -26,10 +26,11 @@ import com.nhlstenden.guineatrade.datasources.CartDatasource
 import com.nhlstenden.guineatrade.datasources.Category
 import com.nhlstenden.guineatrade.datasources.Item
 import com.nhlstenden.guineatrade.utils.Pricing
-import com.nhlstenden.guineatrade.utils.Strangifier
-import com.nhlstenden.guineatrade.utils.Unusuals
 import androidx.lifecycle.lifecycleScope
+import com.nhlstenden.guineatrade.datasources.CartItemType
 import com.nhlstenden.guineatrade.datasources.ItemDatasource
+import com.nhlstenden.guineatrade.datasources.Quality
+import com.nhlstenden.guineatrade.datasources.SpecificItem
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -76,7 +77,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.item_popup_details)
         recyclerView.setLayoutManager(LinearLayoutManager(this@ItemDialogFragment.context));
 
-        val adapter = this@ItemDialogFragment.backpackDatasource.prices?.items[item.marketHashName]?.let { ItemAdapter(it, cartDatasource) }
+        val adapter = ItemAdapter(item, cartDatasource)
         recyclerView.adapter = adapter
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -84,11 +85,12 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
                 val success = async { itemDatasource.setupStock() }.await()
                 if (!success) {
                     Toast.makeText(context, "Unable to get item stocking", Toast.LENGTH_SHORT).show()
-                    return@launch
                 }
             }
 
-            adapter?.notifyDataSetChanged()
+            if (itemDatasource.botStock.isNotEmpty() || itemDatasource.userStock.isNotEmpty()) {
+                adapter?.notifyDataSetChanged()
+            }
         }
     }
 
@@ -116,7 +118,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
         }
 
         override fun getItemCount(): Int {
-            return item.prices.size
+            return categories.size
         }
 
         class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -164,10 +166,12 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
                         effectView.findViewById(R.id.button_row)
                     )
 
-                    fun bind(item: Item, category: Category, effectId: String, price: Int, cartDatasource: CartDatasource) {
+                    fun bind(item: Item, category: Category, unusual: String, price: Int, cartDatasource: CartDatasource) {
                         val realPrice = price.toDouble() / 100.0
-                        var effectDisplayName = if (item.marketHashName != ("Strangifier")) Unusuals.getUnusualName(effectId) else Strangifier.getStrangifierName(effectId)
-
+                        var effectDisplayName = "Default"
+                        if (category.quality == Quality.UNUSUAL) {
+                            effectDisplayName = unusual
+                        }
                         effectView.setOnClickListener {
                             if (toggleableGroup.first().isVisible) {
                                 toggleableGroup.forEach { it.visibility = View.GONE }
@@ -176,14 +180,13 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
                             }
                         }
 
-                        val botStock = cartDatasource.getSpecificBotStock(item.marketHashName, category.quality, category.craftable == "craftable", effectDisplayName)
-                        val userStock = cartDatasource.getSpecificUserStock(item.marketHashName, category.quality, category.craftable == "craftable", effectDisplayName)
+                        val botStock = cartDatasource.getSpecificBotStock(item.marketHashName, category.quality, category.craftable == "craftable", unusual)
+                        val userStock = cartDatasource.getSpecificUserStock(item.marketHashName, category.quality, category.craftable == "craftable", unusual)
 
                         if (botStock != null && botStock.quantity > 0) {
                             buyButton.isEnabled = true
                             buyButton.setOnClickListener {
-//                            cartDatasource.addItem(, CartItemType.BUY )
-                                Log.d("ItemDialogFragment", "Sold item with effect $effectDisplayName for $realPrice")
+                                cartDatasource.addItem(SpecificItem(item.marketHashName,category.craftable == "craftable", category.quality, unusual,), CartItemType.BUY)
                             }
                         } else {
                             buyButton.isEnabled = false
@@ -193,8 +196,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
                         if (userStock != null && userStock.quantity > 0) {
                             sellButton.isEnabled = true
                             sellButton.setOnClickListener {
-//                            cartDatasource.addItem(, CartItemType.SELL )
-                                Log.d("ItemDialogFragment", "Sold item with effect $effectDisplayName for $realPrice")
+                                cartDatasource.addItem(SpecificItem(item.marketHashName,category.craftable == "craftable", category.quality, unusual,), CartItemType.SELL)
                             }
                         } else {
                             sellButton.isEnabled = false

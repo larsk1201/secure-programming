@@ -95,14 +95,30 @@ data class InventoryItem(
     val unusual: String?
 )
 
-@Serializable
 data class Stock(
+    val item: SpecificItem,
+    var quantity: Int
+)
+
+data class SpecificItem(
     val marketHashName: String,
     val craftability: Boolean,
     val quality: Quality,
     val unusual: String? = "0",
-    val quantity: Int
 )
+
+@Serializable
+data class StockResponse(
+    val marketHashName: String,
+    val craftability: Boolean,
+    val quality: Quality,
+    val unusual: String? = "0",
+    var quantity: Int
+) {
+    fun toStock(): Stock {
+        return Stock(SpecificItem(marketHashName, craftability, quality, unusual), quantity)
+    }
+}
 
 @Singleton
 class ItemDatasource @Inject constructor(
@@ -182,20 +198,23 @@ class ItemDatasource @Inject constructor(
             .build()
 
         try {
+            Log.d("ItemDatasource", "Attempting $isPlayerStock")
             val result = this@ItemDatasource.client.client.newCall(request).execute()
 
             if (result.code != 200) {
                 return@withContext false
             }
 
-            val data = Json.decodeFromStream<List<Stock>>(result.body.byteStream())
+            val data = Json.decodeFromStream<List<StockResponse>>(result.body.byteStream()).map { it.toStock() }
+
+            Log.d("ItemDatasource", "data of $isPlayerStock: $data")
             if (isPlayerStock) {
                 this@ItemDatasource.userStock = data
             } else {
                 this@ItemDatasource.botStock = data
             }
         } catch (e: Exception) {
-            Log.d("BackpackDatasource", e.message.toString())
+            Log.d("ItemDatasource", e.message.toString())
             return@withContext false
         }
 
