@@ -64,6 +64,6 @@
         android:id="@+id/signup_button_confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sign up"
+        android:text="@string/signup_button"
         tools:cornerRadius="16dp" />
 </LinearLayout>

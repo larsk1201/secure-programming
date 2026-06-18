@@ -88,12 +88,13 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            Log.d("ItemDialogFragment", position.toString())
             val category: Category = categories[position]
             holder.bind(item, category)
         }
 
         override fun getItemCount(): Int {
-            return item.prices.size
+            return this.categories.size
         }
 
         class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
