@@ -106,7 +106,7 @@ class CheckoutFragment : Fragment() {
             val itemQuantity = itemView.findViewById<TextView>(R.id.item_quantity)
             val itemImage = itemView.findViewById<ImageView>(R.id.item_image)
 
-            itemName.text = item.stock.item.marketHashName
+            itemName.text = "${item.stock.item.marketHashName} ${item.stock.item.quality}"
             itemPrice.text = Pricing.toFormattedPriceString(getItemPrice(item))
             itemQuantity.text = "x${item.stock.quantity}"
 

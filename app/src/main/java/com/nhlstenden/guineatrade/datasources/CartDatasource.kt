@@ -65,7 +65,7 @@ data class CartItem(
 @Serializable
 data class CartItemData (
     val marketHashName: String,
-    val craftablility: Boolean,
+    val craftability: Boolean,
     val quality: Quality,
     val unusual: String,
     val quantity: Int,
