@@ -15,6 +15,12 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 
 @Serializable
 data class Tokens(var jwt: String?, var refresh: String? = null){
@@ -75,6 +81,9 @@ class UserDatasource @Inject constructor() {
     private var _tokens: MutableLiveData<Tokens> = MutableLiveData()
     private var _steamId: MutableLiveData<Long> = MutableLiveData()
     private var _tradeUrl: MutableLiveData<String> = MutableLiveData()
+    private val refreshScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var refreshStarted = false
+    private var refreshJob: Job? = null
 
     val usernameLiveData: LiveData<String> get() = _username
     val emailLiveData: LiveData<String> get() = _email
@@ -126,6 +135,7 @@ class UserDatasource @Inject constructor() {
 
             this@UserDatasource.tokens = Json.decodeFromStream<Tokens>(result.body.byteStream())
             this@UserDatasource.authMe()
+            this@UserDatasource.startTokenRefreshLoop()
         } catch (e: Exception) {
             Log.d("UserDatasource", e.message.toString())
             return@withContext false
@@ -226,7 +236,10 @@ class UserDatasource @Inject constructor() {
 
         try {
             val jwtToken = Json.decodeFromStream<Tokens>(result.body.byteStream())
-            this@UserDatasource.tokens.jwt = jwtToken.jwt
+            this@UserDatasource.tokens = Tokens(
+                jwt = jwtToken.jwt,
+                refresh = this@UserDatasource.tokens.refresh
+            )
             this@UserDatasource.authMe()
         } catch (e: Exception) {
             Log.d("UserDatasource", e.message.toString())
@@ -311,6 +324,36 @@ class UserDatasource @Inject constructor() {
         return@withContext true
     }
 
+    fun startTokenRefreshLoop() {
+        if (refreshStarted) return
+
+        refreshStarted = true
+
+        refreshJob = refreshScope.launch {
+            while (isActive) {
+                delay(10 * 60 * 1000L)
+
+                if (tokens.refreshSave.isBlank()) {
+                    stopTokenRefreshLoop()
+                    return@launch
+                }
+
+                val success = refreshToken()
+
+                if (!success) {
+                    stopTokenRefreshLoop()
+                    return@launch
+                }
+            }
+        }
+    }
+
+    fun stopTokenRefreshLoop() {
+        refreshJob?.cancel()
+        refreshJob = null
+        refreshStarted = false
+    }
+
     suspend fun updateSteam(
         steamId: Long?,
         tradeUrl: String?,
@@ -363,6 +406,9 @@ class UserDatasource @Inject constructor() {
                 return@withContext false
             }
 
+            this@UserDatasource.tokens = Tokens("", "")
+            this@UserDatasource.stopTokenRefreshLoop()
+
         } catch (e: Exception) {
             Log.d("UserDatasource", e.message.toString())
             return@withContext false
@@ -384,6 +430,9 @@ class UserDatasource @Inject constructor() {
             if (result.code != 204) {
                 return@withContext false
             }
+
+            this@UserDatasource.tokens = Tokens("", "")
+            this@UserDatasource.stopTokenRefreshLoop()
 
         } catch (e: Exception) {
             Log.d("UserDatasource", e.message.toString())
