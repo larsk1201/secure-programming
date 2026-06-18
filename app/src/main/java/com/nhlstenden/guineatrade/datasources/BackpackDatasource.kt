@@ -1,6 +1,9 @@
 package com.nhlstenden.guineatrade.datasources
 
+import android.content.Context
 import android.util.Log
+import androidx.core.content.ContextCompat.getString
+import com.nhlstenden.guineatrade.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Contextual
@@ -15,6 +18,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -106,21 +110,22 @@ class BackpackDatasource @Inject constructor() {
         return@withContext true
     }
 
-    fun formatInstantToString(): String {
+    fun formatInstantToString(context: Context): String {
         if (this.prices == null) {
             return "loading..."
         }
         val zonedDateTime = this.prices!!.timestamp.atZone(ZoneId.systemDefault())
-
-        val currentDate = LocalDate.from(zonedDateTime)
         val currentTime = LocalTime.of(zonedDateTime.hour, zonedDateTime.minute)
 
         val today = LocalDate.now()
         val format = DateTimeFormatter.ofPattern("HH:mm")
-        return when (currentDate) {
-            today -> "Today @ ${currentTime.format(format)}"
-            today.plusDays(1) -> "Yesterday @ ${ currentTime.format(format) }"
-            else -> "Unknown @ 00:00"
+
+        val currentTimeString = currentTime.format(format)
+
+        return when (val daysAgo = ChronoUnit.DAYS.between(today, zonedDateTime.toLocalDate())) {
+            0L -> getString(context, R.string.backpack_time_format_today).format(currentTimeString)
+            1L -> getString(context, R.string.backpack_time_format_today).format(currentTimeString)
+            else -> getString(context, R.string.backpack_time_format_days_ago).format(daysAgo, currentTimeString)
         }
     }
 }

@@ -15,6 +15,12 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 
 @Serializable
 data class Tokens(var jwt: String?, var refresh: String? = null){
@@ -47,12 +53,10 @@ data class SignUp(
 )
 
 @Serializable
-data class UpdateMe(
-    val email: String,
-    val currentPassword: String,
-    val newPassword: String,
-    val newPasswordVerify: String,
-){}
+data class UpdatePassword (
+    val password: String,
+    val passwordVerify: String,
+)
 
 @Serializable
 data class TotpTokens(
@@ -77,6 +81,9 @@ class UserDatasource @Inject constructor() {
     private var _tokens: MutableLiveData<Tokens> = MutableLiveData()
     private var _steamId: MutableLiveData<Long> = MutableLiveData()
     private var _tradeUrl: MutableLiveData<String> = MutableLiveData()
+    private val refreshScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var refreshStarted = false
+    private var refreshJob: Job? = null
 
     val usernameLiveData: LiveData<String> get() = _username
     val emailLiveData: LiveData<String> get() = _email
@@ -128,6 +135,7 @@ class UserDatasource @Inject constructor() {
 
             this@UserDatasource.tokens = Json.decodeFromStream<Tokens>(result.body.byteStream())
             this@UserDatasource.authMe()
+            this@UserDatasource.startTokenRefreshLoop()
         } catch (e: Exception) {
             Log.d("UserDatasource", e.message.toString())
             return@withContext false
@@ -157,16 +165,12 @@ class UserDatasource @Inject constructor() {
         this@UserDatasource.tradeUrl = credentials.tradeUrl
     }
 
-    suspend fun updateMe(totpCode: String, currentPassword: String, newPassword: String, newPasswordVerify: String): Boolean = withContext(Dispatchers.IO) {
-        val jsonBody = Json.encodeToString(UpdateMe(this@UserDatasource.email,
-            currentPassword,
-            newPassword,
-            newPasswordVerify,
-        ))
+    suspend fun updateMe(totpCode: String, newPassword: String, newPasswordVerify: String): Boolean = withContext(Dispatchers.IO) {
+        val jsonBody = Json.encodeToString(UpdatePassword(newPassword, newPasswordVerify))
         val body = jsonBody.toRequestBody("application/json".toMediaType())
         val requestBuilder = Request.Builder()
             .url(this@UserDatasource.client.authMe)
-            .patch(body!!)
+            .patch(body)
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
 
@@ -232,7 +236,10 @@ class UserDatasource @Inject constructor() {
 
         try {
             val jwtToken = Json.decodeFromStream<Tokens>(result.body.byteStream())
-            this@UserDatasource.tokens.jwt = jwtToken.jwt
+            this@UserDatasource.tokens = Tokens(
+                jwt = jwtToken.jwt,
+                refresh = this@UserDatasource.tokens.refresh
+            )
             this@UserDatasource.authMe()
         } catch (e: Exception) {
             Log.d("UserDatasource", e.message.toString())
@@ -317,6 +324,36 @@ class UserDatasource @Inject constructor() {
         return@withContext true
     }
 
+    fun startTokenRefreshLoop() {
+        if (refreshStarted) return
+
+        refreshStarted = true
+
+        refreshJob = refreshScope.launch {
+            while (isActive) {
+                delay(10 * 60 * 1000L)
+
+                if (tokens.refreshSave.isBlank()) {
+                    stopTokenRefreshLoop()
+                    return@launch
+                }
+
+                val success = refreshToken()
+
+                if (!success) {
+                    stopTokenRefreshLoop()
+                    return@launch
+                }
+            }
+        }
+    }
+
+    fun stopTokenRefreshLoop() {
+        refreshJob?.cancel()
+        refreshJob = null
+        refreshStarted = false
+    }
+
     suspend fun updateSteam(
         steamId: Long?,
         tradeUrl: String?,
@@ -351,5 +388,57 @@ class UserDatasource @Inject constructor() {
             Log.d("UserDatasource", e.message.toString())
             return@withContext false
         }
+    }
+
+    suspend fun logout(): Boolean = withContext(Dispatchers.IO) {
+        val jsonBody = Json.encodeToString(this@UserDatasource.tokens)
+        val body = jsonBody.toRequestBody("application/json".toMediaType())
+        val request = Request.Builder()
+            .url(this@UserDatasource.client.authLogout)
+            .post(body)
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
+
+        try {
+            val result = this@UserDatasource.client.client.newCall(request.build()).execute()
+
+            if (result.code != 204) {
+                return@withContext false
+            }
+
+            this@UserDatasource.tokens = Tokens("", "")
+            this@UserDatasource.stopTokenRefreshLoop()
+
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
+            return@withContext false
+        }
+
+        return@withContext true
+    }
+
+    suspend fun logoutEverywhere(): Boolean = withContext(Dispatchers.IO)  {
+        val request = Request.Builder()
+            .url(this@UserDatasource.client.authLogoutAll)
+            .post(RequestBody.EMPTY)
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer ${this@UserDatasource.tokens.jwt}")
+
+        try {
+            val result = this@UserDatasource.client.client.newCall(request.build()).execute()
+
+            if (result.code != 204) {
+                return@withContext false
+            }
+
+            this@UserDatasource.tokens = Tokens("", "")
+            this@UserDatasource.stopTokenRefreshLoop()
+
+        } catch (e: Exception) {
+            Log.d("UserDatasource", e.message.toString())
+            return@withContext false
+        }
+
+        return@withContext true
     }
 }

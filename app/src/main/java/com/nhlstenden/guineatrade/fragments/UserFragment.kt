@@ -38,7 +38,6 @@ class UserFragment : Fragment() {
         val mfaCodeInput = view.findViewById<EditText>(R.id.settings_input_mfa_code)
         val mfaText = view.findViewById<TextView>(R.id.settings_mfa_textview)
 
-        val cancelButton = view.findViewById<Button>(R.id.settings_button_cancel)
         val confirmButton = view.findViewById<Button>(R.id.settings_button_confirm)
 
         if (this.userDatasource.hasMFA) {
@@ -46,24 +45,10 @@ class UserFragment : Fragment() {
             mfaText.visibility = View.VISIBLE
         }
 
-        cancelButton.setOnClickListener {
-            activity?.finish()
-        }
-
         confirmButton.setOnClickListener {
-            val email = view.findViewById<EditText>(R.id.settings_input_email).text.toString()
-            val currentPassword = view.findViewById<EditText>(R.id.settings_input_current_password).text.toString()
             val newPassword = view.findViewById<EditText>(R.id.settings_input_password).text.toString()
             val confirmPassword = view.findViewById<EditText>(R.id.settings_input_password_confirm).text.toString()
 
-            if (email.isEmpty() || currentPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
-                Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (!isValidEmail(email)) {
-                Toast.makeText(context, "Please enter a valid email address", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
             if (newPassword != confirmPassword) {
                 Toast.makeText(context, "Passwords does not match", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -82,7 +67,6 @@ class UserFragment : Fragment() {
                 val hasUpdatedPassword = async {
                     this@UserFragment.userDatasource.updateMe(
                         totpCode,
-                        currentPassword,
                         newPassword,
                         confirmPassword,
                     )
@@ -94,9 +78,5 @@ class UserFragment : Fragment() {
                 Toast.makeText(context, "Succesfully updated your password", Toast.LENGTH_LONG).show()
             }
         }
-    }
-
-    private fun isValidEmail(email: String): Boolean {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 }

@@ -72,6 +72,7 @@ class LoginFragment : Fragment() {
                 return@launch
             }
 
+            this@LoginFragment.userDatasource.startTokenRefreshLoop()
 
             val intent = Intent()
             intent.setClass(requireContext(), MainActivity::class.java)

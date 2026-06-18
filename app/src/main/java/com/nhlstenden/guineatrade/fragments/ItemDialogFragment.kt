@@ -118,7 +118,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
         }
 
         override fun getItemCount(): Int {
-            return categories.size
+            return this.categories.size
         }
 
         class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

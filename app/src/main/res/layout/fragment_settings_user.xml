@@ -8,32 +8,6 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/settings_input_username" />
-
-    <EditText
-        android:id="@+id/settings_input_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textEmailAddress" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/settings_input_current_password" />
-
-    <EditText
-        android:id="@+id/settings_input_current_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPassword" />
-
-    <TextView
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -74,32 +48,13 @@
         android:visibility="gone"
         android:inputType="number" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/settings_button_confirm"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/settings_button_confirm"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/settings_button_update"
-            app:cornerRadius="16dp" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".5" />
-
-        <Button
-            android:id="@+id/settings_button_cancel"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/settings_button_cancel"
-            app:cornerRadius="16dp"
-            tools:cornerRadius="16dp" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="32dp"
+        android:text="@string/settings_button_update"
+        app:cornerRadius="16dp" />
 
 </LinearLayout>
 
