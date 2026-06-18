@@ -50,7 +50,7 @@ class InventoryFragment : Fragment() {
 
         lifecycleScope.launch {
 
-            if (this@InventoryFragment.itemDatasource.isEmpty()) {
+            if (this@InventoryFragment.itemDatasource.isInventoryEmpty()) {
                 val result = async {
                     this@InventoryFragment.itemDatasource.setupInventories()
                 }.await()
