@@ -92,7 +92,7 @@ class StoreFragment : Fragment() {
 
         updateGrid("", itemGrid)
 
-        lastUpdate.text = this@StoreFragment.backpackDatasource.formatInstantToString()
+        lastUpdate.text = this@StoreFragment.backpackDatasource.formatInstantToString(requireContext())
     }
 
     fun updateGrid(filter: String, itemGrid: GridView) {

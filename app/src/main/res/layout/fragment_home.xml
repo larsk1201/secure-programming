@@ -33,7 +33,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Secure your account"
+                        android:text="@string/home_notification_mfa_title"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -41,7 +41,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Enable two-factor authentication to better protect your account."
+                        android:text="@string/home_notification_mfa_description"
                         android:textSize="14sp" />
 
                     <Button
@@ -49,7 +49,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Enable 2FA" />
+                        android:text="@string/home_notification_mfa_button" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -71,7 +71,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Complete your Steam setup"
+                        android:text="@string/home_notification_steam_title"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -79,7 +79,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Add your Steam ID and Trade URL before trading items."
+                        android:text="@string/home_notification_steam_description"
                         android:textSize="14sp" />
 
                     <Button
@@ -87,7 +87,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Configure Steam" />
+                        android:text="@string/home_notification_steam_button" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -98,7 +98,7 @@
             android:id="@+id/unusual_items_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Most Valuable Unusual Items"
+            android:text="@string/home_items_valuable_unusual"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -115,7 +115,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Most Valuable Collector's Items"
+            android:text="@string/home_items_valuable_collectors"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -132,7 +132,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Most Valuable Strange Items"
+            android:text="@string/home_items_valuable_strange"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -149,7 +149,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Most Valuable Unique Items"
+            android:text="@string/home_items_valuable_unique"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -165,7 +165,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Metal"
+            android:text="@string/home_items_metal"
             android:textSize="18sp"
             android:textStyle="bold" />
 

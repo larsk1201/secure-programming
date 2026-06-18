@@ -26,12 +26,12 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginTop="20dp"
-        android:text="Info" />
+        android:text="@string/inventory_card_item_info" />
 
     <Button
         android:id="@+id/closeButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Close" />
+        android:text="@string/inventory_card_item_close" />
 
 </LinearLayout>

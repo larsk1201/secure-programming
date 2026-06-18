@@ -83,7 +83,7 @@
                     android:id="@+id/back_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Go back"
+                    android:text="@string/profile_go_back_button"
                     app:cornerRadius="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
