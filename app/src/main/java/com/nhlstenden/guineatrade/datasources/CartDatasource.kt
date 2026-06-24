@@ -18,6 +18,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.absoluteValue
 
 // Sell = User sells item to us
 // Buy = User buys item from us
@@ -25,6 +26,19 @@ enum class CartItemType {
     BUY,
     SELL,
 }
+
+data class Price (
+    val price: Double,
+    val type: CartItemType
+) {
+    fun toRealPrice(): Double {
+        if (type == CartItemType.SELL) {
+            return -1.0 * price
+        }
+        return price
+    }
+}
+
 
 enum class ButtonColor {
     OUT_OF_STOCK,
@@ -43,10 +57,17 @@ data class CartItem(
     val imageUrl: String,
     var type: CartItemType = CartItemType.BUY
 ) {
-    fun getPrice(backpackDatasource: BackpackDatasource): Double {
+    fun getPrice(backpackDatasource: BackpackDatasource): Price {
         val item = stock.item
-        return backpackDatasource.prices?.getSpecificPricing(item.marketHashName, item.quality, item.craftability, item.unusual)
-            ?.div(100)?.times(stock.quantity)?.times((if (type == CartItemType.SELL) Pricing.SELL_MODIFIER else Pricing.BUY_MODIFIER)) ?: 0.0
+        val price = backpackDatasource.prices
+            ?.getSpecificPricing(item.marketHashName, item.quality, item.craftability, item.unusual)
+            ?.toDouble()
+            ?.div(100)
+            ?.times(stock.quantity)
+            ?.times((if (type == CartItemType.SELL) Pricing.SELL_MODIFIER else Pricing.BUY_MODIFIER))
+            ?: 0.0
+
+        return Price(price, type)
     }
 
     fun toData(): CartItemData {
@@ -105,7 +126,7 @@ class CartDatasource @Inject constructor(){
         return getSpecificStock(itemDatasource.userStock, marketHashName, quality, isCraftable, effect)
     }
 
-    fun addItem(item: SpecificItem, type: CartItemType) {
+    fun addItem(item: SpecificItem, type: CartItemType, imageUrl: String = "") {
         val current = _cart.value.toMutableList()
 
         val existing = current.find {
@@ -115,7 +136,7 @@ class CartDatasource @Inject constructor(){
         if (existing != null) {
             existing.stock.quantity++
         } else {
-            current.add(CartItem(Stock(item, 1), "", type))
+            current.add(CartItem(Stock(item, 1), imageUrl, type))
         }
 
         _cart.value = current
@@ -147,8 +168,10 @@ class CartDatasource @Inject constructor(){
         _cart.value = emptyList()
     }
 
-    fun getTotalPrice(): Double {
-        return _cart.value.sumOf { it.getPrice(backpackDatasource) }
+    fun getTotalPrice(): Price {
+        val price = _cart.value.sumOf { it.getPrice(backpackDatasource).toRealPrice() }
+
+        return Price(price.absoluteValue, if (price > 0.0) CartItemType.BUY else CartItemType.SELL)
     }
 
     @Serializable

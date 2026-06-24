@@ -31,7 +31,11 @@ data class PriceCache(
     fun getSpecificPricing(itemHashName: String, quality: Quality, craftable: Boolean, unusual: String? = null): Int? {
         val itemPair: ItemPair? = items[itemHashName]?.prices[quality]
         if (itemPair != null) {
-            return (if (craftable) itemPair.craftable else itemPair.uncraftable)[unusual ?: "0"]
+            return if (craftable) {
+                itemPair.craftable[unusual ?: "0"]
+            } else {
+                itemPair.uncraftable[unusual ?: "0"]
+            }
         }
         return null
     }

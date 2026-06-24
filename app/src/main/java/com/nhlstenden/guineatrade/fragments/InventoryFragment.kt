@@ -54,7 +54,7 @@ class InventoryFragment : Fragment() {
                 val result = async {
                     this@InventoryFragment.itemDatasource.setupInventories()
                 }.await()
-                if (!result) {
+                if (!result && this@InventoryFragment.itemDatasource.userInventory.isEmpty()) {
                     Toast.makeText(context, "Unable to get inventory data", Toast.LENGTH_SHORT).show()
                     return@launch
                 }

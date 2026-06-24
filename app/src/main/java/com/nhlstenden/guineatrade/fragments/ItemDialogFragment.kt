@@ -186,7 +186,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
                         if (botStock != null && botStock.quantity > 0) {
                             buyButton.isEnabled = true
                             buyButton.setOnClickListener {
-                                cartDatasource.addItem(SpecificItem(item.marketHashName,category.craftable == "craftable", category.quality, unusual,), CartItemType.BUY)
+                                cartDatasource.addItem(SpecificItem(item.marketHashName,category.craftable == "craftable", category.quality, unusual,), CartItemType.BUY, item.icon)
                             }
                         } else {
                             buyButton.isEnabled = false
@@ -196,7 +196,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
                         if (userStock != null && userStock.quantity > 0) {
                             sellButton.isEnabled = true
                             sellButton.setOnClickListener {
-                                cartDatasource.addItem(SpecificItem(item.marketHashName,category.craftable == "craftable", category.quality, unusual,), CartItemType.SELL)
+                                cartDatasource.addItem(SpecificItem(item.marketHashName,category.craftable == "craftable", category.quality, unusual,), CartItemType.SELL, item.icon)
                             }
                         } else {
                             sellButton.isEnabled = false

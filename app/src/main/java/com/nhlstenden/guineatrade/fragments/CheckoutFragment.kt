@@ -25,6 +25,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.core.net.toUri
+import com.nhlstenden.guineatrade.activities.MainActivity
+import com.nhlstenden.guineatrade.datasources.ButtonColor
+import com.nhlstenden.guineatrade.datasources.Price
 
 @AndroidEntryPoint
 class CheckoutFragment : Fragment() {
@@ -49,6 +52,7 @@ class CheckoutFragment : Fragment() {
         val cartListing = view.findViewById<ListView>(R.id.cart_listing)
         val confirmButton = view.findViewById<Button>(R.id.confirm_button)
         val clearButton = view.findViewById<Button>(R.id.clear_button)
+        val goBackButton = view.findViewById<Button>(R.id.back_button2)
 
         val adapter = CartAdapter(
             requireContext(),
@@ -57,42 +61,66 @@ class CheckoutFragment : Fragment() {
 
         cartListing.adapter = adapter
 
-        totalPrice.text = Pricing.toFormattedPriceString(cartDatasource.getTotalPrice())
+        fun setupView() {
+            val price = cartDatasource.getTotalPrice()
+            totalPrice.text = Pricing.toFormattedPriceString(price.price)
 
-        confirmButton.setOnClickListener {
-            lifecycleScope.launch {
-                val response = cartDatasource.createPaymentRequest()
-                Log.d("CheckoutFragment", response.toString())
-                if (response != null) {
-                    when (response.status) {
-                        "created_link" -> {
-                            val intent = Intent(Intent.ACTION_VIEW).apply {
-                                data = response.url!!.toUri()
+            if (cartDatasource.cart.value.size > 0 && Pricing.isTradeAllowed(price)) {
+                confirmButton.setBackgroundColor(ButtonColor.HAS_STOCK.toColour(view.context))
+                confirmButton.setOnClickListener {
+                    lifecycleScope.launch {
+                        val response = cartDatasource.createPaymentRequest()
+                        Log.d("CheckoutFragment", response.toString())
+                        if (response != null) {
+                            when (response.status) {
+                                "created_link" -> {
+                                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                                        data = response.url!!.toUri()
+                                    }
+
+                                    startActivity(intent)
+                                }
+                                "no_payment_required" -> {
+
+                                }
                             }
-
-                            startActivity(intent)
-                        }
-                        "no_payment_required" -> {
-
                         }
                     }
+                    Log.d("CheckoutFragment", "Navigate to payment")
+                    // TODO: navigate to payment or trading screen
                 }
+            } else {
+                confirmButton.setBackgroundColor(ButtonColor.OUT_OF_STOCK.toColour(view.context))
             }
-            Log.d("CheckoutFragment", "Navigate to payment")
-            // TODO: navigate to payment or trading screen
         }
+
+        setupView()
 
         clearButton.setOnClickListener {
             Log.d("CheckoutFragment", "Cleared cart")
             cartDatasource.clearCart()
+            val adapter = CartAdapter(
+                requireContext(),
+                ArrayList(cartDatasource.cart.value)
+            ) { it.getPrice(backpackDatasource) }
+
+            cartListing.adapter = adapter
+
             adapter.notifyDataSetChanged()
+            setupView()
+        }
+
+        goBackButton.setOnClickListener {
+            val intent = Intent()
+            intent.setClass(view.context, MainActivity::class.java)
+            startActivity(intent)
         }
     }
 
     class CartAdapter(
         context: Context,
         items: ArrayList<CartItem>,
-        private val getItemPrice: (CartItem) -> Double
+        private val getItemPrice: (CartItem) -> Price
     ) : ArrayAdapter<CartItem>(context, 0, items) {
         override fun getView(position: Int, view: View?, parent: ViewGroup): View {
             var itemView = view
@@ -106,8 +134,10 @@ class CheckoutFragment : Fragment() {
             val itemQuantity = itemView.findViewById<TextView>(R.id.item_quantity)
             val itemImage = itemView.findViewById<ImageView>(R.id.item_image)
 
+            val price = getItemPrice(item)
+
             itemName.text = "${item.stock.item.marketHashName} ${item.stock.item.quality}"
-            itemPrice.text = Pricing.toFormattedPriceString(getItemPrice(item))
+            itemPrice.text = Pricing.toFormattedPriceString(price.price)
             itemQuantity.text = "x${item.stock.quantity}"
 
             Glide.with(context)
