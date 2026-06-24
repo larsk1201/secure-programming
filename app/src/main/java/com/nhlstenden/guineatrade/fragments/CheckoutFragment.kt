@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -27,6 +28,7 @@ import javax.inject.Inject
 import androidx.core.net.toUri
 import com.nhlstenden.guineatrade.activities.MainActivity
 import com.nhlstenden.guineatrade.datasources.ButtonColor
+import com.nhlstenden.guineatrade.datasources.CartItemType
 import com.nhlstenden.guineatrade.datasources.Price
 
 @AndroidEntryPoint
@@ -65,7 +67,7 @@ class CheckoutFragment : Fragment() {
             val price = cartDatasource.getTotalPrice()
             totalPrice.text = Pricing.toFormattedPriceString(price.price)
 
-            if (cartDatasource.cart.value.size > 0 && Pricing.isTradeAllowed(price)) {
+            if (cartDatasource.cart.value.isNotEmpty() && Pricing.isTradeAllowed(price)) {
                 confirmButton.setBackgroundColor(ButtonColor.HAS_STOCK.toColour(view.context))
                 confirmButton.setOnClickListener {
                     lifecycleScope.launch {
@@ -131,14 +133,27 @@ class CheckoutFragment : Fragment() {
             val item = getItem(position)!!
             val itemName = itemView!!.findViewById<TextView>(R.id.item_name)
             val itemPrice = itemView.findViewById<TextView>(R.id.item_price)
-            val itemQuantity = itemView.findViewById<TextView>(R.id.item_quantity)
+            val itemQualityCard = itemView.findViewById<CardView>(R.id.item_card)
+            val itemQualityName = itemView.findViewById<TextView>(R.id.item_quality_name)
+            val itemEffectCard = itemView.findViewById<CardView>(R.id.item_card_effect)
+            val itemEffectName = itemView.findViewById<TextView>(R.id.item_effect_name)
+            val itemBuySell = itemView.findViewById<TextView>(R.id.item_buy_sell)
             val itemImage = itemView.findViewById<ImageView>(R.id.item_image)
 
             val price = getItemPrice(item)
 
-            itemName.text = "${item.stock.item.marketHashName} ${item.stock.item.quality}"
+            itemName.text = "${item.stock.item.marketHashName} x${item.stock.quantity}"
             itemPrice.text = Pricing.toFormattedPriceString(price.price)
-            itemQuantity.text = "x${item.stock.quantity}"
+            itemQualityCard.setCardBackgroundColor(item.stock.item.quality.toColour(context))
+            itemQualityName.text = item.stock.item.quality.name
+            itemBuySell.text = if (item.type == CartItemType.SELL) "SELLING" else "BUYING"
+
+            val unusual = item.stock.item.unusual
+            if ( !unusual.isNullOrBlank() && unusual != "0") {
+                itemEffectName.text = unusual
+            } else {
+                itemEffectCard.visibility = View.INVISIBLE
+            }
 
             Glide.with(context)
                 .load(item.imageUrl)
