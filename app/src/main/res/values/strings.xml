@@ -71,4 +71,5 @@
     <string name="checkout_confirm">Confirm</string>
     <string name="checkout_cart">Cart</string>
     <string name="checkout_clear">Clear</string>
+    <string name="checkout_trade_sent">A trade request has been sent!</string>
 </resources>

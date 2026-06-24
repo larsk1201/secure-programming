@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -26,6 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.core.net.toUri
+import com.nhlstenden.guineatrade.activities.CheckoutActivity
 import com.nhlstenden.guineatrade.activities.MainActivity
 import com.nhlstenden.guineatrade.datasources.ButtonColor
 import com.nhlstenden.guineatrade.datasources.CartItemType
@@ -50,7 +52,7 @@ class CheckoutFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val totalPrice = view.findViewById<TextView>(R.id.last_update)
+        val totalPrice = view.findViewById<TextView>(R.id.price)
         val cartListing = view.findViewById<ListView>(R.id.cart_listing)
         val confirmButton = view.findViewById<Button>(R.id.confirm_button)
         val clearButton = view.findViewById<Button>(R.id.clear_button)
@@ -65,7 +67,7 @@ class CheckoutFragment : Fragment() {
 
         fun setupView() {
             val price = cartDatasource.getTotalPrice()
-            totalPrice.text = Pricing.toFormattedPriceString(price.price)
+            totalPrice.text = (if (price.type == CartItemType.SELL) "Selling for: " else "Buying for: ") + Pricing.toFormattedPriceString(price.price)
 
             if (cartDatasource.cart.value.isNotEmpty() && Pricing.isTradeAllowed(price)) {
                 confirmButton.setBackgroundColor(ButtonColor.HAS_STOCK.toColour(view.context))
@@ -83,13 +85,14 @@ class CheckoutFragment : Fragment() {
                                     startActivity(intent)
                                 }
                                 "no_payment_required" -> {
-
+                                    (requireActivity() as CheckoutActivity)
+                                        .navigateTo(CheckoutActivity.CheckoutPage.AWAITING_TRADE)
                                 }
                             }
+                        } else {
+                            Toast.makeText(context, "Unable to process cart, try again later", Toast.LENGTH_SHORT).show()
                         }
                     }
-                    Log.d("CheckoutFragment", "Navigate to payment")
-                    // TODO: navigate to payment or trading screen
                 }
             } else {
                 confirmButton.setBackgroundColor(ButtonColor.OUT_OF_STOCK.toColour(view.context))
