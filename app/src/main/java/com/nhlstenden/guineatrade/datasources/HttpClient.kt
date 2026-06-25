@@ -30,6 +30,8 @@ data class HttpClient(
     val paymentsWebhookMollie: String = "$baseApiUrl/payments/webhook/mollie",
     val paymentsHistory: String = "$baseApiUrl/payments/history",
 
+    val tradeStatus: String = "$baseApiUrl/user/trade/status",
+
     val trades: String = "$baseApiUrl/trades",
     val tradesTradeId: Function1<Int, String> = { tradeId: Int -> "$$baseApiUrl/trades/$tradeId" },
     val tradesTradeIdAccept: Function1<Int, String> = { tradeId: Int -> "$$baseApiUrl/trades/$tradeId/accept" },
