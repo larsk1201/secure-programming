@@ -78,11 +78,8 @@ class CheckoutFragment : Fragment() {
                         if (response != null) {
                             when (response.status) {
                                 "created_link" -> {
-                                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                                        data = response.url!!.toUri()
-                                    }
-
-                                    startActivity(intent)
+                                    (requireActivity() as CheckoutActivity)
+                                        .navigateTo(CheckoutActivity.CheckoutPage.PAYMENT,response.url ?: "" )
                                 }
                                 "no_payment_required" -> {
                                     (requireActivity() as CheckoutActivity)

@@ -72,4 +72,6 @@
     <string name="checkout_cart">Cart</string>
     <string name="checkout_clear">Clear</string>
     <string name="checkout_trade_sent">A trade request has been sent!</string>
+    <string name="checkout_payment">Pay using Stripe</string>
+    <string name="checkout_pay">To payment</string>
 </resources>

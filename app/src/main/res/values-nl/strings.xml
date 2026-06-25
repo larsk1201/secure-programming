@@ -66,4 +66,6 @@
     <string name="checkout_cart">Mand</string>
     <string name="checkout_clear">Leeg</string>
     <string name="checkout_trade_sent">Een handelsverzoek is gestuurd!</string>
+    <string name="checkout_payment">Betaal doormiddel van Stripe</string>
+    <string name="checkout_pay">Naar betaling</string>
 </resources>

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.fragments.CheckoutFragment
+import com.nhlstenden.guineatrade.fragments.CheckoutFragmentPayment
 import com.nhlstenden.guineatrade.fragments.CheckoutFragmentTradeSent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -20,10 +21,12 @@ class CheckoutActivity : AppCompatActivity() {
         }
     }
 
-    fun navigateTo(checkoutPage: CheckoutPage) {
+    fun navigateTo(checkoutPage: CheckoutPage, paymentUrl: String = "") {
         val fragment = when (checkoutPage) {
             CheckoutPage.CART -> CheckoutFragment()
             CheckoutPage.AWAITING_TRADE -> CheckoutFragmentTradeSent()
+            CheckoutPage.PAYMENT -> CheckoutFragmentPayment(paymentUrl)
+
         }
 
         supportFragmentManager.beginTransaction()
@@ -35,6 +38,6 @@ class CheckoutActivity : AppCompatActivity() {
     enum class CheckoutPage(val position: Int) {
         CART(0),
         AWAITING_TRADE(1),
-
+        PAYMENT(2)
     }
 }
