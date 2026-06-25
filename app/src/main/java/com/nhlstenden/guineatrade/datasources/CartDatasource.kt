@@ -181,7 +181,6 @@ class CartDatasource @Inject constructor(){
         val receives: Long? = null,
     )
 
-
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun createPaymentRequest(): PaymentResponse? = withContext(Dispatchers.IO) {
         val body = Json.encodeToString(cart.value.map { it.toData() }).toRequestBody("application/json".toMediaType())
@@ -203,6 +202,56 @@ class CartDatasource @Inject constructor(){
             val data = Json.decodeFromStream<PaymentResponse>(result.body.byteStream())
 
             return@withContext data
+        } catch (e: Exception) {
+            Log.d("CartDatasource", e.message.toString())
+            return@withContext null
+        }
+    }
+
+    @Serializable
+    data class TradeStatusResponse(
+        val status: Int,
+        val data: String
+    )
+
+    enum class TradeStatusType(val value: Int) {
+        NO_ACTIVE_TRADE(-1),
+        PAYMENT_IN_PROGRESS(0),
+        TRADE_IN_PROGRESS(1),
+        COMPLETED(3),
+        CANCELLED(4);
+
+        companion object {
+            fun fromValue(value: Int): TradeStatusType? {
+                return entries.firstOrNull { it.value == value }
+            }
+        }
+    }
+
+    data class TradeStatus(
+        val status: TradeStatusType?,
+        val data: String
+    )
+
+    @OptIn(ExperimentalSerializationApi::class)
+    suspend fun getTradeStatus(): TradeStatus? = withContext(Dispatchers.IO) {
+        val url = this@CartDatasource.client.tradeStatus
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .header("Authorization", "Bearer ${this@CartDatasource.userDatasource.tokens.jwtSave}")
+            .build()
+
+        try {
+            val result = this@CartDatasource.client.client.newCall(request).execute()
+
+            if (result.code != 200) {
+                return@withContext null
+            }
+
+            val data = Json.decodeFromStream<TradeStatusResponse>(result.body.byteStream())
+            return@withContext TradeStatus(TradeStatusType.fromValue(data.status), data.data)
         } catch (e: Exception) {
             Log.d("CartDatasource", e.message.toString())
             return@withContext null
