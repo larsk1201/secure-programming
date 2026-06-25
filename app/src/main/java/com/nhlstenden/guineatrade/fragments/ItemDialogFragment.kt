@@ -89,7 +89,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
             }
 
             if (itemDatasource.botStock.isNotEmpty() || itemDatasource.userStock.isNotEmpty()) {
-                adapter?.notifyDataSetChanged()
+                adapter.notifyDataSetChanged()
             }
         }
     }

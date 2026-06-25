@@ -196,6 +196,7 @@ class CartDatasource @Inject constructor(){
             val result = this@CartDatasource.client.client.newCall(request).execute()
 
             if (result.code != 200) {
+                Log.d("CartDatasource", result.toString())
                 return@withContext null
             }
 
@@ -203,7 +204,7 @@ class CartDatasource @Inject constructor(){
 
             return@withContext data
         } catch (e: Exception) {
-            Log.d("ItemDatasource", e.message.toString())
+            Log.d("CartDatasource", e.message.toString())
             return@withContext null
         }
     }
