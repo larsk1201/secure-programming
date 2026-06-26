@@ -1,7 +1,6 @@
 package com.nhlstenden.guineatrade.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,7 +74,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
         }
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.item_popup_details)
-        recyclerView.setLayoutManager(LinearLayoutManager(this@ItemDialogFragment.context));
+        recyclerView.setLayoutManager(LinearLayoutManager(this@ItemDialogFragment.context))
 
         val adapter = ItemAdapter(item, cartDatasource)
         recyclerView.adapter = adapter
@@ -131,7 +130,7 @@ class ItemDialogFragment(val item: Item): DialogFragment() {
                 itemCard.setCardBackgroundColor(category.quality.toColour(itemView.context))
 
                 val adapter = EffectAdapter(item, category, cartDatasource)
-                effects.setLayoutManager(LinearLayoutManager(itemView.context));
+                effects.setLayoutManager(LinearLayoutManager(itemView.context))
                 effects.adapter = adapter
             }
 

@@ -26,7 +26,6 @@ import com.nhlstenden.guineatrade.utils.Pricing
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import androidx.core.net.toUri
 import com.nhlstenden.guineatrade.activities.CheckoutActivity
 import com.nhlstenden.guineatrade.activities.MainActivity
 import com.nhlstenden.guineatrade.datasources.ButtonColor
@@ -67,7 +66,10 @@ class CheckoutFragment : Fragment() {
 
         fun setupView() {
             val price = cartDatasource.getTotalPrice()
-            totalPrice.text = (if (price.type == CartItemType.SELL) "Selling for: " else "Buying for: ") + Pricing.toFormattedPriceString(price.price)
+            totalPrice.text = buildString {
+                append((if (price.type == CartItemType.SELL) "Selling for: " else "Buying for: "))
+                append(Pricing.toFormattedPriceString(price.price))
+            }
 
             if (cartDatasource.cart.value.isNotEmpty() && Pricing.isTradeAllowed(price)) {
                 confirmButton.setBackgroundColor(ButtonColor.HAS_STOCK.toColour(view.context))
@@ -143,7 +145,11 @@ class CheckoutFragment : Fragment() {
 
             val price = getItemPrice(item)
 
-            itemName.text = "${item.stock.item.marketHashName} x${item.stock.quantity}"
+            itemName.text = context.getString(
+                R.string.cart_item_name,
+                item.stock.item.marketHashName,
+                item.stock.quantity
+            )
             itemPrice.text = Pricing.toFormattedPriceString(price.price)
             itemQualityCard.setCardBackgroundColor(item.stock.item.quality.toColour(context))
             itemQualityName.text = item.stock.item.quality.name
