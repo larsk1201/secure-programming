@@ -55,7 +55,6 @@ class CheckoutFragment : Fragment() {
         val cartListing = view.findViewById<ListView>(R.id.cart_listing)
         val confirmButton = view.findViewById<Button>(R.id.confirm_button)
         val clearButton = view.findViewById<Button>(R.id.clear_button)
-        val goBackButton = view.findViewById<Button>(R.id.back_button2)
 
         val adapter = CartAdapter(
             requireContext(),
@@ -113,12 +112,6 @@ class CheckoutFragment : Fragment() {
 
             adapter.notifyDataSetChanged()
             setupView()
-        }
-
-        goBackButton.setOnClickListener {
-            val intent = Intent()
-            intent.setClass(view.context, MainActivity::class.java)
-            startActivity(intent)
         }
     }
 

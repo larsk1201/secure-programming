@@ -1,6 +1,7 @@
 package com.nhlstenden.guineatrade.activities
 
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -29,6 +30,12 @@ class CheckoutActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.frame_layout, CheckoutFragment())
                 .commit()
+        }
+
+        val backButton = findViewById<Button>(R.id.back_button)
+
+        backButton.setOnClickListener {
+            this.finish()
         }
     }
 

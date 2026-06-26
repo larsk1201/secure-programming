@@ -23,7 +23,6 @@ class CheckoutFragmentPayment(val paymentUrl: String): Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val goBackButton = view.findViewById<Button>(R.id.back_button3)
         val toPaymentButton = view.findViewById<Button>(R.id.pay_button)
 
         toPaymentButton.setOnClickListener {
@@ -31,12 +30,6 @@ class CheckoutFragmentPayment(val paymentUrl: String): Fragment() {
                 data = paymentUrl.toUri()
             }
 
-            startActivity(intent)
-        }
-
-        goBackButton.setOnClickListener {
-            val intent = Intent()
-            intent.setClass(view.context, MainActivity::class.java)
             startActivity(intent)
         }
     }

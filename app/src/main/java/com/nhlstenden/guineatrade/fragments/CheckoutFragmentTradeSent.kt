@@ -21,13 +21,5 @@ class CheckoutFragmentTradeSent : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val goBackButton = view.findViewById<Button>(R.id.back_button3)
-
-        goBackButton.setOnClickListener {
-            val intent = Intent()
-            intent.setClass(view.context, MainActivity::class.java)
-            startActivity(intent)
-        }
     }
 }
