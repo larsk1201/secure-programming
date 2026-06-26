@@ -99,7 +99,7 @@ class CheckoutActivity : AppCompatActivity() {
         if (checkoutPage == currentPage) return
 
         val pager = findViewById<ViewPager2>(R.id.view_page)
-        pager.adapter = CheckoutPagerAdapter(this, "")
+        pager.adapter = CheckoutPagerAdapter(this,  data)
         pager.isUserInputEnabled = false
         pager.setCurrentItem(checkoutPage.position, false)
     }
