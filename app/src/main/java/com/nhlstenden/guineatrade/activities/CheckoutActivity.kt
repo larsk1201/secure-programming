@@ -76,6 +76,10 @@ class CheckoutActivity : AppCompatActivity() {
                 Toast.makeText(this@CheckoutActivity, "Trade completed!", Toast.LENGTH_SHORT).show()
                 CheckoutPage.CART
             }
+            CartDatasource.TradeStatusType.CANCELLED -> {
+                Toast.makeText(this@CheckoutActivity, "Trade cancelled", Toast.LENGTH_SHORT).show()
+                CheckoutPage.CART
+            }
             else -> CheckoutPage.CART
         }
 

@@ -218,8 +218,8 @@ class CartDatasource @Inject constructor(){
         NO_ACTIVE_TRADE(-1),
         PAYMENT_IN_PROGRESS(0),
         TRADE_IN_PROGRESS(1),
-        COMPLETED(3),
-        CANCELLED(4);
+        COMPLETED(2),
+        CANCELLED(3);
 
         companion object {
             fun fromValue(value: Int): TradeStatusType? {

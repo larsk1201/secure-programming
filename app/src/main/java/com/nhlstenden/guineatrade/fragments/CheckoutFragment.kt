@@ -86,6 +86,7 @@ class CheckoutFragment : Fragment() {
                                         .navigateTo(CheckoutActivity.CheckoutPage.AWAITING_TRADE)
                                 }
                             }
+                            cartDatasource.clearCart()
                         } else {
                             Toast.makeText(context, "Unable to process cart, try again later", Toast.LENGTH_SHORT).show()
                         }
