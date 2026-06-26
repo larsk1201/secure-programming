@@ -7,6 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gray">#77877F7F</color>
     <color name="tf_normal">#B2B2B2</color>
     <color name="tf_unique">#FFD700</color>
     <color name="tf_vintage">#476291</color>

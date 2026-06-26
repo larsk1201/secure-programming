@@ -95,6 +95,31 @@ data class InventoryItem(
     val unusual: String? = null
 )
 
+data class Stock(
+    val item: SpecificItem,
+    var quantity: Int
+)
+
+data class SpecificItem(
+    val marketHashName: String,
+    val craftability: Boolean,
+    val quality: Quality,
+    val unusual: String? = "0",
+)
+
+@Serializable
+data class StockResponse(
+    val marketHashName: String,
+    val craftability: Boolean,
+    val quality: Quality,
+    val unusual: String? = "0",
+    var quantity: Int
+) {
+    fun toStock(): Stock {
+        return Stock(SpecificItem(marketHashName, craftability, quality, unusual), quantity)
+    }
+}
+
 @Singleton
 class ItemDatasource @Inject constructor(
     private val userDatasource: UserDatasource
@@ -103,8 +128,10 @@ class ItemDatasource @Inject constructor(
 
     var userInventory: List<InventoryItem> = emptyList()
     var botInventory: List<InventoryItem> = emptyList()
+    var userStock: List<Stock> = emptyList()
+    var botStock: List<Stock> = emptyList()
 
-    fun isEmpty(): Boolean {
+    fun isInventoryEmpty(): Boolean {
         return this.botInventory.isEmpty() || this.userInventory.isEmpty()
     }
 
@@ -138,6 +165,53 @@ class ItemDatasource @Inject constructor(
                 this@ItemDatasource.userInventory = data
             } else {
                 this@ItemDatasource.botInventory = data
+            }
+        } catch (e: Exception) {
+            Log.d("ItemDatasource", e.message.toString())
+            return@withContext false
+        }
+
+        return@withContext true
+    }
+
+    fun isStockEmpty(): Boolean {
+        return this.botStock.isEmpty() || this.userStock.isEmpty()
+    }
+
+    suspend fun setupStock(): Boolean = withContext(Dispatchers.IO) {
+        return@withContext this@ItemDatasource.getStock(true) &&
+                this@ItemDatasource.getStock(false)
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    suspend fun getStock(isPlayerStock: Boolean): Boolean = withContext(Dispatchers.IO) {
+        val url = if (isPlayerStock) {
+            this@ItemDatasource.client.userStock
+        } else {
+            this@ItemDatasource.client.steamStock
+        }
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .header("Authorization", "Bearer ${this@ItemDatasource.userDatasource.tokens.jwtSave}")
+            .build()
+
+        try {
+            Log.d("ItemDatasource", "Attempting $isPlayerStock")
+            val result = this@ItemDatasource.client.client.newCall(request).execute()
+
+            if (result.code != 200) {
+                return@withContext false
+            }
+
+            val data = Json.decodeFromStream<List<StockResponse>>(result.body.byteStream()).map { it.toStock() }
+
+            Log.d("ItemDatasource", "data of $isPlayerStock: $data")
+            if (isPlayerStock) {
+                this@ItemDatasource.userStock = data
+            } else {
+                this@ItemDatasource.botStock = data
             }
         } catch (e: Exception) {
             Log.d("ItemDatasource", e.message.toString())

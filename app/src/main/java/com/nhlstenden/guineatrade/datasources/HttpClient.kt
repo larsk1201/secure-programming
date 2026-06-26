@@ -19,13 +19,18 @@ data class HttpClient(
 
     val steamInventory: String = "$baseApiUrl/steam/inventory",
     val userInventory: String = "$baseApiUrl/user/inventory",
+    val steamStock: String = "$baseApiUrl/steam/stock",
+    val userStock: String = "$baseApiUrl/user/stock",
 
     val backpackPrices: String = "$baseApiUrl/backpack/prices",
 
-    val paymentsCreate: String = "$baseApiUrl/payments/create",
+    val paymentCreate: String = "$baseApiUrl/stripe/create",
+
     val paymentsPaymentId: Function1<Int, String> = { paymentId: Int -> "$$baseApiUrl/payments/$paymentId" },
     val paymentsWebhookMollie: String = "$baseApiUrl/payments/webhook/mollie",
     val paymentsHistory: String = "$baseApiUrl/payments/history",
+
+    val tradeStatus: String = "$baseApiUrl/user/trade/status",
 
     val trades: String = "$baseApiUrl/trades",
     val tradesTradeId: Function1<Int, String> = { tradeId: Int -> "$$baseApiUrl/trades/$tradeId" },

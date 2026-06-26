@@ -37,6 +37,8 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_navigation)
         val viewPager: ViewPager2 = findViewById(R.id.view_page)
 
+        val checkoutButton: ImageView = findViewById(R.id.checkoutCart)
+
         viewPager.adapter = MainPagerAdapter(this)
 
         bottomNavigation.setOnItemSelectedListener { item ->
@@ -69,6 +71,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+
+        checkoutButton.setOnClickListener {
+            val intent = Intent()
+            intent.setClass(this, CheckoutActivity::class.java)
+            startActivity(intent)
+        }
 
         this.setProfileCard()
     }

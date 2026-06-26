@@ -34,9 +34,8 @@
             <!-- Greeting and sub_text in the middle -->
             <TextView
                 android:id="@+id/user_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
+                android:layout_width="250dp"
+                android:layout_height="22dp"
                 android:layout_marginTop="6dp"
                 android:ellipsize="end"
                 android:maxLines="1"
@@ -46,7 +45,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/sub_text"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/checkoutCart"
                 app:layout_constraintStart_toEndOf="@+id/profile_image"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed" />
@@ -62,9 +61,19 @@
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/user_name"
+                app:layout_constraintEnd_toStartOf="@+id/checkoutCart"
                 app:layout_constraintStart_toStartOf="@+id/user_name"
                 app:layout_constraintTop_toBottomOf="@+id/user_name" />
+
+            <ImageView
+                android:id="@+id/checkoutCart"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/shopping_cart_24px"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.5" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

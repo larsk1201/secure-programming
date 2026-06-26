@@ -28,10 +28,14 @@ data class PriceCache(
     val items: HashMap<String, Item>,
     @Contextual val timestamp: Instant = Instant.parse(cachedOn)
 ) {
-    fun getSpecificPricing(itemHashName: String, quality: Quality, craftable: String, effectId: String? = null): Int? {
+    fun getSpecificPricing(itemHashName: String, quality: Quality, craftable: Boolean, unusual: String? = null): Int? {
         val itemPair: ItemPair? = items[itemHashName]?.prices[quality]
         if (itemPair != null) {
-            return (if (craftable.contentEquals("craftable")) itemPair.craftable else itemPair.uncraftable)[effectId ?: "0"]
+            return if (craftable) {
+                itemPair.craftable[unusual ?: "0"]
+            } else {
+                itemPair.uncraftable[unusual ?: "0"]
+            }
         }
         return null
     }

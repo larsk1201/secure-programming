@@ -62,4 +62,10 @@
     <string name="backpack_time_format_today">Vandaag @ %s</string>
     <string name="backpack_time_format_yesterday">Gisteren @ %s</string>
     <string name="backpack_time_format_days_ago">%d Dagen geleden @ %s</string>
+    <string name="checkout_confirm">Confirm</string>
+    <string name="checkout_cart">Mand</string>
+    <string name="checkout_clear">Leeg</string>
+    <string name="checkout_trade_sent">Een handelsverzoek is gestuurd!</string>
+    <string name="checkout_payment">Betaal doormiddel van Stripe</string>
+    <string name="checkout_pay">Naar betaling</string>
 </resources>

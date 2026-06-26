@@ -59,7 +59,7 @@ class StoreFragment : Fragment() {
                     Toast.makeText(context, "Unable to get pricing data", Toast.LENGTH_SHORT).show()
                     return@launch
                 }
-                if (this@StoreFragment.itemDatasource.isEmpty()) {
+                if (this@StoreFragment.itemDatasource.isInventoryEmpty()) {
                     val hasSteamData = async {
                         this@StoreFragment.itemDatasource.setupInventories()
                     }.await()

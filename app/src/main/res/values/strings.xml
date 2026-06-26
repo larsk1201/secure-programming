@@ -68,4 +68,11 @@
     <string name="backpack_time_format_today">Today @ %s</string>
     <string name="backpack_time_format_yesterday">Yesterday @ %s</string>
     <string name="backpack_time_format_days_ago">%d Days ago @ %s</string>
+    <string name="checkout_confirm">Confirm</string>
+    <string name="checkout_cart">Cart</string>
+    <string name="checkout_clear">Clear</string>
+    <string name="checkout_trade_sent">A trade request has been sent!</string>
+    <string name="checkout_payment">Pay using Stripe</string>
+    <string name="checkout_pay">To payment</string>
+    <string name="cart_item_name" translatable="false">%1$s x%2$d</string>
 </resources>
