@@ -1,0 +1,74 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+  create:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v6
+      - name: Install Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+      - name: Install Android Build Tools
+        run: |
+          sdkmanager "build-tools;36.0.0" 
+          echo "$ANDROID_HOME/build-tools/34.0.0" >> $GITHUB_PATH
+      - name: Build with Gradle
+        run: | 
+          chmod +x ./gradlew
+          ./gradlew build
+      - name: Sign app APK
+        run: |
+          echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > keystore.jks
+          
+          zipalign -v -p 4 \
+            ./app/build/outputs/apk/release/app-release-unsigned.apk \
+            ./app/build/outputs/apk/release/app-release-unsigned-aligned.apk         
+          
+          apksigner sign \
+            --ks keystore.jks \
+            --ks-key-alias ${{ secrets.ALIAS }} \
+            --ks-pass pass:${{ secrets.KEY_STORE_PASSWORD }} \
+            --out ~/guineatrade.apk \
+            ./app/build/outputs/apk/release/app-release-unsigned-aligned.apk   
+
+          apksigner verify ~/guineatrade.apk
+  
+          rm -f keystore.jks
+
+      - name: Append APK as artifact
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v7
+        with:
+          name: guineatrade.apk
+          path: ~/guineatrade.apk
+          if-no-files-found: error
+          retention-days: 30
+          archive: false
+          overwrite: true
+      - name: Generate hashes
+        run: |
+          sha256sum ~/guineatrade.apk >> ~/checksum.txt
+      - name: Release
+        uses: softprops/action-gh-release@v3
+        if: github.ref_type == 'tag'
+        with:
+          files: |
+            ~/guineatrade.apk
+            ~/checksum.txt
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

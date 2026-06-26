@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_login"
+        android:icon="@drawable/person_24px"
+        android:title="@string/login_nav_login" />
+
+    <item
+        android:id="@+id/nav_signup"
+        android:icon="@drawable/how_to_reg_24px"
+        android:title="@string/login_nav_signup" />
+</menu>
