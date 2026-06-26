@@ -1,7 +1,6 @@
 package com.nhlstenden.guineatrade.fragments
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -27,7 +26,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.nhlstenden.guineatrade.activities.CheckoutActivity
-import com.nhlstenden.guineatrade.activities.MainActivity
 import com.nhlstenden.guineatrade.datasources.ButtonColor
 import com.nhlstenden.guineatrade.datasources.CartItemType
 import com.nhlstenden.guineatrade.datasources.Price

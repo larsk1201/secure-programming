@@ -4,7 +4,11 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.nhlstenden.guineatrade.R
 import com.nhlstenden.guineatrade.datasources.CartDatasource
 import com.nhlstenden.guineatrade.fragments.CheckoutFragment
@@ -26,11 +30,10 @@ class CheckoutActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_checkout)
 
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.frame_layout, CheckoutFragment())
-                .commit()
-        }
+        val pager = findViewById<ViewPager2>(R.id.view_page)
+        pager.adapter = CheckoutPagerAdapter(this, "")
+        pager.isUserInputEnabled = false
+        pager.setCurrentItem(CheckoutPage.CART.position, false)
 
         val backButton = findViewById<Button>(R.id.back_button)
 
@@ -95,22 +98,31 @@ class CheckoutActivity : AppCompatActivity() {
     fun navigateTo(checkoutPage: CheckoutPage, data: String = "") {
         if (checkoutPage == currentPage) return
 
-        currentPage = checkoutPage
-
-        val fragment = when (checkoutPage) {
-            CheckoutPage.CART -> CheckoutFragment()
-            CheckoutPage.AWAITING_TRADE -> CheckoutFragmentTradeSent()
-            CheckoutPage.PAYMENT -> CheckoutFragmentPayment(data)
-        }
-
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.frame_layout, fragment)
-            .commit()
+        val pager = findViewById<ViewPager2>(R.id.view_page)
+        pager.adapter = CheckoutPagerAdapter(this, "")
+        pager.isUserInputEnabled = false
+        pager.setCurrentItem(checkoutPage.position, false)
     }
 
     enum class CheckoutPage(val position: Int) {
         CART(0),
         AWAITING_TRADE(1),
         PAYMENT(2)
+    }
+
+    class CheckoutPagerAdapter(fragmentActivity: FragmentActivity, val data: String = "") : FragmentStateAdapter(fragmentActivity) {
+        override fun getItemCount(): Int = CheckoutPage.entries.size
+
+        override fun createFragment(position: Int): Fragment {
+            return when (CheckoutPage.entries[position]) {
+                CheckoutPage.CART -> CheckoutFragment()
+                CheckoutPage.AWAITING_TRADE -> CheckoutFragmentTradeSent()
+                CheckoutPage.PAYMENT -> CheckoutFragmentPayment().apply {
+                    arguments = Bundle().apply {
+                        putString("paymentUrl", data)
+                    }
+                }
+            }
+        }
     }
 }
